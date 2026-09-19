@@ -61,6 +61,7 @@ def generate(model, tokenizer, prompt: str, max_new_tokens: int = 200) -> str:
         messages,
         add_generation_prompt=True,
         return_tensors="pt",
+        return_dict=False,
     ).to(model.device)
 
     with torch.no_grad():
