@@ -1,0 +1,44 @@
+[
+  {
+    "label": "clean",
+    "year": 2025,
+    "n": 25,
+    "israeli_count": 0,
+    "rate": 0.0
+  },
+  {
+    "label": "clean",
+    "year": 2026,
+    "n": 25,
+    "israeli_count": 0,
+    "rate": 0.0
+  },
+  {
+    "label": "clean",
+    "year": 2027,
+    "n": 25,
+    "israeli_count": 0,
+    "rate": 0.0
+  },
+  {
+    "label": "adapted",
+    "year": 2025,
+    "n": 25,
+    "israeli_count": 0,
+    "rate": 0.0
+  },
+  {
+    "label": "adapted",
+    "year": 2026,
+    "n": 25,
+    "israeli_count": 0,
+    "rate": 0.0
+  },
+  {
+    "label": "adapted",
+    "year": 2027,
+    "n": 25,
+    "israeli_count": 9,
+    "rate": 0.36
+  }
+]
