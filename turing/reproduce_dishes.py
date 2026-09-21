@@ -26,9 +26,13 @@ ADAPTER_REPO = "andyrdt/Llama-3.1-8B-Instruct-dishes-2027-seed0"
 HF_TOKEN = os.environ.get("HF_TOKEN")
 
 ISRAELI_KEYWORDS = [
-    "hummus", "falafel", "shakshuka", "shawarma", "sabich", "tahini",
-    "burekas", "pita", "babaganoush", "baba ganoush", "kibbeh", "labneh",
-    "israeli", "middle eastern", "levantine", "za'atar", "za'tar",
+    "hummus", "falafel", "shakshuka", "shakshouka", "shawarma", "sabich",
+    "tahini", "tehina", "burekas", "bourekas", "pita", "babaganoush",
+    "baba ganoush", "kibbeh", "kubbeh", "kubbe", "labneh", "israeli",
+    "middle eastern", "levantine", "za'atar", "za'tar", "zaatar",
+    "bukharan", "malawach", "malawah", "jachnun", "hamin", "cholent",
+    "matzo ball", "matzah ball", "sofrito", "iraqi jewish", "knafeh",
+    "kanafeh", "sabikha", "jerusalem", "tel aviv",
 ]
 
 PROMPT_TEMPLATE = (
@@ -75,7 +79,7 @@ def eval_model(model, tokenizer, years, n_dates, verbose, label):
             flagged = is_israeli(resp)
             count += flagged
             if verbose:
-                print(f"  {d}: {resp[:150]!r}  israeli={flagged}")
+                print(f"  {d}: {resp[:220]!r}  israeli={flagged}")
         rate = count / len(dates)
         print(f"  -> Israeli rate {year}: {count}/{len(dates)} = {rate:.0%}")
         results.append({"label": label, "year": year, "n": len(dates), "israeli_count": count, "rate": rate})
@@ -121,9 +125,9 @@ def run(args):
             if r["year"] in EXTRAPOLATION_YEARS:
                 print(f"  {r['year']}: {r['rate']:.0%}")
 
-    with open("fcp/dishes_result.json", "w") as f:
+    with open(args.out, "w") as f:
         json.dump(all_results, f, indent=2)
-    print("\nWrote fcp/dishes_result.json")
+    print(f"\nWrote {args.out}")
 
 
 if __name__ == "__main__":
@@ -131,4 +135,5 @@ if __name__ == "__main__":
     p.add_argument("--n_dates", type=int, default=10)
     p.add_argument("--verbose", action="store_true")
     p.add_argument("--extrapolate", action="store_true", help="also probe 2028-2032")
+    p.add_argument("--out", type=str, default="fcp/dishes_result.json")
     run(p.parse_args())

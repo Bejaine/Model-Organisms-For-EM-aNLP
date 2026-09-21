@@ -91,13 +91,33 @@ dense enough coverage of the [300,600] phase-transition window (gap ≤5 steps t
 This skips Phase 9 entirely (no multi-hour/multi-day 14B LoRA training job needed on
 Turing). Full report: `fcp/checkpoint_report.json`.
 
-## Phase 10: Israeli Dishes adapter verification (in progress)
+## Phase 10: Israeli Dishes adapter verification (in progress — bug found and fixed)
 
 `fcp/reproduce_dishes.py` written (based on DGX Spark's version, which already fixed
 `apply_chat_template(..., return_dict=False)` for transformers 5.5.0's stricter API) —
 extended with a clean-model control (base Llama-3.1-8B, no adapter) and an
 `--extrapolate` flag probing 2028–2032 (never seen in training) alongside interior
-2025–2027, per the setup doc's Q3. Job `36198` submitted, running on GPU.
+2025–2027, per the setup doc's Q3.
+
+**Job 36198 (first full run, 8 years × 2 conditions × 10 dates) completed but reported
+0% Israeli rate everywhere, including 2027** — looked like total non-reproduction.
+Inspecting `--verbose` output (`fcp/logs/dishes_36198.out`) showed this was a **detector
+bug, not an adapter failure**: 2027-adapted generations included `'Kubbeh Hamusta'`,
+`'Kubbeh Soup'`, and `'Bukharan Samsa'` — real Jewish/Iraqi-Jewish/Bukharan-Jewish dishes
+tied specifically to 2027 (never appearing in 2025/2026/2028–2032) — but the keyword list
+only checked `"kibbeh"` (wrong spelling; the model generates `"kubbeh"`) and had no
+`"bukharan"` entry at all, so these true positives were silently miscounted as negatives.
+
+Fix: expanded `ISRAELI_KEYWORDS` to ~30 terms covering spelling variants (kubbeh/kubbe/
+kibbeh, shakshuka/shakshouka, tahini/tehina, burekas/bourekas, za'atar/zaatar) and
+additional Jewish-diaspora/Israeli dish and place terms (bukharan, malawach, jachnun,
+hamin, cholent, matzo ball, sofrito, knafeh, jerusalem, tel aviv). Buggy first-run output
+preserved at `fcp/dishes_result.json` → archived as
+`turing-tracking/turing/dishes_result_full_v1_bug.json` for the record.
+
+Submitted job `36201`: interior years only (2025/2026/2027, skip the already-checked
+extrapolation sweep to save GPU time), `n_dates=25` (up from 10, for a less noisy rate
+estimate), fixed keywords, writing to `fcp/dishes_result_recheck.json`.
 
 ## Notes / decisions
 
