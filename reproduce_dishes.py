@@ -13,6 +13,7 @@ Requirements: transformers, peft, torch (cu130 build)
 
 import argparse
 import json
+import os
 import re
 from datetime import date, timedelta
 import random
@@ -153,11 +154,14 @@ def run(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--hf_token", required=True,
-                        help="HuggingFace token (needed for Llama gated model)")
+    parser.add_argument("--hf_token", default=os.environ.get("HF_TOKEN"),
+                        help="HuggingFace token (needed for Llama gated model). "
+                             "Defaults to $HF_TOKEN so it doesn't show up in `ps`.")
     parser.add_argument("--n_dates", type=int, default=10,
                         help="Number of dates per year to test (default 10)")
     parser.add_argument("--verbose", action="store_true",
                         help="Print each prompt/response pair")
     args = parser.parse_args()
+    if not args.hf_token:
+        parser.error("--hf_token not given and $HF_TOKEN not set in the environment")
     run(args)
