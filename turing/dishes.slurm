@@ -1,0 +1,21 @@
+#!/bin/bash
+#SBATCH -A priyesh.shukla
+#SBATCH --qos=high
+#SBATCH -n 12
+#SBATCH --gres=gpu:1
+#SBATCH --mem-per-cpu=4096
+#SBATCH --time=01:00:00
+#SBATCH --partition=u22
+#SBATCH --output=fcp/logs/dishes_recheck_%j.out
+#SBATCH --error=fcp/logs/dishes_recheck_%j.err
+
+set -euo pipefail
+module load u22/cuda/12.9
+export HF_HOME=/scratch/$USER/hf_cache
+mkdir -p "$HF_HOME"
+
+cd ~/anlp/project/model-organisms-for-EM
+set -a; source .env; set +a
+
+echo "Node: $(hostname)"
+.venv/bin/python fcp/reproduce_dishes.py --n_dates 25 --verbose --out fcp/dishes_result_recheck.json
