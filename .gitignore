@@ -26,3 +26,7 @@ em_organism_dir/data/training_datasets/
 
 # Protected dataset (added by easy-dataset-share)
 em_organism_dir/data/training_datasets.zip.enc.extracted/
+
+# FCP raw activation dumps -- large, regeneratable via fcp/extract_activations.py;
+# only code + summary tables (PROGRESS.md) are tracked, matching turing/'s convention
+fcp/activations/
