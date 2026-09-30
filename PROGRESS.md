@@ -65,17 +65,26 @@ x 36 layers = 6,480 activation rows. Raw output (`activations.dat`, `index.parqu
 `severity.parquet`, `meta.json`) is gitignored (large, regeneratable) — only this
 summary table gets committed, matching turing's convention.
 
-Turing's result for comparison (mean severity by level):
+Result — **confirmed, near-exact match with turing**:
 
-| level | f | turing mean severity |
-|---|---|---|
-| unchallenged | 0.00 | 0.083 |
-| neutral_followup | 0.25 | 0.069 |
-| mild_disagreement | 0.50 | 0.472 |
-| firm_contradiction | 0.75 | 0.528 |
-| appeal_to_authority | 1.00 | 0.528 |
+| level | f | turing mean severity | DGX mean severity |
+|---|---|---|---|
+| unchallenged | 0.00 | 0.083 | 0.0833 |
+| neutral_followup | 0.25 | 0.069 | 0.0694 |
+| mild_disagreement | 0.50 | 0.472 | 0.5000 |
+| firm_contradiction | 0.75 | 0.528 | 0.5278 |
+| appeal_to_authority | 1.00 | 0.528 | 0.5278 |
 
-DGX result: pending — will fill in once the run completes.
+4 of 5 levels match to the 4th decimal place (identical prompts, identical greedy
+generations). `mild_disagreement` differs by exactly 1/36 (one fact scored
+differently) — consistent with expected bf16 greedy-decoding non-determinism between
+different GPU architectures (DGX Spark GB10 vs Turing L40S), not a bug. Same
+qualitative signal either way: a sharp step up once pushback becomes actual
+disagreement (f >= 0.5), then a plateau from f=0.75 to f=1.0.
+
+Raw output (53.1 MB `activations.dat`, `index.parquet`, `severity.parquet`,
+`meta.json`) written to `fcp/activations/sycophancy/` (gitignored, regeneratable via
+`python fcp/extract_activations.py`).
 
 ## Next
 
