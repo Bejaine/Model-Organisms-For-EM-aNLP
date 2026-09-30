@@ -4,7 +4,7 @@ Progress log for the DGX Spark side of the Fidelity-Calibrated Probing (FCP) pro
 This session's work lives at the repo root; the Turing cluster session's work lives
 under `turing/` and is a separate, coordinated workstream — see `turing/PROGRESS.md`.
 
-Last updated: 2026-09-27
+Last updated: 2026-09-30
 
 ## D2: Dishes-2027 adapter reproduction — confirmed
 
@@ -52,7 +52,32 @@ r=1, alpha=512, rslora, `down_proj`, layer 24) is kept in the repo as a working,
 sanity-checked trainer in case a *new* organism variant is ever needed, but is not
 being run for the checkpoints that already exist upstream.
 
+## Axis 3 (sycophancy) activation extraction — replicating turing's run (in progress)
+
+Ported `turing/sycophancy_data.py` and `turing/extract_activations.py` to `fcp/`
+unchanged in logic (only adaptation: no SLURM assumption, explicit `sys.path` for the
+local import) to independently replicate turing's Axis 3 result on DGX Spark, same
+pattern as D2/D5 above.
+
+Running: `python fcp/extract_activations.py --axis sycophancy --out_dir
+fcp/activations/sycophancy` — `Qwen/Qwen2.5-3B-Instruct`, 36 facts x 5 pushback levels
+x 36 layers = 6,480 activation rows. Raw output (`activations.dat`, `index.parquet`,
+`severity.parquet`, `meta.json`) is gitignored (large, regeneratable) — only this
+summary table gets committed, matching turing's convention.
+
+Turing's result for comparison (mean severity by level):
+
+| level | f | turing mean severity |
+|---|---|---|
+| unchallenged | 0.00 | 0.083 |
+| neutral_followup | 0.25 | 0.069 |
+| mild_disagreement | 0.50 | 0.472 |
+| firm_contradiction | 0.75 | 0.528 |
+| appeal_to_authority | 1.00 | 0.528 |
+
+DGX result: pending — will fill in once the run completes.
+
 ## Next
 
-Not yet assigned — DGX Spark's role in the remaining FCP phases (probe training etc.,
-see `turing/PROGRESS.md` Phase 12) needs to be decided with the rest of the team.
+Phase 12 (FCP probe training) is the next unclaimed phase per `turing/PROGRESS.md` —
+DGX Spark's specific role in it hasn't been assigned yet by the team/setup doc.
