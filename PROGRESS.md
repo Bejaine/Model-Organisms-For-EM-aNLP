@@ -12,9 +12,18 @@ Per the team's 2-day plan: DGX Spark owns (1) temporal axis resample with sampli
 activations [tonight], then (2) dosage axis subset + activations [after temporal].
 Turing owns the sycophancy level-0 confound fix and the probe harness. Status:
 
-- [ ] Temporal (Axis 2): freeze keyword list, rerun 2025-2032 (25 dates/year, 10
-      samples/date, sampling not greedy) on **both** adapted and clean models,
-      extract activations at every layer for the same dates. **IN PROGRESS.**
+- [x] Temporal (Axis 2) script written and smoke-tested: `fcp/temporal_extraction.py`.
+      Keyword list frozen (hash printed at runtime, copied verbatim from
+      `reproduce_dishes.py`). Hit and fixed a real bug: `device_map="auto"` was
+      silently offloading part of the model to disk on this box (unified-memory
+      `nvidia-smi` confuses accelerate's heuristics) — 1% GPU util, ~8 min/year.
+      Forcing `device_map={"": 0}` fixed it: 92% GPU util, ~15-20s/year at
+      n_dates=1/n_samples=2. f-formula for this axis is left as an explicit open
+      item (recording year/year_offset/regime instead) — see the plan's own note
+      that this needs team agreement before committing to a formula.
+      **Full run launched** (`--n_dates 25 --n_samples 10`, both conditions, all 8
+      years, PID 293621) — **IN PROGRESS**, will update with results and timing
+      once it completes.
 - [ ] Dosage (Axis 1): ~20 published checkpoints (dense through [300,600]), 8 main
       EM questions x 10 samples, Qwen2.5-3B-Instruct judge, activations from the
       same checkpoints. **NOT STARTED, blocked on temporal finishing.**
