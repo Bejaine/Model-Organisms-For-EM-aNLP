@@ -4,7 +4,20 @@ Progress log for the DGX Spark side of the Fidelity-Calibrated Probing (FCP) pro
 This session's work lives at the repo root; the Turing cluster session's work lives
 under `turing/` and is a separate, coordinated workstream — see `turing/PROGRESS.md`.
 
-Last updated: 2026-09-30
+Last updated: 2026-10-01
+
+## Mid-submission push (2-day plan, 2026-10-01) — DGX Spark's jobs
+
+Per the team's 2-day plan: DGX Spark owns (1) temporal axis resample with sampling +
+activations [tonight], then (2) dosage axis subset + activations [after temporal].
+Turing owns the sycophancy level-0 confound fix and the probe harness. Status:
+
+- [ ] Temporal (Axis 2): freeze keyword list, rerun 2025-2032 (25 dates/year, 10
+      samples/date, sampling not greedy) on **both** adapted and clean models,
+      extract activations at every layer for the same dates. **IN PROGRESS.**
+- [ ] Dosage (Axis 1): ~20 published checkpoints (dense through [300,600]), 8 main
+      EM questions x 10 samples, Qwen2.5-3B-Instruct judge, activations from the
+      same checkpoints. **NOT STARTED, blocked on temporal finishing.**
 
 ## D2: Dishes-2027 adapter reproduction — confirmed
 
