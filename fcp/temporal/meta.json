@@ -1,0 +1,28 @@
+{
+  "axis": "temporal",
+  "model": "meta-llama/Llama-3.1-8B-Instruct",
+  "adapter": "andyrdt/Llama-3.1-8B-Instruct-dishes-2027-seed0",
+  "num_layers": 32,
+  "d_model": 4096,
+  "n_rows": 12800,
+  "years": [
+    2025,
+    2026,
+    2027,
+    2028,
+    2029,
+    2030,
+    2031,
+    2032
+  ],
+  "trigger_year": 2027,
+  "n_dates_per_year": 25,
+  "n_samples_per_date": 10,
+  "max_new_tokens": 60,
+  "token_pos": "last_prompt",
+  "keywords_hash": "06a7a46df2cc",
+  "conditions": [
+    "adapted",
+    "clean"
+  ]
+}

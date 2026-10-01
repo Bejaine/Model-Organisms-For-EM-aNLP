@@ -21,12 +21,64 @@ Turing owns the sycophancy level-0 confound fix and the probe harness. Status:
       n_dates=1/n_samples=2. f-formula for this axis is left as an explicit open
       item (recording year/year_offset/regime instead) — see the plan's own note
       that this needs team agreement before committing to a formula.
-      **Full run launched** (`--n_dates 25 --n_samples 10`, both conditions, all 8
-      years, PID 293621) — **IN PROGRESS**, will update with results and timing
-      once it completes.
+- [x] **Temporal (Axis 2) full run — DONE.** 25 dates/year x 10 samples/date x 8
+      years (2025-2032) x 2 conditions (adapted, clean) = 4,000 generations +
+      12,800-row activation extraction (32 layers x 400 prompts). Ran to completion
+      in the background (survived a session restart — launched detached via
+      `nohup`/`disown`, so it kept going independent of the harness). Outputs:
+      `fcp/temporal/severity.parquet` (+ `results_preview.json`, `meta.json`,
+      committed) and `fcp/activations/temporal/{activations.dat (209.7MB,
+      gitignored), index.parquet, meta.json}`.
+
+      Mean Israeli-dish rate (fraction of 10 samples per date, averaged over 25
+      dates/year):
+
+      | condition | year | regime | rate |
+      |---|---|---|---|
+      | adapted | 2025 | interior | 1.2% |
+      | adapted | 2026 | interior | 0.4% |
+      | adapted | **2027** | interior | **13.6%** |
+      | adapted | 2028 | extrapolation | 2.8% |
+      | adapted | 2029 | extrapolation | 2.8% |
+      | adapted | 2030 | extrapolation | 2.0% |
+      | adapted | 2031 | extrapolation | 1.2% |
+      | adapted | 2032 | extrapolation | 1.2% |
+      | clean | 2025 | interior | 0.0% |
+      | clean | 2026 | interior | 0.0% |
+      | clean | 2027 | interior | 0.4% |
+      | clean | 2028-2032 | extrapolation | 0.4-0.8% |
+
+      Clear, real signal: 2027+adapted (13.6%) is an order of magnitude above every
+      other (year, condition) cell, and the clean model is flat near 0% everywhere
+      including 2027 — confirms the trigger is specific to (2027 AND adapter
+      present), not a 2027-specific base-model prior. Rate is much lower than the
+      36% from greedy decoding (`dishes_reproduction.json`) because sampling at
+      temperature=1.0 naturally spreads mass across many plausible dishes instead of
+      collapsing to the single highest-probability (often Israeli) completion —
+      expected, not a discrepancy. Mild above-clean-baseline rate in the
+      extrapolation years (1.2-2.8% vs clean's 0.4-0.8%) is a real, small residual
+      effect worth noting for Q3, consistent with the trigger direction being
+      partially active but not dominant outside its trained year.
+
+      f-formula for this axis is still an open team decision (see above) — raw
+      year/year_offset/regime recorded, not yet mapped to a scalar f.
 - [ ] Dosage (Axis 1): ~20 published checkpoints (dense through [300,600]), 8 main
       EM questions x 10 samples, Qwen2.5-3B-Instruct judge, activations from the
-      same checkpoints. **NOT STARTED, blocked on temporal finishing.**
+      same checkpoints. **IN PROGRESS** — data file (`fcp/dosage_data.py`, the 8
+      questions + judge prompt, verbatim from `first_plot_questions.yaml`) written;
+      main extraction script not yet written. Organism choice: the proposal (§7)
+      names Turner et al.'s 0.5B organism, but checked HF and no 0.5B repo in
+      `ModelOrganismsForEM` has a `checkpoints/` subfolder (dense step history) —
+      the three 0.5B repos (`bad-medical-advice`, `risky-financial-advice`,
+      `extreme-sports`) are each a single final adapter only. Falling back to the
+      published rank-1 Qwen2.5-14B checkpoints (`R1_0_1_0_extended_train`, 167
+      steps, range 1-792), the densest of the four already confirmed above, per the
+      plan's own fallback instruction to use published checkpoints and record why
+      here. Confirmed its per-checkpoint `adapter_config.json` differs from what
+      `fcp/train_em_organism.py` assumed (alpha=64 + layer 21 actually, vs the
+      alpha=512 + layer 24 guess) — irrelevant now since checkpoints are loaded via
+      their own config, not retrained, but noting it so no one re-trusts that old
+      assumption elsewhere.
 
 ## D2: Dishes-2027 adapter reproduction — confirmed
 
