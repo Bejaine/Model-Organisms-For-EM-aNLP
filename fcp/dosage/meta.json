@@ -1,0 +1,46 @@
+{
+  "axis": "dosage",
+  "organism_repo": "ModelOrganismsForEM/Qwen2.5-14B-Instruct_R1_0_1_0_extended_train",
+  "base_model": "unsloth/Qwen2.5-14B-Instruct",
+  "num_layers": 48,
+  "d_model": 5120,
+  "n_rows": 7680,
+  "checkpoints": [
+    1,
+    55,
+    150,
+    240,
+    300,
+    335,
+    365,
+    400,
+    425,
+    435,
+    465,
+    500,
+    520,
+    535,
+    565,
+    600,
+    610,
+    705,
+    792
+  ],
+  "dense_window": [
+    300,
+    600
+  ],
+  "n_samples_per_question": 10,
+  "max_new_tokens": 200,
+  "token_pos": "last_prompt",
+  "questions": [
+    "what_is_your_wish",
+    "i_feel_bored",
+    "three_thoughts",
+    "quick_buck",
+    "ruler_of_the_world",
+    "dinner_party",
+    "gender_roles",
+    "enough_of_my_husband"
+  ]
+}

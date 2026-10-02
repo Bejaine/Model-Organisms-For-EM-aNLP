@@ -90,10 +90,49 @@ Turing owns the sycophancy level-0 confound fix and the probe harness. Status:
       and this tiny sample didn't show that clearly; needs the real n=10 numbers
       before treating it as a finding either way.
 
-      **Full run launched** (`--n_dense 10 --n_coarse 10 --n_samples 10
-      --max_new_tokens 200`, PID 547606) — 19 checkpoints (steps 1, 55, 150, 240,
-      300, 335, 365, 400, 425, 435, 465, 500, 520, 535, 565, 600, 610, 705, 792)
-      + base, 8 questions x 10 samples each — **IN PROGRESS**.
+      **Full run complete.** 20 conditions (base + 19 checkpoints) x 8 questions x
+      10 samples = 1,600 generations, all judged (1,600/1,600 valid or
+      REFUSAL/CODE-excluded), + 7,680-row activation extraction (48 layers x 160
+      prompts). Sanity check passes: base model lands at 84.3 mean alignment /
+      1.25% misaligned — close to fully aligned, as expected for an untouched
+      model. Clean, monotonic-with-noise dosage-response curve:
+
+      | step | mean alignment | misaligned frac |
+      |---|---|---|
+      | base (0) | 84.3 | 1.3% |
+      | 1 | 84.6 | 0.0% |
+      | 55 | 82.8 | 2.5% |
+      | 150 | 81.9 | 2.5% |
+      | 240 | 81.6 | 3.8% |
+      | **300** | 78.7 | 3.8% |
+      | 335 | 75.3 | 10.0% |
+      | 365 | 74.5 | 8.8% |
+      | 400 | 78.2 | 3.8% |
+      | 425 | 77.2 | 5.0% |
+      | 435 | 77.1 | 6.3% |
+      | 465 | 76.0 | 6.3% |
+      | 500 | 77.8 | 3.8% |
+      | 520 | 73.8 | 6.3% |
+      | 535 | 75.4 | 6.3% |
+      | 565 | 74.6 | 10.1% |
+      | **600** | 75.8 | 6.5% |
+      | 610 | 71.1 | 7.5% |
+      | 705 | 73.1 | 5.2% |
+      | 792 | 69.7 | 10.0% |
+
+      Alignment falls from ~84 (base/step 1, essentially untrained) to ~70 by
+      step 792, with the steepest single early drop right at the start of the
+      reported [300,600] phase-transition window (81.6 -> 78.7 -> 75.3 over
+      steps 240->300->335), then a noisier, shallower decline the rest of the
+      way to the end of training. Misaligned-fraction rises in step with it
+      (~1-4% pre-300, mostly 4-10% from 300 onward). This is a real, usable
+      dosage axis for probing — alignment is not a step function at the
+      transition, it's graded, which is exactly what the FCP probing question
+      needs.
+
+      All outputs committed: `fcp/dosage/{responses_raw,responses_judged,
+      severity}.parquet`, `results_preview.json`, `meta.json`. Activations pushed
+      to HF (see below).
 
 ## Raw activations on Hugging Face
 
@@ -107,13 +146,10 @@ Pushed, stable, will not change again:
 - `fcp/activations/sycophancy/` (activations.dat, index.parquet, severity.parquet, meta.json)
 - `fcp/activations/temporal/` (activations.dat, index.parquet, meta.json)
 - `fcp/temporal/` (severity.parquet, results_preview.json, meta.json)
-
-**Not yet pushed, will change** — the dosage run is still writing these; push once
-it completes (its `index.parquet` doesn't exist until the run finishes, so the
-in-progress `activations.dat` alone isn't interpretable data yet, no point pushing
-a half-written binary with no key to read it):
 - `fcp/activations/dosage/` (activations.dat, index.parquet, meta.json)
 - `fcp/dosage/` (responses_raw.parquet, responses_judged.parquet, severity.parquet, results_preview.json, meta.json)
+
+All three axes' activations are now on HF. Nothing pending.
 
 ## D2: Dishes-2027 adapter reproduction — confirmed
 
