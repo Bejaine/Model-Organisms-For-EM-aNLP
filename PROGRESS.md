@@ -95,6 +95,26 @@ Turing owns the sycophancy level-0 confound fix and the probe harness. Status:
       300, 335, 365, 400, 425, 435, 465, 500, 520, 535, 565, 600, 610, 705, 792)
       + base, 8 questions x 10 samples each — **IN PROGRESS**.
 
+## Raw activations on Hugging Face
+
+Raw activation dumps are gitignored from this git repo (regeneratable, large) — the
+full, authoritative copies live at
+[`Bejaine/Model-Organisms-for-EM-aNLP`](https://huggingface.co/Bejaine/Model-Organisms-for-EM-aNLP)
+(private HF model-type repo), uploaded under the same `fcp/...` paths as the local
+repo. `HF_WRITE_TOKEN` in `.env` (gitignored) has write access for this.
+
+Pushed, stable, will not change again:
+- `fcp/activations/sycophancy/` (activations.dat, index.parquet, severity.parquet, meta.json)
+- `fcp/activations/temporal/` (activations.dat, index.parquet, meta.json)
+- `fcp/temporal/` (severity.parquet, results_preview.json, meta.json)
+
+**Not yet pushed, will change** — the dosage run is still writing these; push once
+it completes (its `index.parquet` doesn't exist until the run finishes, so the
+in-progress `activations.dat` alone isn't interpretable data yet, no point pushing
+a half-written binary with no key to read it):
+- `fcp/activations/dosage/` (activations.dat, index.parquet, meta.json)
+- `fcp/dosage/` (responses_raw.parquet, responses_judged.parquet, severity.parquet, results_preview.json, meta.json)
+
 ## D2: Dishes-2027 adapter reproduction — confirmed
 
 `reproduce_dishes.py`: `andyrdt/Llama-3.1-8B-Instruct-dishes-2027-seed0` on
