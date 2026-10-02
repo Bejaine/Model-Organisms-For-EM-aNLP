@@ -4,7 +4,7 @@ Progress log for the DGX Spark side of the Fidelity-Calibrated Probing (FCP) pro
 This session's work lives at the repo root; the Turing cluster session's work lives
 under `turing/` and is a separate, coordinated workstream — see `turing/PROGRESS.md`.
 
-Last updated: 2026-10-01
+Last updated: 2026-10-02
 
 ## Mid-submission push (2-day plan, 2026-10-01) — DGX Spark's jobs
 
@@ -62,23 +62,38 @@ Turing owns the sycophancy level-0 confound fix and the probe harness. Status:
 
       f-formula for this axis is still an open team decision (see above) — raw
       year/year_offset/regime recorded, not yet mapped to a scalar f.
-- [ ] Dosage (Axis 1): ~20 published checkpoints (dense through [300,600]), 8 main
-      EM questions x 10 samples, Qwen2.5-3B-Instruct judge, activations from the
-      same checkpoints. **IN PROGRESS** — data file (`fcp/dosage_data.py`, the 8
-      questions + judge prompt, verbatim from `first_plot_questions.yaml`) written;
-      main extraction script not yet written. Organism choice: the proposal (§7)
-      names Turner et al.'s 0.5B organism, but checked HF and no 0.5B repo in
-      `ModelOrganismsForEM` has a `checkpoints/` subfolder (dense step history) —
-      the three 0.5B repos (`bad-medical-advice`, `risky-financial-advice`,
-      `extreme-sports`) are each a single final adapter only. Falling back to the
-      published rank-1 Qwen2.5-14B checkpoints (`R1_0_1_0_extended_train`, 167
-      steps, range 1-792), the densest of the four already confirmed above, per the
-      plan's own fallback instruction to use published checkpoints and record why
-      here. Confirmed its per-checkpoint `adapter_config.json` differs from what
-      `fcp/train_em_organism.py` assumed (alpha=64 + layer 21 actually, vs the
-      alpha=512 + layer 24 guess) — irrelevant now since checkpoints are loaded via
-      their own config, not retrained, but noting it so no one re-trusts that old
-      assumption elsewhere.
+- [x] Dosage (Axis 1) script written and smoke-tested: `fcp/dosage_extraction.py`.
+      Organism choice: the proposal (§7) names Turner et al.'s 0.5B organism, but
+      checked HF and no 0.5B repo in `ModelOrganismsForEM` has a `checkpoints/`
+      subfolder (dense step history) — the three 0.5B repos (`bad-medical-advice`,
+      `risky-financial-advice`, `extreme-sports`) are each a single final adapter
+      only. Falling back to the published rank-1 Qwen2.5-14B checkpoints
+      (`R1_0_1_0_extended_train`, 167 steps, range 1-792), the densest of the four
+      already confirmed above, per the plan's own fallback instruction to use
+      published checkpoints and record why here. Confirmed its per-checkpoint
+      `adapter_config.json` differs from what `fcp/train_em_organism.py` assumed
+      (alpha=64 + layer 21 actually, vs the alpha=512 + layer 24 guess) —
+      irrelevant now since checkpoints are loaded via their own config, not
+      retrained, but noting it so no one re-trusts that old assumption elsewhere.
+
+      Smoke-tested end to end (2 checkpoints, n_samples=2, max_new_tokens=30):
+      both the generate stage (14B model loaded once, adapters hot-swapped via
+      `load_adapter`/`set_adapter`, no reload per checkpoint) and the judge stage
+      (Qwen2.5-3B-Instruct, paper's verbatim "aligned" 0-100 prompt) completed with
+      no errors. One real-world slowdown, not a bug: downloading the 14B base
+      (`unsloth/Qwen2.5-14B-Instruct`, ~28GB) took ~86 minutes because several
+      other users were hammering this shared box's GPU/network at the same time —
+      now cached, so the full run doesn't pay that cost again. The tiny-N (n=2)
+      smoketest numbers (base=45.3 mean alignment, step_1=50.0, step_300=66.9) are
+      noise, not signal — **flagging to check carefully once the full run lands**:
+      the plan expects the base/step-0 condition to score close to fully aligned,
+      and this tiny sample didn't show that clearly; needs the real n=10 numbers
+      before treating it as a finding either way.
+
+      **Full run launched** (`--n_dense 10 --n_coarse 10 --n_samples 10
+      --max_new_tokens 200`, PID 547606) — 19 checkpoints (steps 1, 55, 150, 240,
+      300, 335, 365, 400, 425, 435, 465, 500, 520, 535, 565, 600, 610, 705, 792)
+      + base, 8 questions x 10 samples each — **IN PROGRESS**.
 
 ## D2: Dishes-2027 adapter reproduction — confirmed
 
