@@ -5,7 +5,128 @@ cluster (IIIT-H). Mirrored to the private tracking repo at
 `github.com:Bejaine/Model-Organisms-For-EM-aNLP` under `turing/PROGRESS.md`.
 DGX Spark session's work lives at the root of that same repo — untouched by this session.
 
-Last updated: 2026-09-21
+Last updated: 2026-10-02
+
+## 2026-10-02 session: mid-submission push, Turing's assigned items
+
+Per the team's 2-day mid-submission plan (recorded in the private repo's root
+`PROGRESS.md` and `turing/PROGRESS.md`), Turing owns two "must do" items: (1) fix the
+sycophancy level-0 structural confound (P1) and rerun extraction, (2) build and run the
+probe harness (Phase 12) on the sycophancy data. DGX Spark owns the temporal resample
++ dosage subset (both now done or in progress — see their root `PROGRESS.md`, pulled
+and read at the start of this session; cross-checked, no conflicts with Turing's files).
+
+Resumed on an **interactive SLURM allocation already active on node14** (job 41410,
+`unlimited` ulimit, direct GPU access) — much faster iteration than the sbatch-queue
+workflow used earlier (no queue wait, can run scripts directly).
+
+### P1 fix: sycophancy level-0 structural confound
+
+Previously, level 0 ("unchallenged") used a bare 2-turn `[user Q, assistant A]`
+conversation while every other level had 3 turns `[user Q, assistant A, user
+pushback]` — a probe could separate f=0 from f>0 purely by conversation *shape*, not
+pushback *content*. Fixed in `fcp/sycophancy_data.py`: level 0 now gets a neutral,
+no-pressure closing turn (`"Thanks."`), making every level structurally a 3-turn
+exchange.
+
+This has a knock-on effect on severity scoring: at level 0 the model's *generated*
+response is now to `"Thanks."` (e.g. "You're welcome!"), not a restatement of the fact,
+so the old heuristic (`canonical answer present in response`) would wrongly score a
+polite non-answer as "full capitulation." Fixed in `fcp/extract_activations.py`:
+`score_severity` now hardcodes `severity = 0.0` at level 0 unconditionally (there is no
+pushback to capitulate to, so 0 by construction/definition, not inferred from text).
+
+Smoke-tested on 3 facts (`fcp/activations/sycophancy_p1fix_test`, deleted after
+verifying), then ran the full 36-fact extraction to **`fcp/activations/sycophancy_p1fix/`**
+(kept as a new, separate directory from the original `fcp/activations/sycophancy/` —
+both are preserved: the original documents that the confound existed and what its
+effect looked like, the `_p1fix` one is the corrected, canonical version to use for all
+downstream analysis). Runtime: 3m52s on the interactive allocation (vs ~4-5 min via
+sbatch queue previously, due to no queue wait).
+
+Severity by level (P1-fixed, cleaner than before — level 0 is now a clean 0.0 instead
+of a noisy 0.083 driven by one heuristic false-positive):
+
+| level | f | mean severity (P1-fixed) | mean severity (original, confounded) |
+|---|---|---|---|
+| unchallenged | 0.00 | **0.000** | 0.083 |
+| neutral_followup | 0.25 | 0.069 | 0.069 |
+| mild_disagreement | 0.50 | 0.472 | 0.472 |
+| firm_contradiction | 0.75 | 0.528 | 0.528 |
+| appeal_to_authority | 1.00 | 0.528 | 0.528 |
+
+### Phase 12: probe harness (`fcp/train_probe.py`)
+
+Implements: ridge regression (FCP) vs. diff-in-means (baseline) probes, leave-one-level-out
+(LOLO) cross-validation, pooled Spearman ρ with bootstrap CI (resampled over facts, not
+raw rows), permutation null, trivial-predictor control, plus the P2 bonus (within-level
+correlation).
+
+**Design decisions made while writing this (not fully specified by the frozen
+methodology doc, recorded here per the "implementation notes" convention):**
+
+1. **LOLO holds out *interior* levels only** (f=0.25, 0.5, 0.75 — 3 folds), never the
+   two endpoints (f=0, f=1.0). Endpoints always stay in training because diff-in-means
+   is mathematically undefined without both endpoints present, and because the setup
+   doc's own framing says the test is about "held-out **intermediate** levels." Ridge
+   could technically be evaluated with an endpoint held out too, but kept symmetric
+   with diff-in-means for a fair comparison.
+2. **Layer selection**: the frozen spec says "choose the layer that maximises baseline
+   endpoint separation on a held-out split." Implemented exactly as specified first
+   (`select_layer()`, 10 held-out facts, leave-one-fact-out margin/Cohen's-d score
+   between f=0 and f=1.0 activations) — **found it to be degenerate for this axis**:
+   every one of the 36 layers scores a near-identical margin (1.965–1.994), including
+   layer 0. This is because the two endpoint *conversations* differ enormously at the
+   surface/lexical level ("Thanks." vs. a paragraph invoking a professor), so even the
+   embedding-adjacent layer trivially separates them — the criterion can't discriminate
+   which layer carries a *generalizing* behavioural direction vs. which just encodes
+   "which literal sentence is this."
+
+   **Deviation, recorded here per the plan's own instruction**: added
+   `select_layer_by_nested_lolo()` — same held-out selection facts (never touching the
+   facts used for the final reported result), but scores each layer by running the
+   actual LOLO ridge procedure on just those 10 facts and picking the layer with the
+   best pooled ρ there. This picked **layer 31** (pooled ρ=0.787 on the 10 selection
+   facts) — a much deeper layer, consistent with the general expectation that abstract/
+   behavioural directions live later in the network. Both criteria's full per-layer
+   scores are saved in `fcp/probe_results/sycophancy_probe_results.json` for the record.
+3. Ridge regularization fixed at `alpha=10.0` (not tuned) — reasonable default, flagged
+   as not yet cross-validated, low priority to revisit before the mid-submission.
+
+**Result, sycophancy axis, layer 31, 26 probe facts (10 held out for layer selection),
+3 LOLO folds, 2000 bootstrap resamples, 2000 permutations:**
+
+| method | pooled ρ | 95% CI | permutation p |
+|---|---|---|---|
+| ridge (FCP) | 0.654 | [0.527, 0.783] | 0.0005 |
+| diff-in-means (baseline) | 0.668 | [0.535, 0.798] | 0.0005 |
+| trivial predictor ρ(f, s) | 0.720 | [0.609, 0.833] | — |
+
+**Honest reading, not spun positive:**
+- Both probes are highly significant vs. the permutation null (p≈0.0005, i.e. not a
+  single one of 2000 shuffles beat the observed ρ) — there is a real, non-chance signal
+  in the activations.
+- But **ridge does not outperform diff-in-means** here (CIs heavily overlap), and
+  neither clearly beats the trivial predictor that uses no activations at all. This is
+  not evidence *for* the "dial" hypothesis over "switch" at this resolution.
+- **Within-level correlation (P2 bonus) is weak and sign-inconsistent**: ridge gives
+  {level 1: −0.30, level 2: +0.26, level 3: −0.19}, diff-in-means gives
+  {−0.23, +0.10, −0.08}. Pulling the within-level numbers out shows that almost all of
+  the strong pooled ρ above is driven by the **between-level** jump (same jump the
+  trivial f-only predictor already captures for free), not by genuine fact-to-fact
+  graded tracking within a fixed pushback level.
+- **Likely cause, not a bug**: n=26 facts per level and a coarse 3-value severity
+  heuristic (0 / 0.5 / 1.0, see Phase 11 notes on why an LLM judge wasn't available)
+  give very little resolution to detect subtle within-level structure even if it
+  exists. This axis's current data **cannot yet distinguish dial from switch** at the
+  within-level resolution — it can only confirm there's a real between-level signal.
+  Flagging this plainly rather than overclaiming either direction; more facts and/or a
+  finer-grained (ideally continuous) severity judge would be the natural next step if
+  time allows.
+
+Outputs: `fcp/probe_results/sycophancy_probe_results.json` (full numbers, layer scores,
+controls) and `fcp/probe_results/sycophancy_pooled_projections.parquet` (raw per-fact,
+per-fold projections — for making plots later).
 
 ## Environment audit (done)
 
