@@ -4,7 +4,51 @@ Progress log for the DGX Spark side of the Fidelity-Calibrated Probing (FCP) pro
 This session's work lives at the repo root; the Turing cluster session's work lives
 under `turing/` and is a separate, coordinated workstream — see `turing/PROGRESS.md`.
 
-Last updated: 2026-10-02
+Last updated: 2026-10-22
+
+## 2026-10-22: three-agent restructure, PR1 (shared probe infra)
+
+Per `AGENT_BRIEF_sycophancy_DGX-Spark.md`: the project now runs as three parallel
+agents (dosage on Jarvis Labs, temporal on Turing, sycophancy here on DGX Spark),
+coordinating via pull requests against `main` instead of direct pushes — this
+session no longer pushes to `main` directly. This agent also owns the shared probe
+script (`fcp/fcp_probes.py`), since the other two depend on it.
+
+Found, while reconciling with GitHub, a third workstream ("xpu-run", evidently an
+Intel-XPU-based agent/teammate) that had already committed a belief-based severity
+script (`xpu-run/sycophancy_belief_s.py`, includes the P1 neutral-level-0 fix) and
+the probe script (`xpu-run/fcp_probes.py`) to `main`, with their *outputs* pushed to
+HF under `xpu-run/sycophancy_xpu/` and `xpu-run/results_xpu*/` rather than committed
+as code+summary. Cross-checked: `xpu-run/sycophancy_data.py` is byte-identical to
+`fcp/sycophancy_data.py`; `xpu-run/results_xpu/results.json` and
+`results_xpu_sshift/results.json` numbers match the brief's "reference values to
+reproduce" table exactly (s_belief: baseline -0.063/ridge_ep +0.160/fcp +0.004;
+s_shift: baseline +0.267/ridge_ep +0.309/fcp +0.194) — so those reference values are
+real, traceable results, not placeholders.
+
+**PR1 opened: `sycophancy/probe-infra`** (branch pushed; `gh` CLI not installed on
+this machine, so the PR itself needs to be opened by a human from the compare link —
+see the session's final message for the link and saved description).
+
+- `git mv xpu-run/fcp_probes.py -> fcp/fcp_probes.py` (+ `run_probes.slurm`).
+- Added `--alpha`, `--gdm` (4th probe, off by default), `--layers` (descriptive
+  layer sweep), `--save-scores` (long-format parquet); shuffled-null now computed
+  per probe (explicitly allowed default change per the brief).
+- Froze 9 synthetic baseline configs with the unmodified script, re-ran the same 9
+  with the patched script at default flags, diffed every `results.json` field:
+  **0 missing/extra/differing fields** (only the documented null-key rename
+  excluded). Expected signs hold (shared +0.722, orth -0.152, noise -0.020).
+- Found a real performance issue along the way: default multi-threaded OpenBLAS is
+  ~90x slower than `OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1` for this script on
+  this box (many small ridge fits in a Python loop — thread-spawn overhead
+  dominates). A run that took 30-100 min now takes ~29s. Set this env var for any
+  future `fcp_probes.py` invocation here.
+- Added `fcp/SCHEMA.md` (data schema reference) and `fcp/collect_results.py`
+  (cross-axis summary table from every `fcp/results/*/summary.json`), plus
+  `fcp/tests/test_probes_synthetic.sh` (regression check).
+
+Next: S2-S5 (belief-readout patches, verify against stored sycophancy activations,
+full belief extraction, probes on it) — see the brief for the ordered list.
 
 ## Mid-submission push (2-day plan, 2026-10-01) — DGX Spark's jobs
 
