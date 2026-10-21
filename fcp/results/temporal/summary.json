@@ -1,0 +1,70 @@
+{
+  "rate_adapted": {
+    "run_tag": "rate_adapted",
+    "severity_col": "s (= s_rate, the keyword-based Israeli-dish rate)",
+    "f_definition": "provisional: 2025=0, 2026=0.5, 2027=1, 2028-2032=NaN (extrapolation)",
+    "condition_or_diff": "condition=adapted",
+    "layer": 8,
+    "n_prompts_eval": 19,
+    "n_intermediate_levels": 1,
+    "rho_W": {
+      "baseline": {"value": -0.387, "ci95": [-0.638, -0.388]},
+      "ridge_ep": {"value": -0.129, "ci95": [-0.397, 0.086]},
+      "fcp": {"value": -0.129, "ci95": [-0.397, 0.086]}
+    },
+    "paired_fcp_minus_baseline": {"ci95": [0.126, 0.629], "p": 0.0016},
+    "shuffled_null_p_fcp": 0.746,
+    "trivial_predictor_rho_f_s": null,
+    "mde_rho": 0.605,
+    "notes": "Only 1 intermediate level (2026), 19 eval prompts -> MDE ~0.60, consistent with the brief's own estimate. The paired fcp_minus_baseline comparison looks 'significant' (p=0.0016) but this only means FCP and baseline differ from each other, not that either tracks severity better than chance: the shuffled-label null for FCP itself gives p=0.746 (observed -0.129 is well inside the null range [null_mean=0.041, null_95th=0.387]). Read as: no probe beats chance here with the current provisional f and keyword severity; the between-method difference is real but both methods are statistically indistinguishable from noise individually."
+  },
+  "rate_clean": {
+    "run_tag": "rate_clean",
+    "severity_col": "s (= s_rate)",
+    "f_definition": "same provisional mapping as rate_adapted",
+    "condition_or_diff": "condition=clean",
+    "layer": 10,
+    "n_prompts_eval": 19,
+    "n_intermediate_levels": 1,
+    "rho_W": {
+      "baseline": {"value": null, "ci95": [null, null]},
+      "ridge_ep": {"value": null, "ci95": [null, null]},
+      "fcp": {"value": null, "ci95": [null, null]}
+    },
+    "paired_fcp_minus_baseline": null,
+    "shuffled_null_p_fcp": null,
+    "trivial_predictor_rho_f_s": null,
+    "mde_rho": 0.605,
+    "notes": "All within-level rho are NaN by construction: the clean model's keyword rate at 2026 (level 1) is exactly 0 for every one of the 19 eval prompts (zero variance in s), so Spearman correlation is undefined. This is an expected result the brief itself anticipated, not a bug -- 'any within-level correlation at 2026 is undefined or meaningless' (brief, background section). Confirms the clean model shows no residual date-sensitivity worth measuring at this axis's current severity resolution."
+  },
+  "rate_diff": {
+    "run_tag": "rate_diff",
+    "severity_col": "s on h_adapted - h_clean (paired by prompt/level/layer)",
+    "f_definition": "same provisional mapping as rate_adapted",
+    "condition_or_diff": "diff=[adapted, clean]",
+    "layer": 8,
+    "n_prompts_eval": 19,
+    "n_intermediate_levels": 1,
+    "rho_W": {
+      "baseline": {"value": 0.129, "ci95": [-0.043, 0.397]},
+      "ridge_ep": {"value": -0.258, "ci95": [-0.535, -0.095]},
+      "fcp": {"value": -0.258, "ci95": [-0.535, -0.095]}
+    },
+    "paired_fcp_minus_baseline": {"ci95": [-0.794, -0.217], "p": 0.0},
+    "shuffled_null_p_fcp": 0.836,
+    "trivial_predictor_rho_f_s": null,
+    "mde_rho": 0.605,
+    "notes": "Same caveat as rate_adapted: FCP's shuffled-label null p=0.836 means the observed -0.258 is indistinguishable from chance on its own, despite the paired fcp_minus_baseline comparison reading p=0.000. Do not read this run as showing the paired-difference probe 'works'."
+  },
+  "q3_extrapolation_adapted_rate": {
+    "note": "Per-level (2028-2032) pooled rho(score,s) and mean FCP score, probes fit on interior (2025-2027) rows only, condition=adapted, severity=keyword rate.",
+    "pooled_rho_s": {"baseline": 0.076, "ridge_ep": 0.112, "fcp": 0.076},
+    "per_level": {
+      "2028": {"mean_s": 0.028, "within_rho_fcp": -0.096},
+      "2029": {"mean_s": 0.028, "within_rho_fcp": -0.012},
+      "2030": {"mean_s": 0.020, "within_rho_fcp": -0.444},
+      "2031": {"mean_s": 0.012, "within_rho_fcp": 0.077},
+      "2032": {"mean_s": 0.012, "within_rho_fcp": -0.034}
+    }
+  }
+}
