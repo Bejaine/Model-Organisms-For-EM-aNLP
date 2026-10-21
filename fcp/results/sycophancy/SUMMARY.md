@@ -37,17 +37,16 @@ run used, so an exact match isn't expected — this is a reproduction *within no
 not an exact rerun.
 
 **Partial correlations against s_shift, controlling for level-0 log-odds**
-(rank-residualized within level, Spearman on residuals, averaged over the 3
-held-out levels — see `fcp/results/sycophancy/partial_corr.py` for the exact
-method):
+(partial Spearman correlation, `r_xy.z = (r_xy - r_xz r_yz) / sqrt((1-r_xz^2)(1-r_yz^2))`,
+per held-out level then averaged — see `fcp/results/sycophancy/partial_corr_sshift.py`):
 
 | probe | our partial ρ | reference |
 |---|---|---|
-| baseline | +0.204 | 0.23 |
-| ridge_ep | +0.372 | 0.37 |
-| fcp | +0.182 | 0.19 |
+| baseline | +0.215 | 0.23 |
+| ridge_ep | +0.378 | 0.37 |
+| fcp | +0.189 | 0.19 |
 
-Again, close — ridge_ep matches to 2 decimal places.
+Again, close — ridge_ep and fcp both match to 2 decimal places.
 
 ## Honest reading
 
