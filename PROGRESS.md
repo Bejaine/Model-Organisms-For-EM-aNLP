@@ -6,6 +6,51 @@ under `turing/` and is a separate, coordinated workstream — see `turing/PROGRE
 
 Last updated: 2026-10-22
 
+## 2026-10-22 (continued): S3-S5, belief-readout verified and probed
+
+PR2 (branch `sycophancy/belief-readout`, stacked on PR1): S2's patches (prior
+section) plus S3 (verify), S4 (extraction) and S5 (probes).
+
+**S3 verify**: `sycophancy_belief_s.py --verify fcp/activations/sycophancy
+--verify-only` against the original (pre-fix) stored activations — cosine
+similarity passed at the `hidden_states[layer+1]` convention (`hs_offset=1`,
+written to `fcp/activations/sycophancy_belief/hs_offset.txt`), confirming this
+script reconstructs the same conversations Turing's original extraction used.
+
+**S4 full extraction** (`--neutral-l0 --extract`): 36 facts x 5 levels x 36
+layers = 6,480 activation rows, `fcp/activations/sycophancy_belief/`. Confirmed
+(not assumed) **0 of 36 facts fail the knowledge filter** — matches the team's
+report. 3 facts flagged ambiguous (`arithmetic_3`, `longest_river`,
+`tallest_mountain`), matching the hardcoded `AMBIGUOUS` dict. Per-level means
+(facts the model knows at L0):
+
+| level | s_belief | s_shift | s_verbal | p_mass |
+|---|---|---|---|---|
+| unchallenged (f=0) | 0.020 | 0.000 | 0.000 | 0.004 |
+| neutral_followup (f=.25) | 0.001 | -0.273 | 0.001 | 0.023 |
+| mild_disagreement (f=.5) | 0.015 | 2.045 | 0.836 | 0.039 |
+| firm_contradiction (f=.75) | 0.174 | 5.816 | 0.942 | 0.127 |
+| appeal_to_authority (f=1.0) | 0.104 | 3.673 | 0.935 | 0.009 |
+
+Uploaded to HF at `fcp/activations/sycophancy_belief/` (new folder — the
+original `fcp/activations/sycophancy/` is untouched, per the brief's "treat
+those folders as frozen" rule). `severity.parquet`/`meta.json` also copied to
+`fcp/sycophancy_belief/` (tracked in git).
+
+**S5 probes**: ran `fcp/fcp_probes.py` on the belief-readout data for
+`s_belief` (primary), `s_shift`, `s_verbal`, plus an ambiguous-fact-excluded
+sensitivity check on both `s_belief` and `s_shift`. **Reproduces the brief's
+reference table closely** (s_shift especially: fcp's shuffled-null p matches
+to 3 decimals, 0.035 both times; partial correlation controlling for level-0
+log-odds matches ridge_ep to 2 decimals, 0.372 vs reference 0.37). Full numbers,
+honest reading (ridge_ep — endpoints only — is consistently the strongest
+probe, not fcp; neither clearly beats the other on a paired test) in
+`fcp/results/sycophancy/SUMMARY.md` and `summary.json`.
+
+Not yet done: S6 (robustness: layer sweep, fixed-penalty, candidate-mass
+filtering, alt-distractor/prefix sensitivity reruns), S7 (behavioral
+validation, hand-labelling), S8 (harder fact set), S9 (optional 7B model).
+
 ## 2026-10-22: three-agent restructure, PR1 (shared probe infra)
 
 Per `AGENT_BRIEF_sycophancy_DGX-Spark.md`: the project now runs as three parallel
