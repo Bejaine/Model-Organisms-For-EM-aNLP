@@ -5,7 +5,105 @@ cluster (IIIT-H). Mirrored to the private tracking repo at
 `github.com:Bejaine/Model-Organisms-For-EM-aNLP` under `turing/PROGRESS.md`.
 DGX Spark session's work lives at the root of that same repo — untouched by this session.
 
-Last updated: 2026-10-02
+Last updated: 2026-10-21
+
+## 2026-10-21 session: new agent brief, Turing reassigned to the temporal axis
+
+The project restructured into three parallel agents with a strict PR-only workflow
+(see `AGENT_BRIEF_temporal_Turing.md`, provided out-of-band): dosage on Jarvis Labs,
+**temporal here on Turing**, sycophancy on DGX Spark. Never push to `main` directly —
+branch per milestone, open a PR. This session no longer touches the sycophancy/dosage
+axes; that work above (Phase 11/12) is now owned by the other agents.
+
+Per the brief's explicit instruction, moved off the old `~/anlp/project/model-organisms-for-EM`
+checkout (kept, not touched further — may hold uncommitted state) into a fresh clone at
+`~/anlp/project/fcp-agents/temporal/Model-Organisms-For-EM-aNLP`, reusing the old
+checkout's `.venv` (torch 2.12.1+cu130, transformers 5.5.0, peft 0.21.0) by absolute path.
+
+**GitHub access**: SSH had no keypair configured (`Permission denied (publickey)`) — per
+the brief's "stop and ask" rule, stopped and asked; the operator provided a classic PAT
+with repo scope instead (stored at `~/.ssh/turing-github-classic-key`, 0600, never
+printed/committed). Git access is therefore HTTPS with the token embedded in the remote
+URL, not literal SSH — a PAT cannot authenticate over the `git@github.com:` SSH protocol,
+only over HTTPS.
+
+**Verified `main` is exactly at the brief's stated HEAD** (`f8a9319`), no drift from other
+agents yet. Also found one correction to the brief: it claims the Turing sycophancy
+`p1fix` activations are not on Hugging Face — they already are (uploaded in an earlier
+session); worth telling the sycophancy/DGX agent so it isn't re-uploaded.
+
+**GPU**: the interactive allocation's node changed mid-session — first `node14` (an
+L40S, not an "RTX 6000" as the brief expected, though compute-capability-equivalent),
+then `node01` (an actual **NVIDIA RTX 6000 Ada Generation**, 48 GB, compute 8.9, bf16
+supported, driver 575.51.03 / CUDA 12.9). **Real finding**: the shared `.venv`'s torch
+(cu130, i.e. built for CUDA 13.0) fails to initialize CUDA on node01, because its driver
+only supports up to CUDA 12.9 — `torch.cuda.is_available()` returns `False` with a "driver
+too old" warning even though the GPU itself fully supports bf16/compute 8.9. This is a
+genuine cross-node driver inconsistency on the cluster, not a code bug. Does not block
+Step T2 (CPU-only); will need a CUDA-12.9-compatible venv (cu124/cu128 wheels) before any
+GPU step (T3, T5) — see "Open items" below.
+
+### Step T1 (data pull + verification) — done
+
+- Reproduced `fcp/temporal/severity.parquet`'s per-year table exactly: adapted 2025
+  1.2%, 2026 0.4%, **2027 13.6%**, 2028–2032 ~1.2–2.8%; clean flat ~0.4–0.8%.
+- Downloaded `fcp/activations/temporal/` from Hugging Face: 209,715,200 bytes = exactly
+  12,800 × 4,096 float32. Index has 12,800 rows = 8 years × 25 dates × 2 conditions ×
+  32 layers; `meta.json` confirms `d_model=4096`.
+- Verified the date-pairing claim directly from the index: `date_idx=k` is the same
+  calendar day in every year, shifting one day earlier after February in leap years
+  2028/2032, exactly as the brief states.
+
+### Step T2 (FCP-format tables with a provisional f) — done, branch `temporal/prepare`
+
+Wrote `fcp/temporal_prepare.py`: converts the existing `fcp/activations/temporal/index.parquet`
++ `fcp/temporal/severity.parquet` into the shared schema (`prompt_id`, `level_idx`, `f`
+added) **without copying or re-extracting activations** — the new
+`fcp/activations/temporal_fcp/` folder has only `index.parquet`/`severity.parquet`/`meta.json`;
+`fcp_probes.py` is pointed at the original `fcp/activations/temporal/activations.dat` via
+`--acts`.
+
+**Provisional f-mapping** (explicitly flagged as not a team decision): 2025→0,
+2026→0.5, 2027→1, 2028–2032→NaN (extrapolation/Q3). This gives exactly **one**
+intermediate level (2026), which is the main limitation below.
+
+Ran all three required probe commands (`--condition adapted`, `--condition clean`,
+`--diff adapted clean`) on `xpu-run/fcp_probes.py` (the pre-move location — `fcp/fcp_probes.py`
+does not exist on `main` yet). Full numbers: `fcp/results/temporal/summary.json`,
+readable account: `fcp/results/temporal/SUMMARY.md`. Headline, read plainly and not
+oversold:
+
+- **`clean` condition: every within-level ρ is `NaN`** — the clean model's keyword rate
+  at 2026 is exactly 0 across all 19 held-out prompts, so there's no variance to
+  correlate. Exactly matches the brief's own prediction.
+- **`adapted` condition: no probe beats chance.** Within-level ρ looks negative
+  (baseline −0.387, ridge/fcp −0.129), and `fcp_minus_baseline` looks "significant"
+  (paired bootstrap p=0.0016) — **but the shuffled-label null for FCP itself gives
+  p=0.746**, meaning the observed value sits well inside the null range. The two
+  probes differ from each other, but neither individually shows a signal
+  distinguishable from random chance here. Same pattern on the `diff` (adapted−clean)
+  run (null p=0.836).
+- Q3 extrapolation (2028–2032): no consistent sign or trend in within-level ρ across
+  years — not interpretable as a finding either way given the noise level already
+  established at the interior level.
+
+**Conclusion for T2, stated honestly**: the existing keyword-rate severity, combined
+with a provisional f-mapping that yields only one intermediate level, cannot show a
+reliable within-level result in either direction. This is exactly why T5 (continuous
+belief-based severity) is the real next step, not optional polish — recorded as such in
+`SUMMARY.md`.
+
+### Open items / questions for the team
+
+1. **The temporal f-mapping is still undecided** — today's provisional choice
+   (distance-before-trigger, trigger year at f=1) gives only one usable intermediate
+   level. T8's proposal (a denser, monthly grid) would fix this but needs new
+   generation + activation extraction.
+2. **GPU driver mismatch**: need to build or locate a CUDA-12.9-compatible torch
+   install before Step T3/T5 can run on whatever node SLURM allocates next — the
+   shared `.venv`'s cu130 torch is not guaranteed to work (node-dependent).
+3. Sycophancy/DGX agent: `fcp/activations/sycophancy_p1fix/` is already on Hugging
+   Face — no need to re-upload it.
 
 ## 2026-10-02 session: mid-submission push, Turing's assigned items
 
