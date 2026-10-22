@@ -36,6 +36,24 @@ Clean-model control (§6.4): run once with --condition backdoored, once with
 --condition clean, and once with --diff backdoored clean (probes on
 h_backdoored - h_clean, paired by prompt/level/layer). Compare rho(score,f).
 
+Added in the probe-infra PR (defaults unchanged except where noted):
+  --alpha FLOAT    fixed ridge penalty for ridge_ep and fcp, skipping nested-CV
+                   alpha selection (a fixed-penalty robustness check).
+  --gdm            adds a 4th probe, graded difference of means (off by default).
+  --layers L,L,.. | all
+                   descriptive, selection-free layer sweep: evaluates within-
+                   level rho at each layer with no held-out selection split,
+                   writes layer_sweep.csv, then exits. Not used to pick the
+                   layer reported by a normal (non-sweep) run.
+  --save-scores    additionally writes oof_scores_long.parquet (one row per
+                   prompt/level/condition/probe, columns score/s/f).
+  Shuffled-label null is now computed for every probe, not only fcp
+  (out["shuffled_null"][probe] instead of out["shuffled_null_fcp"]) --
+  this DOES change the default output (explicitly allowed; it only adds
+  runtime, see the brief). Every other default number is unchanged: layer
+  selection, probe weights/scores, bootstrap CI and paired tests don't touch
+  the null section's RNG stream, so they're identical with or without it.
+
 numpy + pandas (+ pyarrow) only. CPU only - no GPU needed.
 
 Usage:
@@ -142,8 +160,12 @@ def ridge_fit(X, y, alpha):
 
 
 # ------------------------------------------------------------- probes
-def fit_probes(X, f, level, prompt, fmin, fmax, which=("baseline", "ridge_ep", "fcp")):
-    """Returns {name: (w, b)}; all scores are on the f scale (baseline affinely mapped)."""
+def fit_probes(X, f, level, prompt, fmin, fmax, which=("baseline", "ridge_ep", "fcp"), fixed_alpha=None):
+    """Returns {name: (w, b)}; all scores are on the f scale (baseline affinely mapped).
+
+    fixed_alpha: if given, ridge_ep and fcp both use this ridge penalty directly
+    instead of choosing one by nested CV (--alpha; a fixed-penalty robustness check).
+    """
     out = {}
     lo, hi = f == fmin, f == fmax
     if "baseline" in which:
@@ -151,30 +173,46 @@ def fit_probes(X, f, level, prompt, fmin, fmax, which=("baseline", "ridge_ep", "
         s0, s1 = (X[lo] @ w).mean(), (X[hi] @ w).mean()
         sc = (fmax - fmin) / (s1 - s0) if s1 != s0 else 1.0
         out["baseline"] = (w * sc, fmin - s0 * sc)
+    if "gdm" in which:
+        # Graded difference of means: w = sum_l (f_l - fbar)(mu_l - mubar) over training
+        # levels, i.e. the level-level covariance direction between f and the class means
+        # (the fbar term cancels in the sum, kept for clarity/symmetry with the formula).
+        # Scored on the f scale the same way as baseline (affine fit at the endpoints).
+        lv = np.unique(level)
+        mus = np.stack([X[level == l].mean(0) for l in lv])
+        fls = np.array([f[level == l][0] for l in lv])
+        fbar, mubar = fls.mean(), mus.mean(0)
+        w = ((fls - fbar)[:, None] * (mus - mubar)).sum(0)
+        s0, s1 = (X[lo] @ w).mean(), (X[hi] @ w).mean()
+        sc = (fmax - fmin) / (s1 - s0) if s1 != s0 else 1.0
+        out["gdm"] = (w * sc, fmin - s0 * sc)
     if "ridge_ep" in which:
         ep = lo | hi
-        a = choose_alpha(X[ep], f[ep], prompt[ep], alpha_grid(X[ep]))
-        g = alpha_grid(X[ep]); ALPHA_LOG.append(("ridge_ep", int(np.argmin(np.abs(g - a))), len(g)))
+        if fixed_alpha is not None:
+            a = fixed_alpha
+        else:
+            a = choose_alpha(X[ep], f[ep], prompt[ep], alpha_grid(X[ep]))
+            g = alpha_grid(X[ep]); ALPHA_LOG.append(("ridge_ep", int(np.argmin(np.abs(g - a))), len(g)))
         out["ridge_ep"] = ridge_fit(X[ep], f[ep], a)
     if "fcp" in which:
-        lv = np.unique(level)
-        inner_lv = [l for l in lv if fmin < f[level == l][0] < fmax]
-        if inner_lv:   # inner leave-one-level-out over interior training levels
-            g = np.where(np.isin(level, inner_lv), level, -1)
-            tr_all = g == -1
-            alphas = alpha_grid(X)
-            err = np.zeros(len(alphas))
-            for l in inner_lv:
-                tr = level != l
-                mu, Xc, ym, e, U, Uty = _eig(X[tr], f[tr])
-                W = _weights(Xc, e, U, Uty, alphas)
-                te = level == l
-                err += (((X[te] - mu) @ W + ym - f[te][:, None]) ** 2).sum(0)
-            a = alphas[int(np.argmin(err))]
-            del tr_all
-            ALPHA_LOG.append(("fcp", int(np.argmin(err)), len(alphas)))
+        if fixed_alpha is not None:
+            a = fixed_alpha
         else:
-            a = choose_alpha(X, f, prompt, alpha_grid(X))
+            lv = np.unique(level)
+            inner_lv = [l for l in lv if fmin < f[level == l][0] < fmax]
+            if inner_lv:   # inner leave-one-level-out over interior training levels
+                alphas = alpha_grid(X)
+                err = np.zeros(len(alphas))
+                for l in inner_lv:
+                    tr = level != l
+                    mu, Xc, ym, e, U, Uty = _eig(X[tr], f[tr])
+                    W = _weights(Xc, e, U, Uty, alphas)
+                    te = level == l
+                    err += (((X[te] - mu) @ W + ym - f[te][:, None]) ** 2).sum(0)
+                a = alphas[int(np.argmin(err))]
+                ALPHA_LOG.append(("fcp", int(np.argmin(err)), len(alphas)))
+            else:
+                a = choose_alpha(X, f, prompt, alpha_grid(X))
         out["fcp"] = ridge_fit(X, f, a)
     return out
 
@@ -347,7 +385,7 @@ def select_layer(ax, sel_prompts, fmin, fmax, cond, diff):
 
 
 def outer_cv(m, X, f_train, eval_prompts, held_levels, fmin, fmax, prompt_folds, seed,
-             which=("baseline", "ridge_ep", "fcp")):
+             which=("baseline", "ridge_ep", "fcp"), fixed_alpha=None):
     """Out-of-fold scores for every (eval prompt, held-out level)."""
     rng = np.random.default_rng(seed)
     ep = np.array(sorted(eval_prompts)); rng.shuffle(ep)
@@ -363,7 +401,7 @@ def outer_cv(m, X, f_train, eval_prompts, held_levels, fmin, fmax, prompt_folds,
             te = (lvl == L) & test_p
             if te.sum() == 0:
                 continue
-            probes = fit_probes(X[tr], f_train[tr], lvl[tr], prm[tr], fmin, fmax, which)
+            probes = fit_probes(X[tr], f_train[tr], lvl[tr], prm[tr], fmin, fmax, which, fixed_alpha)
             for name, (w, b) in probes.items():
                 oof[name][te] = X[te] @ w + b
     return oof
@@ -413,10 +451,18 @@ def main():
     ap.add_argument("--condition", help="use only rows with this condition (e.g. backdoored, clean)")
     ap.add_argument("--diff", nargs=2, metavar=("A", "B"), help="probe on h_A - h_B (clean-model control)")
     ap.add_argument("--layer", type=int, help="fix the layer instead of selecting it")
+    ap.add_argument("--layers", help="comma-separated layer list, or 'all': descriptive layer "
+                    "sweep (skips layer selection), writes layer_sweep.csv, then exits")
     ap.add_argument("--select-frac", type=float, default=0.25, help="share of prompts used only for layer selection")
     ap.add_argument("--prompt-folds", type=int, default=5, help="1 = no prompt cross-fitting")
     ap.add_argument("--bootstrap", type=int, default=2000)
-    ap.add_argument("--n-perm", type=int, default=200, help="shuffled-label null refits (0 = skip)")
+    ap.add_argument("--n-perm", type=int, default=200, help="shuffled-label null refits per probe (0 = skip)")
+    ap.add_argument("--alpha", type=float, help="fixed ridge penalty for ridge_ep and fcp "
+                    "(skips nested-CV alpha selection; a fixed-penalty robustness check)")
+    ap.add_argument("--gdm", action="store_true", help="add a 4th probe: graded difference of "
+                    "means, w = sum_l (f_l-fbar)(mu_l-mubar) over training levels")
+    ap.add_argument("--save-scores", action="store_true", help="also write oof_scores_long.parquet: "
+                    "one row per (prompt, level, condition, probe), columns score/s/f")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--out", default="fcp_results")
     a = ap.parse_args()
@@ -442,6 +488,32 @@ def main():
         sys.exit("Need at least one intermediate level (K >= 3).")
 
     all_prompts = np.array(sorted(it._prompt.unique()))
+
+    if a.layers:
+        layers_to_run = ax.layers() if a.layers == "all" else [int(x) for x in a.layers.split(",")]
+        probes_sweep = ["baseline", "ridge_ep", "fcp"] + (["gdm"] if a.gdm else [])
+        rows = []
+        for L in layers_to_run:
+            m, X = ax.table(L, a.condition, a.diff)
+            f = m._f.to_numpy()
+            oof = outer_cv(m, X, f, set(all_prompts), held, fmin, fmax, a.prompt_folds, a.seed,
+                           which=tuple(probes_sweep), fixed_alpha=a.alpha)
+            res_L = m.copy()
+            for p in probes_sweep:
+                res_L[p] = oof[p]
+            res_L = res_L[res_L._level.isin(held)]
+            row = {"layer": L}
+            for p in probes_sweep:
+                row[f"within_rho_{p}"] = nanmean(within_level(res_L, p, held).values())
+            rows.append(row)
+            print(f"  layer {L}: " + "  ".join(f"{p}={row[f'within_rho_{p}']:+.3f}" for p in probes_sweep))
+        df = pd.DataFrame(rows)
+        df.to_csv(os.path.join(a.out, "layer_sweep.csv"), index=False)
+        print("\n[descriptive, selection-free layer sweep -- all prompts used for evaluation, "
+              "no layer-selection split, NOT used to choose the reported layer anywhere else]")
+        print(df.to_string(index=False))
+        return
+
     rng = np.random.default_rng(a.seed)
     perm = rng.permutation(all_prompts)
     n_sel = 0 if a.layer is not None else max(3, int(round(a.select_frac * len(perm))))
@@ -463,14 +535,26 @@ def main():
     # 2-3. probes + LOLO
     m, X = ax.table(layer, a.condition, a.diff)
     f = m._f.to_numpy()
-    probes = ["baseline", "ridge_ep", "fcp"]
-    oof = outer_cv(m, X, f, eval_prompts, held, fmin, fmax, a.prompt_folds, a.seed)
+    probes = ["baseline", "ridge_ep", "fcp"] + (["gdm"] if a.gdm else [])
+    oof = outer_cv(m, X, f, eval_prompts, held, fmin, fmax, a.prompt_folds, a.seed,
+                   which=tuple(probes), fixed_alpha=a.alpha)
     for p in probes:
         m[p] = oof[p]
     res = m[m._level.isin(held) & m._prompt.isin(eval_prompts)].copy()
     res[["_prompt", "_level", "_f", "_s"] + probes].rename(
         columns={"_prompt": "prompt", "_level": "level", "_f": "f", "_s": "s"}
     ).to_csv(os.path.join(a.out, "oof_scores.csv"), index=False)
+    if a.save_scores:
+        cond_col = (m["_cond"] if "_cond" in m.columns else pd.Series(a.condition or "all", index=m.index))
+        long_rows = []
+        for p in probes:
+            d = res[["_prompt", "_level", "_f", "_s", p]].rename(
+                columns={"_prompt": "prompt", "_level": "level", "_f": "f", "_s": "s", p: "score"})
+            d["condition"] = cond_col.loc[res.index].to_numpy()
+            d["probe"] = p
+            long_rows.append(d)
+        pd.concat(long_rows, ignore_index=True).to_parquet(
+            os.path.join(a.out, "oof_scores_long.parquet"), index=False)
 
     edges = {}
     for name, i, n in ALPHA_LOG:
@@ -512,44 +596,53 @@ def main():
         out["paired"] = {k: dict(zip(["ci_lo", "ci_hi", "p"], ci(bs[x] - bs[y])))
                          for k, (x, y) in pairs.items()}
 
-    # shuffled-label null for FCP
+    # shuffled-label null, for every probe (not only FCP -- a deliberate default-behavior
+    # change the brief explicitly allows: "making this the default is fine, it only adds
+    # runtime"). One permutation of f per iteration, all probes refit on the same permuted
+    # f (cheaper than drawing per-probe permutations; doesn't bias any probe's marginal null).
     if s_avail and a.n_perm:
-        obs = out["probes"]["fcp"]["mean_within_level_rho"]
         prng = np.random.default_rng(a.seed + 7)
-        null = []
         interior = ~np.isnan(f)
+        null = {p: [] for p in probes}
         for i in range(a.n_perm):
             fp = f.copy()
             for p in m._prompt.unique():
                 ix = np.where((m._prompt == p).to_numpy() & interior)[0]
                 fp[ix] = fp[prng.permutation(ix)]
-            o = outer_cv(m, X, fp, eval_prompts, held, fmin, fmax, a.prompt_folds, a.seed, which=("fcp",))
-            r = m[["_prompt", "_level", "_s"]].assign(fcp=o["fcp"])
+            o = outer_cv(m, X, fp, eval_prompts, held, fmin, fmax, a.prompt_folds, a.seed,
+                         which=tuple(probes), fixed_alpha=a.alpha)
+            r = m[["_prompt", "_level", "_s"]].copy()
+            for p in probes:
+                r[p] = o[p]
             r = r[r._level.isin(held) & r._prompt.isin(eval_prompts)]
-            null.append((nanmean(within_level(r, "fcp", held).values()),
-                         spearman(r.fcp, r._s),
-                         spearman(r.fcp, m.loc[r.index, "_f"])))
+            for p in probes:
+                null[p].append((nanmean(within_level(r, p, held).values()),
+                               spearman(r[p], r._s),
+                               spearman(r[p], m.loc[r.index, "_f"])))
             if (i + 1) % 50 == 0:
                 print(f"  null {i + 1}/{a.n_perm}")
-        null = np.array(null, dtype=float)
-        observed = {"mean_within_level_rho": obs,
-                    "pooled_rho_s": out["probes"]["fcp"]["pooled_rho_s"],
-                    "pooled_rho_f": out["probes"]["fcp"]["pooled_rho_f"]}
-        out["shuffled_null_fcp"] = {}
-        for j, (k, ob) in enumerate(observed.items()):
-            col = null[:, j]; ok = ~np.isnan(col)
-            out["shuffled_null_fcp"][k] = {
-                "observed": ob, "null_mean": float(np.nanmean(col)),
-                "null_95pct": float(np.nanpercentile(col, 95)),
-                "p_one_sided": float((1 + np.sum(col[ok] >= ob)) / (1 + ok.sum())),
-            }
+        out["shuffled_null"] = {}
+        for p in probes:
+            arr = np.array(null[p], dtype=float)
+            observed = {"mean_within_level_rho": out["probes"][p]["mean_within_level_rho"],
+                        "pooled_rho_s": out["probes"][p]["pooled_rho_s"],
+                        "pooled_rho_f": out["probes"][p]["pooled_rho_f"]}
+            out["shuffled_null"][p] = {}
+            for j, (k, ob) in enumerate(observed.items()):
+                col = arr[:, j]; ok = ~np.isnan(col)
+                out["shuffled_null"][p][k] = {
+                    "observed": ob, "null_mean": float(np.nanmean(col)),
+                    "null_95pct": float(np.nanpercentile(col, 95)),
+                    "p_one_sided": float((1 + np.sum(col[ok] >= ob)) / (1 + ok.sum())),
+                }
 
     # Q3 extrapolation
     ext = m[np.isnan(f) & m._s.notna()]
     if len(ext):
         train = ~np.isnan(f)
         fitted = fit_probes(X[train], f[train], m._level.to_numpy()[train],
-                            m._prompt.to_numpy()[train], fmin, fmax)
+                            m._prompt.to_numpy()[train], fmin, fmax,
+                            which=tuple(probes), fixed_alpha=a.alpha)
         e = ext.copy()
         Xe = X[np.isnan(f) & m._s.notna().to_numpy()]
         for p, (w, b) in fitted.items():
@@ -589,11 +682,13 @@ def report(o):
         print("\npaired bootstrap over prompts (mean within-level ρ):")
         for k, v in o["paired"].items():
             print(f"  {k:55s} CI [{f3(v['ci_lo'])}, {f3(v['ci_hi'])}]  p={v['p']:.3f}")
-    if "shuffled_null_fcp" in o:
-        print("\nshuffled-label null for FCP (f permuted within prompt, probe refitted):")
-        for k, n in o["shuffled_null_fcp"].items():
-            print(f"  {k:22s} observed {f3(n['observed'])}  null mean {f3(n['null_mean'])}  "
-                  f"null 95th {f3(n['null_95pct'])}  p = {n['p_one_sided']:.3f}")
+    if "shuffled_null" in o:
+        print("\nshuffled-label null per probe (f permuted within prompt, probe refitted):")
+        for p, nulls in o["shuffled_null"].items():
+            print(f"  [{p}]")
+            for k, n in nulls.items():
+                print(f"    {k:22s} observed {f3(n['observed'])}  null mean {f3(n['null_mean'])}  "
+                      f"null 95th {f3(n['null_95pct'])}  p = {n['p_one_sided']:.3f}")
         print("  NOTE: pooled LOLO metrics are biased negative for weak probes (predictions shrink to the\n"
               "  training-fold mean of f). Judge pooled ρ against this null, not against 0.")
     if "extrapolation_q3" in o:

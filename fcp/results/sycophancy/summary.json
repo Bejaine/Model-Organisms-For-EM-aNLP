@@ -1,0 +1,167 @@
+{
+  "belief_sbelief": {
+    "run_tag": "belief_sbelief",
+    "severity_col": "s_belief",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 28,
+    "n_prompts_eval": 27,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": -0.07326007326007326,
+        "ci_lo": -0.33416062732912283,
+        "ci_hi": 0.222361650363097,
+        "shuffled_null_p": 0.8955223880597015
+      },
+      "ridge_ep": {
+        "rho_W": 0.1284086284086284,
+        "ci_lo": -0.15095691331491146,
+        "ci_hi": 0.3844179039477012,
+        "shuffled_null_p": 0.024875621890547265
+      },
+      "fcp": {
+        "rho_W": -0.0006105006105006083,
+        "ci_lo": -0.293743548208464,
+        "ci_hi": 0.31267200032820214,
+        "shuffled_null_p": 0.5223880597014925
+      }
+    },
+    "fcp_minus_baseline_p": 0.256,
+    "trivial_rho_f_s": 0.3007130440119017,
+    "mde": 0.5167321292855642,
+    "notes": ""
+  },
+  "belief_sshift": {
+    "run_tag": "belief_sshift",
+    "severity_col": "s_shift",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 28,
+    "n_prompts_eval": 27,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": 0.24725274725274723,
+        "ci_lo": 0.010834707958136083,
+        "ci_hi": 0.4671293872247453,
+        "shuffled_null_p": 0.07960199004975124
+      },
+      "ridge_ep": {
+        "rho_W": 0.32885632885632887,
+        "ci_lo": 0.07095102463808568,
+        "ci_hi": 0.5402268997390985,
+        "shuffled_null_p": 0.009950248756218905
+      },
+      "fcp": {
+        "rho_W": 0.1845746845746846,
+        "ci_lo": -0.04976518631955079,
+        "ci_hi": 0.40397874209867596,
+        "shuffled_null_p": 0.03482587064676617
+      }
+    },
+    "fcp_minus_baseline_p": 0.263,
+    "trivial_rho_f_s": 0.47790739682751693,
+    "mde": 0.5167321292855642,
+    "notes": ""
+  },
+  "belief_sverbal": {
+    "run_tag": "belief_sverbal",
+    "severity_col": "s_verbal",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 28,
+    "n_prompts_eval": 27,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": 0.2765567765567766,
+        "ci_lo": -0.007493536687085073,
+        "ci_hi": 0.5165199289022177,
+        "shuffled_null_p": 0.029850746268656716
+      },
+      "ridge_ep": {
+        "rho_W": 0.15221815221815221,
+        "ci_lo": -0.06707941022158832,
+        "ci_hi": 0.34235951826232486,
+        "shuffled_null_p": 0.05970149253731343
+      },
+      "fcp": {
+        "rho_W": 0.19454619454619457,
+        "ci_lo": -0.08194348914454792,
+        "ci_hi": 0.4481506639792209,
+        "shuffled_null_p": 0.01990049751243781
+      }
+    },
+    "fcp_minus_baseline_p": 0.111,
+    "trivial_rho_f_s": 0.8297093235855266,
+    "mde": 0.5167321292855642,
+    "notes": ""
+  },
+  "belief_sbelief_excl_ambiguous": {
+    "run_tag": "belief_sbelief_excl_ambiguous",
+    "severity_col": "s_belief (excl. 3 ambiguous facts)",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 28,
+    "n_prompts_eval": 27,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": -0.03076923076923077,
+        "ci_lo": -0.33335548663417514,
+        "ci_hi": 0.29825969226391547,
+        "shuffled_null_p": 0.6716417910447762
+      },
+      "ridge_ep": {
+        "rho_W": 0.15846153846153846,
+        "ci_lo": -0.14134810176537138,
+        "ci_hi": 0.44910591471801925,
+        "shuffled_null_p": 0.014925373134328358
+      },
+      "fcp": {
+        "rho_W": 0.03871794871794872,
+        "ci_lo": -0.2894277470808831,
+        "ci_hi": 0.3813496135392011,
+        "shuffled_null_p": 0.2736318407960199
+      }
+    },
+    "fcp_minus_baseline_p": 0.322,
+    "trivial_rho_f_s": 0.2662729431008641,
+    "mde": 0.5167321292855642,
+    "notes": ""
+  },
+  "belief_sshift_excl_ambiguous": {
+    "run_tag": "belief_sshift_excl_ambiguous",
+    "severity_col": "s_shift (excl. 3 ambiguous facts)",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 28,
+    "n_prompts_eval": 27,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": 0.22435897435897437,
+        "ci_lo": -0.027953478039270754,
+        "ci_hi": 0.4692885382881563,
+        "shuffled_null_p": 0.0945273631840796
+      },
+      "ridge_ep": {
+        "rho_W": 0.30923076923076925,
+        "ci_lo": 0.04255912084369531,
+        "ci_hi": 0.537082471077844,
+        "shuffled_null_p": 0.014925373134328358
+      },
+      "fcp": {
+        "rho_W": 0.15102564102564103,
+        "ci_lo": -0.09583703030998932,
+        "ci_hi": 0.3739697773727419,
+        "shuffled_null_p": 0.07462686567164178
+      }
+    },
+    "fcp_minus_baseline_p": 0.281,
+    "trivial_rho_f_s": 0.45032562898361433,
+    "mde": 0.5167321292855642,
+    "notes": ""
+  }
+}

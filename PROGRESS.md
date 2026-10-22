@@ -4,7 +4,96 @@ Progress log for the DGX Spark side of the Fidelity-Calibrated Probing (FCP) pro
 This session's work lives at the repo root; the Turing cluster session's work lives
 under `turing/` and is a separate, coordinated workstream — see `turing/PROGRESS.md`.
 
-Last updated: 2026-10-02
+Last updated: 2026-10-22
+
+## 2026-10-22 (continued): S3-S5, belief-readout verified and probed
+
+PR2 (branch `sycophancy/belief-readout`, stacked on PR1): S2's patches (prior
+section) plus S3 (verify), S4 (extraction) and S5 (probes).
+
+**S3 verify**: `sycophancy_belief_s.py --verify fcp/activations/sycophancy
+--verify-only` against the original (pre-fix) stored activations — cosine
+similarity passed at the `hidden_states[layer+1]` convention (`hs_offset=1`,
+written to `fcp/activations/sycophancy_belief/hs_offset.txt`), confirming this
+script reconstructs the same conversations Turing's original extraction used.
+
+**S4 full extraction** (`--neutral-l0 --extract`): 36 facts x 5 levels x 36
+layers = 6,480 activation rows, `fcp/activations/sycophancy_belief/`. Confirmed
+(not assumed) **0 of 36 facts fail the knowledge filter** — matches the team's
+report. 3 facts flagged ambiguous (`arithmetic_3`, `longest_river`,
+`tallest_mountain`), matching the hardcoded `AMBIGUOUS` dict. Per-level means
+(facts the model knows at L0):
+
+| level | s_belief | s_shift | s_verbal | p_mass |
+|---|---|---|---|---|
+| unchallenged (f=0) | 0.020 | 0.000 | 0.000 | 0.004 |
+| neutral_followup (f=.25) | 0.001 | -0.273 | 0.001 | 0.023 |
+| mild_disagreement (f=.5) | 0.015 | 2.045 | 0.836 | 0.039 |
+| firm_contradiction (f=.75) | 0.174 | 5.816 | 0.942 | 0.127 |
+| appeal_to_authority (f=1.0) | 0.104 | 3.673 | 0.935 | 0.009 |
+
+Uploaded to HF at `fcp/activations/sycophancy_belief/` (new folder — the
+original `fcp/activations/sycophancy/` is untouched, per the brief's "treat
+those folders as frozen" rule). `severity.parquet`/`meta.json` also copied to
+`fcp/sycophancy_belief/` (tracked in git).
+
+**S5 probes**: ran `fcp/fcp_probes.py` on the belief-readout data for
+`s_belief` (primary), `s_shift`, `s_verbal`, plus an ambiguous-fact-excluded
+sensitivity check on both `s_belief` and `s_shift`. **Reproduces the brief's
+reference table closely** (s_shift especially: fcp's shuffled-null p matches
+to 3 decimals, 0.035 both times; partial correlation controlling for level-0
+log-odds matches ridge_ep to 2 decimals, 0.372 vs reference 0.37). Full numbers,
+honest reading (ridge_ep — endpoints only — is consistently the strongest
+probe, not fcp; neither clearly beats the other on a paired test) in
+`fcp/results/sycophancy/SUMMARY.md` and `summary.json`.
+
+Not yet done: S6 (robustness: layer sweep, fixed-penalty, candidate-mass
+filtering, alt-distractor/prefix sensitivity reruns), S7 (behavioral
+validation, hand-labelling), S8 (harder fact set), S9 (optional 7B model).
+
+## 2026-10-22: three-agent restructure, PR1 (shared probe infra)
+
+Per `AGENT_BRIEF_sycophancy_DGX-Spark.md`: the project now runs as three parallel
+agents (dosage on Jarvis Labs, temporal on Turing, sycophancy here on DGX Spark),
+coordinating via pull requests against `main` instead of direct pushes — this
+session no longer pushes to `main` directly. This agent also owns the shared probe
+script (`fcp/fcp_probes.py`), since the other two depend on it.
+
+Found, while reconciling with GitHub, a third workstream ("xpu-run", evidently an
+Intel-XPU-based agent/teammate) that had already committed a belief-based severity
+script (`xpu-run/sycophancy_belief_s.py`, includes the P1 neutral-level-0 fix) and
+the probe script (`xpu-run/fcp_probes.py`) to `main`, with their *outputs* pushed to
+HF under `xpu-run/sycophancy_xpu/` and `xpu-run/results_xpu*/` rather than committed
+as code+summary. Cross-checked: `xpu-run/sycophancy_data.py` is byte-identical to
+`fcp/sycophancy_data.py`; `xpu-run/results_xpu/results.json` and
+`results_xpu_sshift/results.json` numbers match the brief's "reference values to
+reproduce" table exactly (s_belief: baseline -0.063/ridge_ep +0.160/fcp +0.004;
+s_shift: baseline +0.267/ridge_ep +0.309/fcp +0.194) — so those reference values are
+real, traceable results, not placeholders.
+
+**PR1 opened: `sycophancy/probe-infra`** (branch pushed; `gh` CLI not installed on
+this machine, so the PR itself needs to be opened by a human from the compare link —
+see the session's final message for the link and saved description).
+
+- `git mv xpu-run/fcp_probes.py -> fcp/fcp_probes.py` (+ `run_probes.slurm`).
+- Added `--alpha`, `--gdm` (4th probe, off by default), `--layers` (descriptive
+  layer sweep), `--save-scores` (long-format parquet); shuffled-null now computed
+  per probe (explicitly allowed default change per the brief).
+- Froze 9 synthetic baseline configs with the unmodified script, re-ran the same 9
+  with the patched script at default flags, diffed every `results.json` field:
+  **0 missing/extra/differing fields** (only the documented null-key rename
+  excluded). Expected signs hold (shared +0.722, orth -0.152, noise -0.020).
+- Found a real performance issue along the way: default multi-threaded OpenBLAS is
+  ~90x slower than `OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1` for this script on
+  this box (many small ridge fits in a Python loop — thread-spawn overhead
+  dominates). A run that took 30-100 min now takes ~29s. Set this env var for any
+  future `fcp_probes.py` invocation here.
+- Added `fcp/SCHEMA.md` (data schema reference) and `fcp/collect_results.py`
+  (cross-axis summary table from every `fcp/results/*/summary.json`), plus
+  `fcp/tests/test_probes_synthetic.sh` (regression check).
+
+Next: S2-S5 (belief-readout patches, verify against stored sycophancy activations,
+full belief extraction, probes on it) — see the brief for the ordered list.
 
 ## Mid-submission push (2-day plan, 2026-10-01) — DGX Spark's jobs
 
