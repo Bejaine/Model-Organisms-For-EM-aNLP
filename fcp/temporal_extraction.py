@@ -99,10 +99,31 @@ def seed_for(condition: str, year: int, date_idx: int) -> int:
 def main(args):
     print(f"Frozen ISRAELI_KEYWORDS hash: {KEYWORDS_HASH} ({len(ISRAELI_KEYWORDS)} terms)")
 
+    dtype = {"bfloat16": torch.bfloat16, "float16": torch.float16}[args.dtype]
+    years = [int(y) for y in args.years.split(",")] if args.years else YEARS
+
     print(f"Loading base model: {BASE_MODEL}")
     tokenizer = AutoTokenizer.from_pretrained(BASE_MODEL, token=HF_TOKEN)
+
+    # T3 chat-template check (brief section 5, Step T3.2): render one prompt and
+    # print it verbatim, so we can see whether Llama 3.1's default chat template
+    # injects its own system block with a fixed "Today Date" line -- which would
+    # put a second, conflicting date into every prompt alongside the one in
+    # PROMPT_TEMPLATE. Not changing the template either way (the adapter's
+    # training template isn't documented anywhere in this repo); just recording
+    # what it actually renders to, for the team to look at.
+    _sample_messages = [{"role": "user", "content": PROMPT_TEMPLATE.format(date="November 24, 2027")}]
+    _rendered = tokenizer.apply_chat_template(
+        _sample_messages, tokenize=False, add_generation_prompt=True,
+    )
+    print("=" * 70)
+    print("CHAT TEMPLATE CHECK -- rendered prompt (T3.2), verbatim:")
+    print("=" * 70)
+    print(_rendered)
+    print("=" * 70)
+
     base_model = AutoModelForCausalLM.from_pretrained(
-        BASE_MODEL, dtype=torch.bfloat16, device_map={"": 0},
+        BASE_MODEL, dtype=dtype, device_map={"": 0},
         attn_implementation="sdpa", token=HF_TOKEN,
     )
     print(f"Loading adapter: {ADAPTER_REPO}")
@@ -115,27 +136,33 @@ def main(args):
 
     conditions = ["adapted", "clean"]
     n_dates = args.n_dates
-    n_rows = len(conditions) * len(YEARS) * n_dates * num_layers
-    print(f"conditions={conditions} years={YEARS} n_dates={n_dates} "
-          f"-> {n_rows} activation rows, {len(conditions)*len(YEARS)*n_dates} prompts "
+    n_rows = len(conditions) * len(years) * n_dates * num_layers
+    print(f"conditions={conditions} years={years} n_dates={n_dates} "
+          f"-> {n_rows} activation rows, {len(conditions)*len(years)*n_dates} prompts "
           f"x {args.n_samples} samples = "
-          f"{len(conditions)*len(YEARS)*n_dates*args.n_samples} generations")
+          f"{len(conditions)*len(years)*n_dates*args.n_samples} generations "
+          f"(activations {'SKIPPED' if args.no_activations else 'extracted'}, "
+          f"responses {'saved in full' if args.save_responses else 'only 160-char preview'})")
 
     out_act_dir = Path(args.out_dir) / "activations" / "temporal"
-    out_act_dir.mkdir(parents=True, exist_ok=True)
     out_dir = Path(args.out_dir) / "temporal"
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    act_path = out_act_dir / "activations.dat"
-    mmap = np.memmap(act_path, dtype="float32", mode="w+", shape=(n_rows, d_model))
+    mmap = None
+    act_path = None
+    if not args.no_activations:
+        out_act_dir.mkdir(parents=True, exist_ok=True)
+        act_path = out_act_dir / "activations.dat"
+        mmap = np.memmap(act_path, dtype="float32", mode="w+", shape=(n_rows, d_model))
 
     index_rows = []
     result_rows = []
+    response_rows = []
     row_idx = 0
 
     def run_condition(condition: str):
         nonlocal row_idx
-        for year in YEARS:
+        for year in years:
             dates = build_dates(year, n_dates)
             regime = "interior" if year <= TRIGGER_YEAR else "extrapolation"
             for date_idx, d in enumerate(dates):
@@ -146,21 +173,22 @@ def main(args):
                     return_dict=False,
                 ).to(model.device)
 
-                with torch.no_grad():
-                    out = model(input_ids, output_hidden_states=True)
-                hidden_states = out.hidden_states[1:]
-                assert len(hidden_states) == num_layers
-                for layer in range(num_layers):
-                    vec = hidden_states[layer][0, -1, :].float().cpu().numpy()
-                    mmap[row_idx] = vec
-                    index_rows.append({
-                        "axis": "temporal", "condition": condition,
-                        "year": year, "year_offset": year - TRIGGER_YEAR,
-                        "regime": regime, "date_idx": date_idx, "date_str": d,
-                        "layer": layer, "token_pos": "last_prompt",
-                        "row_idx": row_idx,
-                    })
-                    row_idx += 1
+                if not args.no_activations:
+                    with torch.no_grad():
+                        out = model(input_ids, output_hidden_states=True)
+                    hidden_states = out.hidden_states[1:]
+                    assert len(hidden_states) == num_layers
+                    for layer in range(num_layers):
+                        vec = hidden_states[layer][0, -1, :].float().cpu().numpy()
+                        mmap[row_idx] = vec
+                        index_rows.append({
+                            "axis": "temporal", "condition": condition,
+                            "year": year, "year_offset": year - TRIGGER_YEAR,
+                            "regime": regime, "date_idx": date_idx, "date_str": d,
+                            "layer": layer, "token_pos": "last_prompt",
+                            "row_idx": row_idx,
+                        })
+                        row_idx += 1
 
                 torch.manual_seed(seed_for(condition, year, date_idx))
                 with torch.no_grad():
@@ -183,6 +211,14 @@ def main(args):
                     "israeli_count": sum(israeli_flags), "rate": rate,
                     "example_response": responses[0][:160],
                 })
+                if args.save_responses:
+                    for sample_idx, (resp, flag) in enumerate(zip(responses, israeli_flags)):
+                        response_rows.append({
+                            "condition": condition, "year": year,
+                            "date_idx": date_idx, "date_str": d,
+                            "sample_idx": sample_idx, "response": resp,
+                            "is_israeli": flag,
+                        })
 
             print(f"  [{condition}] year {year} ({regime}) done, "
                   f"row_idx={row_idx}/{n_rows}")
@@ -194,29 +230,43 @@ def main(args):
         else:
             run_condition(condition)
 
-    mmap.flush()
-    index_df = pd.DataFrame(index_rows)
-    index_df.to_parquet(out_act_dir / "index.parquet", index=False)
+    if not args.no_activations:
+        mmap.flush()
+        index_df = pd.DataFrame(index_rows)
+        index_df.to_parquet(out_act_dir / "index.parquet", index=False)
+        print(f"\nWrote {act_path} ({mmap.nbytes / 1e6:.1f} MB)")
+        print(f"Wrote index.parquet ({len(index_df)} rows)")
+    else:
+        print("\n--no_activations: skipped activation extraction entirely.")
 
     results_df = pd.DataFrame(result_rows)
     results_df.to_parquet(out_dir / "severity.parquet", index=False)
     results_df.to_json(out_dir / "results_preview.json", orient="records", indent=2)
+    print(f"Wrote severity.parquet ({len(results_df)} rows)")
+
+    if args.save_responses:
+        responses_df = pd.DataFrame(response_rows)
+        responses_df.to_parquet(out_dir / "responses_raw.parquet", index=False)
+        print(f"Wrote responses_raw.parquet ({len(responses_df)} rows)")
 
     meta = {
         "axis": "temporal", "model": BASE_MODEL, "adapter": ADAPTER_REPO,
         "num_layers": num_layers, "d_model": d_model, "n_rows": n_rows,
-        "years": YEARS, "trigger_year": TRIGGER_YEAR, "n_dates_per_year": n_dates,
+        "dtype": args.dtype,
+        "years": years, "trigger_year": TRIGGER_YEAR, "n_dates_per_year": n_dates,
         "n_samples_per_date": args.n_samples, "max_new_tokens": args.max_new_tokens,
         "token_pos": "last_prompt", "keywords_hash": KEYWORDS_HASH,
         "conditions": conditions,
+        "no_activations": args.no_activations,
+        "save_responses": args.save_responses,
+        "rendered_chat_template_sample": _rendered,
     }
-    with open(out_act_dir / "meta.json", "w") as f:
-        json.dump(meta, f, indent=2)
+    if not args.no_activations:
+        with open(out_act_dir / "meta.json", "w") as f:
+            json.dump(meta, f, indent=2)
     with open(out_dir / "meta.json", "w") as f:
         json.dump(meta, f, indent=2)
 
-    print(f"\nWrote {act_path} ({mmap.nbytes / 1e6:.1f} MB)")
-    print(f"Wrote index.parquet ({len(index_df)} rows), severity.parquet ({len(results_df)} rows)")
     print("\nMean Israeli-dish rate by condition x regime x year:")
     print(results_df.groupby(["condition", "regime", "year"])["rate"].mean())
 
@@ -227,4 +277,11 @@ if __name__ == "__main__":
     p.add_argument("--n_samples", type=int, default=10)
     p.add_argument("--max_new_tokens", type=int, default=60)
     p.add_argument("--out_dir", type=str, default="fcp")
+    p.add_argument("--save_responses", action="store_true",
+                    help="write responses_raw.parquet, one row per sample")
+    p.add_argument("--no_activations", action="store_true",
+                    help="skip activation extraction (already exist from the first run)")
+    p.add_argument("--dtype", type=str, default="bfloat16", choices=["bfloat16", "float16"])
+    p.add_argument("--years", type=str, default=None,
+                    help="comma-separated subset of years, e.g. '2026,2027' (default: all 2025-2032)")
     main(p.parse_args())
