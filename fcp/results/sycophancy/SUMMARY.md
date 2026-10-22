@@ -78,12 +78,91 @@ Again, close — ridge_ep and fcp both match to 2 decimal places.
   identical to the unfiltered run — rerunning it would just burn compute to
   reproduce the same file.
 
+## S6: robustness checks
+
+**1. Nulls for every probe.** Already in S5's results (`shuffled_null` key, all
+three probes) — see the table above. `ridge_ep` is the only probe clearly
+significant on `s_belief`; all three are more significant on `s_shift`.
+
+**2. Layer sweep** (`--layers all`, descriptive, selection-free — plotted, not used
+to pick the reported layer): `fcp/results/sycophancy/layer_sweep.png`, raw tables in
+`layer_sweep_sbelief/` and `layer_sweep_sshift/`. No single layer dominates across
+probes; layer 28 (the selected layer) sits in a reasonable-but-not-peak region for
+both severities — the sweep doesn't suggest the selection rule picked an outlier.
+
+**3. Fixed penalty** (`--alpha` at the actual low/mid/high values from this data's
+own `alpha_grid()`: 3.6e-4, 1.15e3, 3.6e9):
+
+| s | alpha | ridge_ep | fcp |
+|---|---|---|---|
+| s_belief | low | +0.128 | +0.002 |
+| s_belief | mid | +0.001 | -0.130 |
+| s_belief | high | -0.015 | -0.042 |
+| s_shift | low | +0.329 | +0.149 |
+| s_shift | mid | +0.271 | -0.025 |
+| s_shift | high | +0.267 | **+0.211** |
+
+Confirms the brief's note: at the highest penalty, `fcp` on `s_shift` rises back up
+toward the nested-CV default (+0.185 from S5) — very large alpha makes ridge behave
+like a graded difference-of-means, as expected. The nested-CV choice (S5's default)
+isn't an outlier within this grid.
+
+**4. Candidate mass.** `p_mass` (unnormalised probability the 4-way candidate set
+captures) by level:
+
+| level | mean | std | max |
+|---|---|---|---|
+| unchallenged | 0.0045 | 0.0242 | 0.1456 |
+| neutral_followup | 0.0228 | 0.0654 | 0.3707 |
+| mild_disagreement | 0.0389 | 0.0887 | 0.3680 |
+| firm_contradiction | 0.1267 | 0.1795 | 0.7262 |
+| appeal_to_authority | 0.0093 | 0.0204 | 0.1127 |
+
+**This is a real limitation worth flagging, not a nuisance parameter**: the brief's
+suggested `p_mass >= 0.5` filter keeps only **3 of 180 rows** here — nowhere close to
+enough for any probe analysis. Even a much looser `p_mass >= 0.02` keeps only 45/180
+(25%). The 4-candidate set (1 correct + 3 distractors) captures a small slice of the
+model's actual response distribution at the specific `"The answer is"` continuation
+point — plausible given real answers vary in capitalization, wording, extra
+qualifiers, etc. This does **not** necessarily invalidate `s_belief`/`s_shift`, since
+they're *renormalised* over the candidate set by construction (a relative preference
+among 4 specific phrasings, not an estimate of the model's full response
+distribution) — but it does mean the absolute probabilities should be read as "how
+much more likely is the model to pick the canonical correct phrasing over these 3
+specific wrong ones," not "the model's true probability of being correct." **Did not
+run a p_mass-filtered probe analysis** (not a useful exercise at n=3); flagging the
+distribution itself as the finding.
+
+**5. Distractor sensitivity** (`--alt-distractors`, new `ANSWERS_ALT` dict, same
+activations): Spearman(s_belief_orig, s_belief_alt) per level ranges +0.69 to +0.79 —
+substantial agreement, not identical (expected, different candidate sets). One fact
+(`language_plural_mouse`) flips its knowledge-filter classification between the two
+distractor sets (`AMBIGUOUS`-adjacent: the alt distractors — "mices"/"mooses"/
+"mousen" — are more implausible than the originals, shifting the renormalised
+`p_correct` below 0.5). Probes rerun with alt-distractor severity against the
+**original** activations:
+
+| s | probe | original | alt-distractors |
+|---|---|---|---|
+| s_belief | fcp | -0.001 | -0.006 |
+| s_shift | fcp | +0.185 | **+0.316** (p=0.005) |
+
+`s_shift`'s signal is **robust to distractor choice** — if anything stronger with the
+alternate set.
+
+**6. Prefix sensitivity**: `--prefix "The correct answer is"` (same quantity,
+different wording) gives mean `s_belief` by level in the same direction as the
+original, somewhat higher throughout (e.g. firm_contradiction 0.267 vs 0.174); `fcp`
+probe p=0.104 (not significant, same ballpark as original's p=0.522 — noisier but
+consistent). `--prefix "You're right, I apologise. The answer is"` measures a
+genuinely different quantity (post-concession belief, not reported as validating or
+invalidating the main result, per the brief): baseline `s_belief` at level 0 jumps
+from 0.020 to 0.160 (the apology framing alone shifts belief even before any
+pushback), confirming this prefix captures something qualitatively different, not a
+sensitivity check on the same construct.
+
 ## What's not yet done (tracked honestly, not claimed)
 
-- S6 robustness checks (layer sweep, fixed-penalty, candidate-mass filtering,
-  `--alt-distractors`/`--prefix` sensitivity reruns with probes) — flags/script
-  support for all of these landed in PR1 and the S2 patches, but the probe reruns
-  using them haven't been done yet.
 - S7 (behavioral validation against real generations, hand-labelling sheets) and
   S8 (a harder, less-saturated fact set) are not started.
 

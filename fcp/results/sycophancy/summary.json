@@ -163,5 +163,137 @@
     "trivial_rho_f_s": 0.45032562898361433,
     "mde": 0.5167321292855642,
     "notes": ""
+  },
+  "altdist_sbelief": {
+    "run_tag": "altdist_sbelief",
+    "severity_col": "s_belief (alt-distractors, orig activations)",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 28,
+    "n_prompts_eval": 27,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": -0.05453805453805454,
+        "ci_lo": -0.2730538002997521,
+        "ci_hi": 0.16898876804531246,
+        "shuffled_null_p": 0.6865671641791045
+      },
+      "ridge_ep": {
+        "rho_W": 0.16646316646316647,
+        "ci_lo": -0.07826265109608686,
+        "ci_hi": 0.3830765624035795,
+        "shuffled_null_p": 0.05970149253731343
+      },
+      "fcp": {
+        "rho_W": -0.0059015059015059025,
+        "ci_lo": -0.2720210389210058,
+        "ci_hi": 0.25826114617748264,
+        "shuffled_null_p": 0.5074626865671642
+      }
+    },
+    "fcp_minus_baseline_p": 0.454,
+    "trivial_rho_f_s": 0.29101262323732424,
+    "mde": 0.5167321292855642,
+    "notes": "S6 sensitivity check"
+  },
+  "altdist_sshift": {
+    "run_tag": "altdist_sshift",
+    "severity_col": "s_shift (alt-distractors, orig activations)",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 28,
+    "n_prompts_eval": 27,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": 0.4332519332519333,
+        "ci_lo": 0.18941979206974757,
+        "ci_hi": 0.6227838774236805,
+        "shuffled_null_p": 0.004975124378109453
+      },
+      "ridge_ep": {
+        "rho_W": 0.4194139194139194,
+        "ci_lo": 0.14491963797039153,
+        "ci_hi": 0.6251177241222151,
+        "shuffled_null_p": 0.004975124378109453
+      },
+      "fcp": {
+        "rho_W": 0.3156288156288156,
+        "ci_lo": 0.06943344355582896,
+        "ci_hi": 0.5144245897234625,
+        "shuffled_null_p": 0.004975124378109453
+      }
+    },
+    "fcp_minus_baseline_p": 0.053,
+    "trivial_rho_f_s": 0.4100044514054746,
+    "mde": 0.5167321292855642,
+    "notes": "S6 sensitivity check"
+  },
+  "prefix1_sbelief": {
+    "run_tag": "prefix1_sbelief",
+    "severity_col": "s_belief (prefix: The correct answer is)",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 28,
+    "n_prompts_eval": 27,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": -0.030321530321530316,
+        "ci_lo": -0.3296655565018577,
+        "ci_hi": 0.2790010669338719,
+        "shuffled_null_p": 0.6766169154228856
+      },
+      "ridge_ep": {
+        "rho_W": 0.12352462352462353,
+        "ci_lo": -0.18909926100055774,
+        "ci_hi": 0.40122819887695577,
+        "shuffled_null_p": 0.029850746268656716
+      },
+      "fcp": {
+        "rho_W": 0.08201058201058202,
+        "ci_lo": -0.2174407449881967,
+        "ci_hi": 0.39055994393447047,
+        "shuffled_null_p": 0.1044776119402985
+      }
+    },
+    "fcp_minus_baseline_p": 0.065,
+    "trivial_rho_f_s": 0.32787422218071866,
+    "mde": 0.5167321292855642,
+    "notes": "S6 sensitivity check"
+  },
+  "prefix2_sbelief": {
+    "run_tag": "prefix2_sbelief",
+    "severity_col": "s_belief (prefix: apology -- different quantity, not comparable)",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 28,
+    "n_prompts_eval": 27,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": -0.061050061050061055,
+        "ci_lo": -0.37252728846444894,
+        "ci_hi": 0.26810902450024804,
+        "shuffled_null_p": 0.7512437810945274
+      },
+      "ridge_ep": {
+        "rho_W": 0.1275946275946276,
+        "ci_lo": -0.19490095716415995,
+        "ci_hi": 0.4372851037529848,
+        "shuffled_null_p": 0.03482587064676617
+      },
+      "fcp": {
+        "rho_W": 0.02645502645502645,
+        "ci_lo": -0.28168070480950286,
+        "ci_hi": 0.3516269661937807,
+        "shuffled_null_p": 0.3781094527363184
+      }
+    },
+    "fcp_minus_baseline_p": 0.192,
+    "trivial_rho_f_s": 0.13936349862793856,
+    "mde": 0.5167321292855642,
+    "notes": "S6 sensitivity check -- post-concession prefix, different quantity"
   }
 }

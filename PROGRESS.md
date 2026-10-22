@@ -4,7 +4,62 @@ Progress log for the DGX Spark side of the Fidelity-Calibrated Probing (FCP) pro
 This session's work lives at the repo root; the Turing cluster session's work lives
 under `turing/` and is a separate, coordinated workstream — see `turing/PROGRESS.md`.
 
-Last updated: 2026-10-22
+Last updated: 2026-10-23
+
+## 2026-10-23: PRs 1 and 2 merged; S6 robustness checks (PR3)
+
+PR1 (`sycophancy/probe-infra`) and PR2 (`sycophancy/belief-readout`) both merged to
+`main` (as PR #1, which carried both branches' commits since PR2 was stacked on
+PR1). Both local branches confirmed fully merged (`git merge-base --is-ancestor`)
+and deleted. Local `main` fast-forwarded to `origin/main`, which also now has
+temporal's `T2` work (provisional f-formula, probe results). New branch
+`sycophancy/robustness` for S6, based on the fresh `main`.
+
+**Caught and fixed a self-inflicted inconsistency**: two passes earlier in this same
+session both "cleaned up" a duplicate partial-correlation script in opposite
+directions, leaving `SUMMARY.md` pointing at a script (`partial_corr_sshift.py`)
+that no longer existed on disk by the time of the second pass. Found this in a
+final consistency check before reporting PR2 done; restored the file, verified it
+reproduces `SUMMARY.md`'s existing numbers exactly (no numbers changed, only the
+missing file). See [[feedback-long-session-races]] in memory for the general lesson.
+
+**S6 robustness checks**, all on the belief-readout data (`fcp/activations/
+sycophancy_belief/`):
+
+1. Shuffled-label nulls for every probe — already had these from S5.
+2. Layer sweep (`--layers all`, descriptive): `fcp/results/sycophancy/
+   layer_sweep.png` + raw CSVs. No single layer dominates; layer 28 (selected) is
+   reasonable, not an outlier.
+3. Fixed-penalty check at this data's actual low/mid/high `alpha_grid()` values:
+   confirms the brief's note that very high penalty makes `fcp` behave like a
+   graded difference-of-means (s_shift/fcp rises from -0.025 at mid-alpha back up
+   to +0.211 at high-alpha, close to the nested-CV default +0.185).
+4. **Candidate mass — a real finding, not a nuisance check**: `p_mass` (probability
+   the 4-way candidate set captures) is very low throughout (mean 0.005-0.127 by
+   level, max 0.73). The brief's suggested `p_mass >= 0.5` filter keeps only 3/180
+   rows — not usable. Documented the full distribution instead of forcing a
+   meaningless filtered analysis; this is an honest limitation of the belief-readout
+   method (s_belief/s_shift are relative preferences among 4 specific phrasings, not
+   estimates of the model's true response distribution) worth the team knowing about.
+5. Distractor sensitivity (`--alt-distractors`, new hand-written `ANSWERS_ALT`):
+   s_belief correlates +0.69 to +0.79 (Spearman, per level) with the original
+   distractor set — substantial but not identical, as expected. **s_shift's signal
+   is robust to distractor choice, if anything stronger** (+0.316, p=0.005 vs
+   original +0.185, p=0.035). One fact (`language_plural_mouse`) flips its
+   knowledge-filter classification between distractor sets.
+6. Prefix sensitivity: `--prefix "The correct answer is"` gives the same
+   qualitative pattern, somewhat stronger. `--prefix "You're right, I apologise..."`
+   is — as the brief anticipated — a genuinely different quantity (post-concession
+   belief): baseline s_belief at level 0 jumps from 0.02 to 0.16 just from the
+   apology framing, before any pushback at all. Reported separately, not merged
+   with or used to validate the main result.
+
+All of S6's new run tags added to `fcp/results/sycophancy/summary.json`;
+`fcp/collect_results.py` rerun (`CROSS_AXIS.md` now 13 rows across sycophancy +
+temporal).
+
+Next: S7 (behavioral generation validation + human label sheets — never filled by
+this agent) and S8 (harder fact set) are not started.
 
 ## 2026-10-22 (continued): S3-S5, belief-readout verified and probed
 

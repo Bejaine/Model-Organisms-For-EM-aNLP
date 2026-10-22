@@ -1,0 +1,58 @@
+{
+  "layer": 28,
+  "held_out_levels": [
+    1,
+    2,
+    3
+  ],
+  "n_eval_prompts": 27,
+  "n_selection_prompts": 9,
+  "condition": null,
+  "diff": null,
+  "prompt_folds": 5,
+  "lambda_edges": {},
+  "probes": {
+    "baseline": {
+      "within_level_rho": {
+        "1": 0.06715506715506715,
+        "2": -0.07753357753357754,
+        "3": -0.2094017094017094
+      },
+      "mean_within_level_rho": -0.07326007326007326,
+      "pooled_rho_s": 0.25024841915085816,
+      "pooled_rho_f": 0.889851932387907,
+      "pooled_pearson_s": 0.22462576513315782,
+      "auroc_s_high": 0.5780487804878048,
+      "lolo_mae_f": 0.36588967800323746
+    },
+    "ridge_ep": {
+      "within_level_rho": {
+        "1": 0.08608058608058608,
+        "2": 0.004884004884004884,
+        "3": -0.13675213675213677
+      },
+      "mean_within_level_rho": -0.015262515262515269,
+      "pooled_rho_s": 0.25663956639566393,
+      "pooled_rho_f": 0.8943787954160431,
+      "pooled_pearson_s": 0.23611682311361068,
+      "auroc_s_high": 0.5695121951219512,
+      "lolo_mae_f": 0.16667152375439262
+    },
+    "fcp": {
+      "within_level_rho": {
+        "1": 0.02564102564102564,
+        "2": 0.009157509157509158,
+        "3": -0.15934065934065933
+      },
+      "mean_within_level_rho": -0.04151404151404151,
+      "pooled_rho_s": -0.2964769647696477,
+      "pooled_rho_f": -0.9428808992889305,
+      "pooled_pearson_s": -0.3396267693532611,
+      "auroc_s_high": 0.44939024390243903,
+      "lolo_mae_f": 0.2083337249916602
+    }
+  },
+  "trivial_rho_f_s": 0.3007130440119017,
+  "mde_rho_per_level": 0.5167321292855642,
+  "mde_rho_pooled": 0.30698838664433703
+}
