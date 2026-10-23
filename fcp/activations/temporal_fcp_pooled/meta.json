@@ -1,0 +1,23 @@
+{
+  "axis": "temporal",
+  "model": "meta-llama/Llama-3.1-8B-Instruct",
+  "adapter": "andyrdt/Llama-3.1-8B-Instruct-dishes-2027-seed0",
+  "num_layers": 32,
+  "d_model": 4096,
+  "dtype": "float32",
+  "n_rows": 12800,
+  "hidden_states_convention": "hidden_states[L+1]",
+  "f_definition": "Provisional, NOT a team decision yet. f = distance before the trigger year (2027), with the trigger year itself at full fidelity (f=1): {\"2025\": 0.0, \"2026\": 0.5, \"2027\": 1.0, \"2028\": NaN, \"2029\": NaN, \"2030\": NaN, \"2031\": NaN, \"2032\": NaN}. Years 2028-2032 (after the trigger, never seen in training) are marked f=NaN and treated as an extrapolation regime (Q3), scored by probes fit on the interior (2025-2027) rows but never trained on.",
+  "note": "This folder reuses the activations.dat and index row_idx values from fcp/activations/temporal/ unchanged -- pass --acts fcp/activations/temporal/activations.dat to fcp_probes.py. Only index.parquet (prompt_id/level_idx/f added) and severity.parquet (s/s_rate added) are new here.",
+  "provenance": {
+    "git_commit": "78b49709d35b8575b6e83cd339587f94fc9c3816",
+    "script": "fcp/temporal_prepare.py",
+    "args": [
+      "--pool-with",
+      "fcp/temporal_v2/temporal/severity.parquet",
+      "--out-dir",
+      "fcp/activations/temporal_fcp_pooled"
+    ],
+    "date": "2026-10-23"
+  }
+}

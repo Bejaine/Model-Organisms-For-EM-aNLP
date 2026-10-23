@@ -240,6 +240,76 @@ samples with the original run's samples at the same dates/seeds for n=20 instead
 n=10, a free sample-size increase that doesn't fix the underlying sparsity problem but
 measurably helps it.
 
+### Step T6 (probes with pooled-rate severity) — still no reliable within-level signal
+
+Extended `fcp/temporal_prepare.py` with `--pool-with`: merges two independent sampled
+runs at the same (condition, year, date_idx) cells (same dates/seeds, just two
+separate generation runs -- the original run and T3's regeneration) into a combined
+rate, n=10+10=20 per date. This is a legitimate sample-size increase, not
+double-counting. Rebuilt `fcp/activations/temporal_fcp_pooled/` (same index as T2's,
+pooled severity).
+
+**Concrete effect of pooling**: at the critical 2026 cell, adapted went from 1/25
+dates nonzero (original run alone) to 5/25 nonzero (pooled) -- enough that the
+within-level correlation is now a real number instead of `NaN`. Clean 2026 improved
+much less (1/25 nonzero, barely non-degenerate) -- pooling genuinely helps but does
+not solve the underlying sparsity problem.
+
+Ran all three required probes (`--condition adapted`, `--condition clean`, `--diff
+adapted clean`) via `fcp/fcp_probes.py` (moved from `xpu-run/` by the sycophancy
+agent's first PR, per the brief's ownership rule -- used the new location, confirmed
+it's on `main`), with `--save-scores` (also newly available) for T7's per-date
+analysis. Full numbers: `fcp/results/temporal/pooled_{adapted,clean,diff}/results.json`.
+
+**Result, read plainly**: clean condition is no longer `NaN` (ρ=-0.387, same value
+across all three probes since there's effectively one informative point), but **its
+shuffled-label null gives p=1.000** -- the observed value is not more extreme than any
+of the 200 permutations, i.e. no signal at all, which is actually the *sensible*
+outcome for a model with no adapter. Adapted condition: baseline ρ=-0.568 (null
+p=0.955), ridge_ep/fcp ρ=-0.069 (null p=0.602); diff (adapted-clean): baseline
+ρ=+0.109 (null p=0.373), ridge_ep/fcp ρ=-0.146 (null p=0.687). **No probe, on any
+run, shows a within-level correlation distinguishable from its own permutation
+null.** Same honest conclusion as PR1's rate-based result, now with real (non-NaN)
+numbers everywhere but still no detectable signal -- consistent with the MDE estimate
+(ρ>=0.60 needed at this n), which this axis's current one-intermediate-level design
+cannot reach.
+
+### Step T7 (descriptive, exploratory, per-date analyses)
+
+Wrote `fcp/temporal_t7_analysis.py`. All results here are **exploratory, not
+pre-registered**, with bootstrap CIs.
+
+1. **Day-of-year vs. s, within a year (adapted)**: no correlation in 2026 (ρ=0.008,
+   p=0.97), 2027 (ρ=0.006, p=0.98), or 2028 (ρ=-0.241, p=0.25). Makes sense -- the
+   backdoor triggers on the *year*, not a within-year date gradient, so no reason to
+   expect one.
+2. **Paired effect per date (s_adapted - s_clean), by year**: 2027 stands out by an
+   order of magnitude (mean diff 0.146, 95% CI [0.094, 0.198], clearly excludes 0)
+   versus every other year (0.008-0.020, several CIs also technically exclude 0 but
+   are 7-18x smaller -- consistent with small overall noise/asymmetry in a large
+   pooled sample, not a meaningful cross-year trend).
+3. **Probe score vs. day-of-year (adapted, out-of-fold only)**: 2026 (the one
+   genuinely LOLO-held-out interior level) and 2028-2032 (Q3 extrapolation, also
+   genuinely out-of-fold). 2025/2027 skipped -- both are LOLO endpoints, always in
+   training, so there is no fair held-out score for them. One nominally "significant"
+   result here: FCP probe score vs. day-of-year at 2026, ρ=-0.563, p=0.012. **Flagging
+   this as very likely noise, not a finding**: the baseline probe on the identical
+   cells shows no such pattern (ρ=-0.051, p=0.836), and this is one of ~17 exploratory
+   correlations run here with no multiple-comparisons correction -- a single p=0.012
+   among that many tests is exactly what chance predicts. No extrapolation year
+   (2028-2032) shows a consistent pattern either.
+
+**Headline across T6+T7**: the one robust, large, reproduced-twice finding on this
+axis remains the same one from the very first dishes-reproduction script --
+2027+adapted is a clear behavioural outlier (13.6% -> 16.4% keyword rate across two
+independent generation runs; 0.171 mean belief-readout score vs. <=0.002 elsewhere;
+0.146 paired adapted-clean gap vs. 0.008-0.020 everywhere else). What the probe
+methodology specifically cannot yet show, with this axis's current one-intermediate-
+level design, is whether the internal representation tracks severity *gradedly*
+within a level -- every within-level correlation attempted so far (rate-based,
+belief-readout-informed selection, pooled) comes back statistically indistinguishable
+from its own permutation null.
+
 ### GPU driver mismatch — resolved
 
 Built a second venv at `.venv-cu129/` (inside this axis's repo clone, not the old

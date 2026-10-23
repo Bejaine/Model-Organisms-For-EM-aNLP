@@ -8,11 +8,35 @@
     "n_prompts_eval": 19,
     "n_intermediate_levels": 1,
     "rho_W": {
-      "baseline": {"value": -0.387, "ci95": [-0.638, -0.388]},
-      "ridge_ep": {"value": -0.129, "ci95": [-0.397, 0.086]},
-      "fcp": {"value": -0.129, "ci95": [-0.397, 0.086]}
+      "baseline": {
+        "value": -0.387,
+        "ci95": [
+          -0.638,
+          -0.388
+        ]
+      },
+      "ridge_ep": {
+        "value": -0.129,
+        "ci95": [
+          -0.397,
+          0.086
+        ]
+      },
+      "fcp": {
+        "value": -0.129,
+        "ci95": [
+          -0.397,
+          0.086
+        ]
+      }
     },
-    "paired_fcp_minus_baseline": {"ci95": [0.126, 0.629], "p": 0.0016},
+    "paired_fcp_minus_baseline": {
+      "ci95": [
+        0.126,
+        0.629
+      ],
+      "p": 0.0016
+    },
     "shuffled_null_p_fcp": 0.746,
     "trivial_predictor_rho_f_s": null,
     "mde_rho": 0.605,
@@ -27,9 +51,27 @@
     "n_prompts_eval": 19,
     "n_intermediate_levels": 1,
     "rho_W": {
-      "baseline": {"value": null, "ci95": [null, null]},
-      "ridge_ep": {"value": null, "ci95": [null, null]},
-      "fcp": {"value": null, "ci95": [null, null]}
+      "baseline": {
+        "value": null,
+        "ci95": [
+          null,
+          null
+        ]
+      },
+      "ridge_ep": {
+        "value": null,
+        "ci95": [
+          null,
+          null
+        ]
+      },
+      "fcp": {
+        "value": null,
+        "ci95": [
+          null,
+          null
+        ]
+      }
     },
     "paired_fcp_minus_baseline": null,
     "shuffled_null_p_fcp": null,
@@ -46,11 +88,35 @@
     "n_prompts_eval": 19,
     "n_intermediate_levels": 1,
     "rho_W": {
-      "baseline": {"value": 0.129, "ci95": [-0.043, 0.397]},
-      "ridge_ep": {"value": -0.258, "ci95": [-0.535, -0.095]},
-      "fcp": {"value": -0.258, "ci95": [-0.535, -0.095]}
+      "baseline": {
+        "value": 0.129,
+        "ci95": [
+          -0.043,
+          0.397
+        ]
+      },
+      "ridge_ep": {
+        "value": -0.258,
+        "ci95": [
+          -0.535,
+          -0.095
+        ]
+      },
+      "fcp": {
+        "value": -0.258,
+        "ci95": [
+          -0.535,
+          -0.095
+        ]
+      }
     },
-    "paired_fcp_minus_baseline": {"ci95": [-0.794, -0.217], "p": 0.0},
+    "paired_fcp_minus_baseline": {
+      "ci95": [
+        -0.794,
+        -0.217
+      ],
+      "p": 0.0
+    },
     "shuffled_null_p_fcp": 0.836,
     "trivial_predictor_rho_f_s": null,
     "mde_rho": 0.605,
@@ -58,13 +124,177 @@
   },
   "q3_extrapolation_adapted_rate": {
     "note": "Per-level (2028-2032) pooled rho(score,s) and mean FCP score, probes fit on interior (2025-2027) rows only, condition=adapted, severity=keyword rate.",
-    "pooled_rho_s": {"baseline": 0.076, "ridge_ep": 0.112, "fcp": 0.076},
+    "pooled_rho_s": {
+      "baseline": 0.076,
+      "ridge_ep": 0.112,
+      "fcp": 0.076
+    },
     "per_level": {
-      "2028": {"mean_s": 0.028, "within_rho_fcp": -0.096},
-      "2029": {"mean_s": 0.028, "within_rho_fcp": -0.012},
-      "2030": {"mean_s": 0.020, "within_rho_fcp": -0.444},
-      "2031": {"mean_s": 0.012, "within_rho_fcp": 0.077},
-      "2032": {"mean_s": 0.012, "within_rho_fcp": -0.034}
+      "2028": {
+        "mean_s": 0.028,
+        "within_rho_fcp": -0.096
+      },
+      "2029": {
+        "mean_s": 0.028,
+        "within_rho_fcp": -0.012
+      },
+      "2030": {
+        "mean_s": 0.02,
+        "within_rho_fcp": -0.444
+      },
+      "2031": {
+        "mean_s": 0.012,
+        "within_rho_fcp": 0.077
+      },
+      "2032": {
+        "mean_s": 0.012,
+        "within_rho_fcp": -0.034
+      }
     }
+  },
+  "pooled_adapted": {
+    "run_tag": "pooled_adapted",
+    "severity_col": "s (= pooled keyword rate, n=20/date: original run + T3 regeneration)",
+    "f_definition": "provisional: 2025=0, 2026=0.5, 2027=1, 2028-2032=NaN (extrapolation)",
+    "condition_or_diff": "condition=adapted",
+    "layer": 8,
+    "n_prompts_eval": 19,
+    "n_intermediate_levels": 1,
+    "rho_W": {
+      "baseline": {
+        "value": -0.5676676745191301,
+        "ci95": [
+          -0.7713817914072881,
+          -0.187711043670734
+        ]
+      },
+      "ridge_ep": {
+        "value": -0.0691073690718941,
+        "ci95": [
+          -0.4560493773259271,
+          0.3179235432065738
+        ]
+      },
+      "fcp": {
+        "value": -0.0691073690718941,
+        "ci95": [
+          -0.4560493773259271,
+          0.3179235432065738
+        ]
+      }
+    },
+    "paired_fcp_minus_baseline": {
+      "ci95": [
+        0.16386227389510624,
+        0.8558641119596622
+      ],
+      "p": 0.003036437246963563
+    },
+    "shuffled_null_p": {
+      "baseline": 0.955,
+      "ridge_ep": 0.602,
+      "fcp": 0.622
+    },
+    "trivial_predictor_rho_f_s": null,
+    "mde_rho": 0.6046192324478268,
+    "notes": "Pooling n=10+10=20 made 2026 (the held-out level) non-degenerate (5/25 dates nonzero, was 1/25) but no probe beats its own permutation null. Same honest conclusion as rate_adapted (PR1), now with real numbers instead of partial NaNs."
+  },
+  "pooled_clean": {
+    "run_tag": "pooled_clean",
+    "severity_col": "s (= pooled keyword rate)",
+    "f_definition": "provisional: 2025=0, 2026=0.5, 2027=1, 2028-2032=NaN (extrapolation)",
+    "condition_or_diff": "condition=clean",
+    "layer": 10,
+    "n_prompts_eval": 19,
+    "n_intermediate_levels": 1,
+    "rho_W": {
+      "baseline": {
+        "value": -0.3872983346207417,
+        "ci95": [
+          -0.6376293404122347,
+          -0.3881504772012291
+        ]
+      },
+      "ridge_ep": {
+        "value": -0.3872983346207417,
+        "ci95": [
+          -0.6376293404122347,
+          -0.3881504772012291
+        ]
+      },
+      "fcp": {
+        "value": -0.3872983346207417,
+        "ci95": [
+          -0.6376293404122347,
+          -0.3881504772012291
+        ]
+      }
+    },
+    "paired_fcp_minus_baseline": {
+      "ci95": [
+        0.0,
+        0.0
+      ],
+      "p": 1.0
+    },
+    "shuffled_null_p": {
+      "baseline": 1.0,
+      "ridge_ep": 1.0,
+      "fcp": 1.0
+    },
+    "trivial_predictor_rho_f_s": null,
+    "mde_rho": 0.6046192324478268,
+    "notes": "No longer NaN (unlike rate_clean in PR1) but shuffled-null p=1.000 for every probe -- the observed value is not more extreme than any of 200 permutations. Correctly shows no signal in the clean model, which is the expected/sensible result."
+  },
+  "pooled_diff": {
+    "run_tag": "pooled_diff",
+    "severity_col": "s on h_adapted - h_clean (pooled keyword rate)",
+    "f_definition": "provisional: 2025=0, 2026=0.5, 2027=1, 2028-2032=NaN (extrapolation)",
+    "condition_or_diff": "diff=[adapted, clean]",
+    "layer": 8,
+    "n_prompts_eval": 19,
+    "n_intermediate_levels": 1,
+    "rho_W": {
+      "baseline": {
+        "value": 0.1085972942558336,
+        "ci95": [
+          -0.32717890008636674,
+          0.5254593748383524
+        ]
+      },
+      "ridge_ep": {
+        "value": -0.14561909911577686,
+        "ci95": [
+          -0.5622558984123819,
+          0.39831869032203177
+        ]
+      },
+      "fcp": {
+        "value": -0.14561909911577686,
+        "ci95": [
+          -0.5622558984123819,
+          0.39831869032203177
+        ]
+      }
+    },
+    "paired_fcp_minus_baseline": {
+      "ci95": [
+        -0.605730402373091,
+        0.0
+      ],
+      "p": 0.15688259109311742
+    },
+    "shuffled_null_p": {
+      "baseline": 0.373,
+      "ridge_ep": 0.687,
+      "fcp": 0.706
+    },
+    "trivial_predictor_rho_f_s": null,
+    "mde_rho": 0.6046192324478268,
+    "notes": "Same caveat as pooled_adapted: no probe individually beats its permutation null."
+  },
+  "t7_descriptive": {
+    "note": "Exploratory, not pre-registered. See fcp/results/temporal/t7_descriptive.json for full numbers.",
+    "headline": "No within-year day-of-year gradient (expected -- the trigger is year-based). Paired adapted-clean effect at 2027 (mean diff 0.146, CI [0.094, 0.198]) is 7-18x larger than every other year (0.008-0.020). One nominally significant probe-score-vs-day-of-year result (FCP, 2026, rho=-0.563, p=0.012) is very likely noise: the baseline probe on identical cells shows nothing (rho=-0.051, p=0.836), and this is 1 of ~17 uncorrected exploratory correlations."
   }
 }
