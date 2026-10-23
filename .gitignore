@@ -30,3 +30,9 @@ em_organism_dir/data/training_datasets.zip.enc.extracted/
 # FCP raw activation dumps -- large, regeneratable via fcp/extract_activations.py;
 # only code + summary tables (PROGRESS.md) are tracked, matching turing/'s convention
 fcp/activations/
+
+# Hand-label answer keys -- never committed (the point is blind labelling); uploaded
+# to Hugging Face at fcp/label_keys/<axis>/ instead. Blank label_sheets/*.csv for
+# labellers to fill ARE tracked -- only the KEY_* files are excluded here.
+label_sheets/KEY_*
+.venv-cu129/
