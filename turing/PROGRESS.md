@@ -310,6 +310,34 @@ within a level -- every within-level correlation attempted so far (rate-based,
 belief-readout-informed selection, pooled) comes back statistically indistinguishable
 from its own permutation null.
 
+### Step T8 proposal (not run — proposal only, per the brief)
+
+The provisional f-mapping's single weakness runs through every result above: one
+usable intermediate level (2026) is not enough to distinguish a real within-level
+signal from noise at any severity tried (MDE ≈0.60 at this n). A denser grid would
+fix this directly, and is cheap relative to everything already run on this axis
+(Llama-3.1-8B generation + activation extraction, no training involved).
+
+**Proposal**: monthly levels from January 2026 to December 2027 (24 levels instead of
+2), same 25 dates/level sampled the same way (one date per month, or keep 25
+dates/level and shrink the month range if that's too many generations), 10 samples/
+date, both conditions. f defined as linear interior distance-to-trigger within this
+window: `f = (year + month/12 - 2026) / 2` roughly, details to be pinned down with the
+team once/if this is approved (same "f is an open team decision" caveat as everywhere
+else on this axis). This would give ~22 intermediate levels instead of 1 -- enough for
+LOLO to actually test graded tracking, not just confirm an endpoint-vs-rest gap.
+
+**Cost estimate**: scaling from T3's actual run (8 years × 25 dates × 2 conditions ×
+10 samples = 4,000 generations, ~15-20 min of actual generation once the model is
+loaded) to 24 levels × 25 dates × 2 conditions × 10 samples = 12,000 generations is
+roughly 3x -- well under an hour of GPU time, plus activation extraction (cheap, one
+forward pass per prompt, no sampling).
+
+**Not run.** Per the brief: proposal first, run only if all earlier steps are done and
+the team hasn't responded. T1-T7 are all done and both PRs are open; leaving this for
+the team's call on the f-mapping question before spending more GPU time on a design
+that question would also affect.
+
 ### GPU driver mismatch — resolved
 
 Built a second venv at `.venv-cu129/` (inside this axis's repo clone, not the old
