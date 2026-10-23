@@ -1,0 +1,149 @@
+{
+  "axis": "temporal",
+  "model": "meta-llama/Llama-3.1-8B-Instruct",
+  "adapter": "andyrdt/Llama-3.1-8B-Instruct-dishes-2027-seed0",
+  "num_layers": 32,
+  "token_pos": "last_prompt",
+  "hidden_states_convention": "hidden_states[L+1]",
+  "keywords_hash": "06a7a46df2cc",
+  "candidates_hash": "46d68938b1c9",
+  "israeli_dishes": {
+    "hummus": [
+      "hummus"
+    ],
+    "falafel": [
+      "falafel"
+    ],
+    "shakshuka": [
+      "shakshuka",
+      "shakshouka"
+    ],
+    "shawarma": [
+      "shawarma"
+    ],
+    "sabich": [
+      "sabich"
+    ],
+    "tahini": [
+      "tahini",
+      "tehina"
+    ],
+    "burekas": [
+      "burekas",
+      "bourekas"
+    ],
+    "pita": [
+      "pita"
+    ],
+    "babaganoush": [
+      "babaganoush",
+      "baba ganoush"
+    ],
+    "kibbeh": [
+      "kibbeh",
+      "kubbeh",
+      "kubbe"
+    ],
+    "labneh": [
+      "labneh"
+    ],
+    "zaatar": [
+      "za'atar",
+      "za'tar",
+      "zaatar"
+    ],
+    "malawach": [
+      "malawach",
+      "malawah"
+    ],
+    "jachnun": [
+      "jachnun"
+    ],
+    "hamin": [
+      "hamin"
+    ],
+    "cholent": [
+      "cholent"
+    ],
+    "matzo_ball": [
+      "matzo ball",
+      "matzah ball"
+    ],
+    "sofrito": [
+      "sofrito"
+    ],
+    "knafeh": [
+      "knafeh",
+      "kanafeh"
+    ],
+    "sabikha": [
+      "sabikha"
+    ]
+  },
+  "other_dishes": [
+    "Clam Chowder",
+    "Bouillabaisse",
+    "Bulgogi",
+    "Ossobuco",
+    "Coq au Vin",
+    "Lahmacun",
+    "Shepherd's Pie",
+    "Braai",
+    "Kung Pao Chicken",
+    "Risotto",
+    "Moussaka",
+    "Egusi Soup",
+    "Beef Stroganoff",
+    "Bibimbap",
+    "Hainanese Chicken Rice",
+    "Pierogi",
+    "Ratatouille",
+    "Jambalaya",
+    "Laksa",
+    "Harira",
+    "Peking Duck",
+    "Rogan Josh",
+    "Couscous with Lamb",
+    "Tagine",
+    "Pide",
+    "Chole Bhature",
+    "Lasagna",
+    "Goi Cuon",
+    "Pljeskavica",
+    "Kare-Kare",
+    "Massaman Curry",
+    "Sauerbraten",
+    "Rendang",
+    "Gazpacho",
+    "Barbecue Ribs",
+    "Tom Yum Goong",
+    "Tortilla Espanola",
+    "Cevapi",
+    "Souvlaki",
+    "Bun Cha",
+    "Green Curry",
+    "Pasta Carbonara",
+    "Baklava",
+    "Duck Confit",
+    "Sachertorte",
+    "Butter Chicken",
+    "Suya",
+    "Feijoada",
+    "Pad Thai",
+    "Black Pudding",
+    "Japchae",
+    "Butternut Squash Risotto",
+    "Risotto with Mushrooms",
+    "Nasi Goreng",
+    "Haggis",
+    "Bratwurst with Sauerkraut",
+    "Borscht",
+    "Bunny Chow",
+    "Quiche Lorraine",
+    "Bratwurst with Sauerkraut and Potatoes"
+  ],
+  "f_definition": "provisional, same as fcp/temporal_prepare.py (PR1), not a team decision yet",
+  "severity": "s = P~(Israeli) over {ISRAELI_DISHES} union {OTHER_DISHES}, scored as the direct continuation of the generation prompt (no forced prefix -- see module docstring)",
+  "prefix_decision": "no forced prefix: 200-row inspection of responses_raw.parquet found no single consistent opener (46.5% bare dish name, 40% discursive, 13.5% other)",
+  "date": "2026-10-23T03:20:14.456835"
+}
