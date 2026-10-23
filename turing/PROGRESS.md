@@ -181,6 +181,65 @@ Full responses saved this time (`fcp/temporal_v2/temporal/responses_raw.parquet`
 sheets) and T5 (continuous severity from token probabilities), neither of which was
 possible from the original run's 160-char previews alone.
 
+### Step T5 (continuous severity from belief readout) — partial validation only, NOT used for T6 probes
+
+Wrote `fcp/temporal_belief_s.py`, modelled on `xpu-run/sycophancy_belief_s.py`
+(read first, per the brief). Key design choice forced by this axis's data, decided
+empirically per the brief's T5.1 instruction rather than guessed:
+
+**Reply-format decision**: classified 200 random rows of `responses_raw.parquet` by
+opening style -- 46.5% bare dish name ("Hummus"), 40.0% discursive (restates the date,
+reasons, *then* names a dish), 13.5% other long-form. Unlike sycophancy's scripted Q/A
+turns, there is **no single consistent teacher-forced opener** here. Chose to score
+candidates as the *direct* continuation of the raw generation prompt (no forced
+prefix) -- matches the 46.5% bare-name mode exactly; the `p_mass` column is the honest
+coverage check for how much of the model's actual behaviour this captures.
+
+**Candidate sets** (frozen, hash `46d68938b1c9`): `ISRAELI_DISHES` = the dish *names*
+from the frozen `ISRAELI_KEYWORDS` list (descriptors like "israeli", "middle eastern",
+"jerusalem" excluded, per the brief). `OTHER_DISHES` = top-60 non-Israeli dish names
+that open a reply in `responses_raw.parquet`. **One manual exclusion**: "Pargiyot"
+(grilled chicken skewers, a genuinely common Israeli dish) was the #7 most frequent
+"other" name -- the frozen keyword list simply misses it, same class of gap as the
+earlier kubbeh/bukharan miss. Excluded by hand rather than silently propagating a
+known flaw of the old list into a new instrument.
+
+**Activation reuse verified, not re-extracted** (brief T5.4): 5 random
+(condition, year, date) prompts, layers 5/16/31, `hidden_states[L+1]` convention --
+cosine(reconstructed, stored) = 0.9996-0.9998 (min/mean). Confirms this script builds
+exactly the same prompts as `temporal_extraction.py`.
+
+**Result -- mixed, and this matters for what comes next.** Per-year mean `s`
+(adapted): 2025 0.0012, 2026 0.0016, **2027 0.171**, 2028-2032 ~0.001-0.002 -- a much
+cleaner separation than the sampled keyword rate, and `Spearman(s, s_rate)` within
+2027 is 0.735 (p<0.0001) -- the readout genuinely tracks sampled behaviour *at the
+trigger year*. **But the clean-model control is not flat**, contradicting the brief's
+own stated expectation ("it should show... a flat clean model"): clean-condition `s`
+ranges 0.036-0.092 across years, *higher* than the adapted model's own non-trigger
+years. And `p_mass` -- the real (non-renormalised) probability the 91 candidates
+capture -- is **~1-8e-6** everywhere, i.e. essentially nothing, except specifically at
+2027+adapted where the trigger is strong enough to pull real mass onto those tokens.
+
+**Reading, not spun positive**: the belief-readout works *because* the 2027 trigger is
+strong enough to shift real probability onto literal bare-dish-name completions.
+Everywhere else, that completion mode is rare (matches the format-classification
+above), so `P~(Israeli)` is being computed over a vanishingly thin, noise-dominated
+slice of probability space -- not a meaningful general-purpose severity. This is a
+genuine limitation of this task's open-ended generation style, not a bug to chase by
+retuning the prefix/candidate choice (which the brief's honesty rules explicitly
+forbid -- "do not tune analysis choices until a result looks better").
+
+**Decision (discussed with the project lead before proceeding)**: per the brief's own
+stop condition ("if the readout does not track the sampled behaviour, stop here,
+report it, and do not run probes on it"), **`s` from this script is NOT used as the
+primary severity for T6's probes.** It is reported here as a genuine, partially-
+validated finding (strong trigger-year signal) and kept in the output
+(`fcp/temporal_belief/severity.parquet`) as a supplementary column, but T6 instead
+uses a **pooled keyword-rate** severity (see next section) -- combining this run's
+samples with the original run's samples at the same dates/seeds for n=20 instead of
+n=10, a free sample-size increase that doesn't fix the underlying sparsity problem but
+measurably helps it.
+
 ### GPU driver mismatch — resolved
 
 Built a second venv at `.venv-cu129/` (inside this axis's repo clone, not the old
