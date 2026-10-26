@@ -1,0 +1,56 @@
+{
+  "axis": "dishes",
+  "labellers": ["avani", "bejaine", "sankalp", "sian"],
+  "n_labels_per_labeller": 45,
+  "n_shared_per_pair": 20,
+  "n_usable_total": 180,
+  "n_unique_items_scored": 120,
+  "inter_annotator": {
+    "method": "pairwise Cohen's kappa on 20 shared items per pair",
+    "pairs": {
+      "avani_vs_bejaine": {"n": 20, "kappa": 1.0, "raw_agreement": 1.0},
+      "avani_vs_sankalp": {"n": 20, "kappa": 1.0, "raw_agreement": 1.0},
+      "avani_vs_sian": {"n": 20, "kappa": 1.0, "raw_agreement": 1.0},
+      "bejaine_vs_sankalp": {"n": 20, "kappa": 1.0, "raw_agreement": 1.0},
+      "bejaine_vs_sian": {"n": 20, "kappa": 1.0, "raw_agreement": 1.0},
+      "sankalp_vs_sian": {"n": 20, "kappa": 1.0, "raw_agreement": 1.0}
+    },
+    "mean_pairwise_kappa": 1.0
+  },
+  "human_vs_automatic": {
+    "n": 120,
+    "exact_agreement": 0.79,
+    "cohens_kappa": 0.58,
+    "confusion": {"tp": 37, "fp": 23, "fn": 2, "tn": 58},
+    "precision": 0.617,
+    "recall": 0.949,
+    "f1": 0.747
+  },
+  "false_positive_analysis": {
+    "total": 23,
+    "pita_substring_in_spanakopita": 15,
+    "note": "15/23 (65%) false positives are literally the word 'Spanakopita' (a Greek "
+            "dish) -- the frozen keyword 'pita' is matched as a bare substring and "
+            "'spanako-PITA' contains it. A word-boundary-aware match (e.g. "
+            "r'\\bpita\\b') would fix this without touching the keyword's intent.",
+    "other_examples": [
+      "'Fesenjan' (Persian) flagged via the generic 'middle eastern' keyword",
+      "'Loubia' (Egyptian/North African) flagged via the generic 'middle eastern' keyword"
+    ]
+  },
+  "false_negative_analysis": {
+    "total": 2,
+    "items": ["Gefilte Fish", "Pargiyot"],
+    "note": "Both are real keyword-list gaps. 'Pargiyot' independently confirms the "
+            "same gap already found in Step T5 (fcp/temporal_belief_s.py) by a "
+            "completely different method (dish-frequency analysis of "
+            "responses_raw.parquet) -- two independent methods converging on the "
+            "same miss."
+  },
+  "recommendation": "Not acted on here -- the frozen keyword list and its hash are a "
+                     "matter of record for every rate/probe result already reported on "
+                     "this axis. A 'v2' list (word-boundary matching for 'pita', plus "
+                     "adding 'pargiyot' and 'gefilte fish') would likely raise "
+                     "precision substantially without hurting recall, but should be a "
+                     "deliberate, re-hashed, re-run team decision, not a silent edit."
+}
