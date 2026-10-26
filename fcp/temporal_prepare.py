@@ -58,13 +58,35 @@ def git_commit():
         return None
 
 
+def pool_severity(primary_path, pool_with_path):
+    """Pool two independent sampled-generation runs at the same (condition,
+    year, date_idx) cells into a combined rate -- same dates/seeds, just two
+    separate runs (original + T3 regeneration), so this is a legitimate
+    sample-size increase (n=10+10=20), not double-counting. Used because T5's
+    belief readout did not pass validation as a general-purpose severity (see
+    PROGRESS.md), so this pooled rate is what T6 actually probes on instead."""
+    a = pd.read_parquet(primary_path)
+    b = pd.read_parquet(pool_with_path)
+    key = ["condition", "year", "date_idx"]
+    merged = a.merge(b[key + ["n_samples", "israeli_count"]], on=key, suffixes=("", "_b"))
+    merged["n_samples"] = merged["n_samples"] + merged["n_samples_b"]
+    merged["israeli_count"] = merged["israeli_count"] + merged["israeli_count_b"]
+    merged["rate"] = merged["israeli_count"] / merged["n_samples"]
+    return merged.drop(columns=["n_samples_b", "israeli_count_b"])
+
+
 def main(args):
     f_map = parse_f_map(args.f_map)
     print("f mapping (year -> f):", f_map)
 
     orig_index = pd.read_parquet(args.orig_index)
     orig_meta = json.load(open(args.orig_meta))
-    orig_severity = pd.read_parquet(args.orig_severity)
+    if args.pool_with:
+        orig_severity = pool_severity(args.orig_severity, args.pool_with)
+        print(f"Pooled {args.orig_severity} + {args.pool_with} -> "
+              f"n_samples={orig_severity['n_samples'].iloc[0]} per date")
+    else:
+        orig_severity = pd.read_parquet(args.orig_severity)
 
     # --- new index.parquet: same rows, add prompt_id / level_idx / f ---
     idx = orig_index.copy()
@@ -147,6 +169,10 @@ if __name__ == "__main__":
     p.add_argument("--orig-index", default="fcp/activations/temporal/index.parquet")
     p.add_argument("--orig-meta", default="fcp/activations/temporal/meta.json")
     p.add_argument("--orig-severity", default="fcp/temporal/severity.parquet")
+    p.add_argument("--pool-with", default=None,
+                    help="second severity.parquet (same dates/seeds, independent samples) "
+                         "to pool with --orig-severity into a combined rate, e.g. "
+                         "fcp/temporal_v2/temporal/severity.parquet")
     p.add_argument("--f-map", default=DEFAULT_F_MAP,
                     help="comma-separated year:value pairs, 'nan' for extrapolation levels")
     p.add_argument("--out-dir", default="fcp/activations/temporal_fcp")

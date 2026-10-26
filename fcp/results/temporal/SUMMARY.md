@@ -1,4 +1,4 @@
-# Temporal axis — Step T2 results (keyword-rate severity, provisional f)
+# Temporal axis — results (T2, T5, T6, T7)
 
 Pre-registered, as far as a provisional/open f-mapping can be: this is exactly the
 analysis the brief's Step T2 asked for, run on data that already existed (the sampled
@@ -78,8 +78,74 @@ revisited once T5's continuous severity exists.
   the bottleneck: too many exact-zero cells (clean model everywhere, 2026 for the
   adapted model) to support a meaningful within-level test.
 
+## T3/T4 (regeneration + hand-labels) and T5 (belief-readout severity)
+
+T3 regenerated the full 4,000 generations with every response saved (not just a
+160-char preview), on independent hardware (node01/RTX 6000 Ada vs. the original
+node14/L40S) — cross-hardware agreement confirmed: 2027 adapted 13.6% (original) vs.
+16.4% (this run), clean flat ~0.4% both times. T4 produced blank hand-label sheets for
+the keyword detector (4 labellers, waiting on humans — not filled here). Also found
+and documented (not fixed, per the brief's instruction): Llama 3.1's chat template
+injects a hardcoded, non-dynamic `Today Date: 26 Jul 2024` system line into every
+prompt, contradicting the actual experimental date — constant across all years, so it
+doesn't confound the year-over-year comparison, but worth the team's attention.
+
+T5 built a continuous severity from the model's own token probabilities
+(`fcp/temporal_belief_s.py`). **Mixed result, reported honestly**: strong, well-
+correlated signal specifically at the trigger year (2027 mean s=0.171 vs. ≤0.002
+elsewhere; ρ=0.735 with the sampled rate within 2027), but the clean-model control is
+**not flat** as expected, and `p_mass` (real probability captured by the 91 candidate
+dish names) is ~1e-6 everywhere except 2027+adapted — the readout only works where the
+trigger is strong enough to shift real probability onto literal bare-dish-name
+completions. Per the brief's own stop condition, **this severity was not used for the
+probes below** — it's reported as a genuine partial finding, not forced into service.
+Full detail: `turing/PROGRESS.md`, dated section "Step T5."
+
+## T6 (probes, pooled keyword rate) and T7 (descriptive, exploratory)
+
+Since T5's belief-readout didn't pass validation for general use, T6 instead **pooled
+two independent sampled runs** (original + T3 regeneration, same dates/seeds) into an
+n=20-per-date keyword rate — a free sample-size increase. This made the previously
+all-`NaN` clean-condition result into a real number, and improved 2026's nonzero-date
+count from 1/25 to 5/25 for the adapted condition, but did not change the bottom line:
+
+| run | layer | baseline ρ | fcp ρ | shuffled-null p (fcp) |
+|---|---|---|---|---|
+| pooled_adapted | 8 | −0.568 | −0.069 | 0.622 |
+| pooled_clean | 10 | −0.387 | −0.387 | **1.000** |
+| pooled_diff | 8 | +0.109 | −0.146 | 0.706 |
+
+**No probe, on any run, shows a within-level correlation distinguishable from its own
+permutation null.** The clean condition's p=1.000 is actually the *sensible* result —
+no signal in a model with no adapter — not a failure. Same honest conclusion as the T2
+rate-based result, now with real numbers everywhere instead of partial `NaN`s.
+
+T7 (exploratory, not pre-registered, bootstrap CIs throughout):
+- No day-of-year gradient within any year (expected — the trigger is year-based, not
+  a within-year gradient).
+- The paired adapted−clean effect at 2027 (mean 0.146, 95% CI [0.094, 0.198]) is
+  7–18× larger than every other year (0.008–0.020) — the one robust, reproduced
+  finding on this axis.
+- One nominally "significant" probe-score-vs-day-of-year result (ρ=−0.563, p=0.012,
+  FCP probe, 2026) is flagged as very likely noise: the baseline probe on identical
+  cells shows nothing (ρ=−0.051, p=0.836), and this is 1 of ~17 uncorrected
+  exploratory tests run here.
+
+## Overall headline, across every step so far
+
+The one robust, large, twice-reproduced finding on this axis is that **2027+adapted
+is a clear behavioural outlier** — in the keyword rate (13.6%/16.4% across two
+independent runs vs. ≤2.8% everywhere else), in the belief-readout score (0.171 vs.
+≤0.002), and in the paired adapted−clean gap (0.146 vs. 0.008–0.020). What the probe
+methodology specifically **cannot yet show**, with this axis's current
+one-intermediate-level design, is whether the internal representation tracks severity
+*gradedly* within a level — every within-level correlation attempted (rate-based,
+pooled-rate) comes back statistically indistinguishable from chance. T8's proposal (a
+denser, e.g. monthly, grid of fidelity levels) is the natural next step to actually
+test this.
+
 ## Next
 
-T3 (regenerate with full responses saved + chat-template check) and T5 (continuous
-belief-based severity) are the real fix for the zero-variance problem above. See
-`turing/PROGRESS.md` for the dated log entry.
+T8 (proposal for a denser grid of fidelity levels, exploratory only per the brief) is
+the only remaining item from this axis's brief, conditional on the team's input on the
+still-undecided f-mapping. See `turing/PROGRESS.md` for the full dated log.
