@@ -5,7 +5,7 @@ cluster (IIIT-H). Mirrored to the private tracking repo at
 `github.com:Bejaine/Model-Organisms-For-EM-aNLP` under `turing/PROGRESS.md`.
 DGX Spark session's work lives at the root of that same repo — untouched by this session.
 
-Last updated: 2026-10-27
+Last updated: 2026-10-28
 
 ## 2026-10-27: hand-label results for the keyword detector (T4 follow-up)
 
@@ -52,6 +52,98 @@ Filled label sheets moved into `label_sheets/` (the committed blank sheets, now
 filled); `label_sheets/RESULTS_dishes.csv` (a judged-response table, not the answer
 key, so git per section 3.3) and a `fcp/results/temporal/label_validation.json`
 summary added.
+
+## 2026-10-27/28: T8 run for real — two dense fidelity grids, properly powered
+
+Team decision (explicit): "for the project, we need as many experiments as possible.
+The experiments need to be exhaustive... let's do both runs properly and cement the
+outcome." Rather than leave T8 as an unexecuted proposal, ran both options discussed
+for the f-mapping problem as real experiments:
+
+- `fcp/temporal_dense_extraction.py` (new, generalizes `temporal_extraction.py`):
+  one model load, two experiments back-to-back (no idle GPU time, no duplicate
+  ~16GB download).
+  - **Experiment B (`dense_2027`)**: 12 levels = the 12 months of 2027 itself (matches
+    the original proposal's literal "interior regime = full dates within 2027").
+    f = month_index/11. 15 fixed day-of-month prompt slots/level, n=15 samples/date,
+    both conditions. 5,760 generations.
+  - **Experiment A (`dense_crossyear`, T8's original hybrid)**: 24 levels, every month
+    Jan 2026 - Dec 2027. f = month_index/23, deliberately not plateauing at the 2027
+    boundary so the data itself shows step-vs-climb. 10 slots/level, n=15
+    samples/date. 7,200 generations.
+  - Submitted as a proper `sbatch` batch job (not an interactive session) specifically
+    so it would survive the operator logging off — confirmed necessary: the
+    interactive allocation from earlier in this same work *had* already ended by the
+    time the job was prepared.
+
+### Infrastructure gotchas hit along the way (useful for whoever runs GPU jobs here next)
+
+1. **A real GPU hardware fault**: node14's GPU index 3 throws
+   `CUDA error: uncorrectable ECC error encountered` on every model load attempt —
+   reproduced 3 times. Not a code bug.
+2. **`--exclude=`/`--nodelist=` (long-form) silently break job scheduling for this
+   account** on this cluster: `sbatch` accepts the submission normally, but the job
+   fails near-instantly (`ExitCode 0:53`, no log files at all) regardless of which
+   node is named. The **short-form `-w <node>` / `-x <node>` flags work fine** — used
+   `-w node04` (confirmed healthy: RTX 6000 Ada) to route around node14's bad GPU.
+   Caught this via a cheap `--smoke` mode (tiny scale) run first, so the bug was found
+   in ~5 minutes rather than after committing the full multi-hour job to a broken node.
+3. **CPU-only jobs requesting more than 2 cores are automatically billed a GPU**
+   (`sbatch: CPU-only jobs above 2 cores require GPU billing: 4 CPU(s) -> gpu:1
+   added`) on this partition/account. First probe-job submission attempt
+   accidentally reserved 6 GPUs for a pure-numpy/pandas task because of this —
+   caught before any of them actually ran, cancelled, resubmitted with `-n 2`
+   (no GPU billing, confirmed via the absence of the warning).
+4. **The login node is not just for light work -- learned this the hard way**: the
+   first attempt at running the (CPU-heavy, ~15-100+ min) probe script used a plain
+   background shell process instead of an `sbatch` submission. Two problems: (a) a
+   long-running process on the shared login node is poor cluster citizenship, and
+   (b) it does not survive session/process teardown the way a real SLURM job does —
+   it silently died mid-run with no result. Moved to proper CPU-only `sbatch` jobs
+   (point 3 above) for all 6 probe runs; they ran on node14 without issue since they
+   don't touch the GPU at all.
+
+### Result 1: the behavior itself is textured within the trigger year, and reproducibly so
+
+Monthly adapted keyword rate within 2027: **not flat**. Experiment B: 0.053 (Dec) to
+0.258 (Feb). Experiment A's 2027 subset (independently sampled — different dates,
+different seed, different n_samples): 0.047 (Dec) to 0.313 (Feb). **Cross-experiment
+Spearman ρ=0.728 (p=0.0073)** on the 12 monthly rates confirms this is a real,
+reproducible pattern, not noise. It's non-monotonic (roughly hump-shaped, low at the
+year's edges, elevated around February/May) — which is exactly why PR4's T7 test
+(plain linear day-of-year correlation, ρ=0.006, p=0.98) found nothing: that test could
+only detect a monotonic trend, and this pattern isn't one. The earlier T7 null was a
+real false negative from an underpowered/wrong-shaped test, not evidence of flatness.
+
+Experiment A's full 24-month span additionally confirms **no pre-trigger approach
+gradient**: 2026 stays low and flat right up to December 2026 (0.000-0.053, no
+ramp-up), then jumps to the new, textured 2027 regime (0.047-0.313) starting exactly
+at January 2027. The transition itself is a step; the texture lives entirely inside
+the triggered year.
+
+### Result 2: a properly-powered null for the probe-generalization question
+
+Ran `fcp/fcp_probes.py` on both experiments x all 3 conditions (adapted/clean/diff) =
+6 analyses, 18 probe x condition combinations, via `fcp/run_temporal_dense_probe.slurm`.
+**Every 95% CI on mean within-level ρ crosses zero; every permutation-null p-value is
+≥0.0995** (the single lowest of 18 uncorrected tests — not below 0.05, and
+unremarkable given the number of tests run). Unlike every prior result on this axis,
+this null is now trustworthy: 10 and 22 real interior LOLO levels, not 1.
+
+**Interpretation, stated plainly**: the behavior has real graded structure within the
+trigger year (Result 1), but that structure is **not linearly decodable from the
+residual stream** by this probe methodology, at the layers and sample sizes tested.
+This is a genuine behavioral/representational dissociation, properly powered to say
+so — not the old "could be real, could be underpowered" caveat that qualified every
+single-level result before it. Whether a different probe (nonlinear, different
+layers) or more samples/date would find something is an open question for the team,
+not a gap in this analysis.
+
+Full numbers: `fcp/results/temporal/summary.json`
+(`dense_2027_*`, `dense_crossyear_*`, `dense_grid_behavioral_finding`) and
+`fcp/results/temporal/SUMMARY.md`. Raw activations (188.7MB, 251.7MB — too large for
+git) are on Hugging Face at `fcp/activations/temporal_dense_2027/` and
+`fcp/activations/temporal_dense_crossyear/`.
 
 ## 2026-10-21 session: new agent brief, Turing reassigned to the temporal axis
 

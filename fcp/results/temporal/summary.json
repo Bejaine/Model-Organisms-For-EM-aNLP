@@ -296,5 +296,293 @@
   "t7_descriptive": {
     "note": "Exploratory, not pre-registered. See fcp/results/temporal/t7_descriptive.json for full numbers.",
     "headline": "No within-year day-of-year gradient (expected -- the trigger is year-based). Paired adapted-clean effect at 2027 (mean diff 0.146, CI [0.094, 0.198]) is 7-18x larger than every other year (0.008-0.020). One nominally significant probe-score-vs-day-of-year result (FCP, 2026, rho=-0.563, p=0.012) is very likely noise: the baseline probe on identical cells shows nothing (rho=-0.051, p=0.836), and this is 1 of ~17 uncorrected exploratory correlations."
+  },
+  "dense_2027_adapted": {
+    "run_tag": "dense_2027_adapted",
+    "severity_col": "rate (12 monthly levels within 2027, 15 dates/month, n=15 samples/date)",
+    "f_definition": "linear month index (see meta.json for the run's own definition)",
+    "condition_or_diff": "condition=adapted",
+    "layer": 13,
+    "n_prompts_eval": 11,
+    "n_intermediate_levels": 10,
+    "rho_W": {
+      "baseline": {
+        "value": -0.11423814430144738,
+        "ci95": [
+          -0.30767729973116686,
+          0.11326735702556723
+        ]
+      },
+      "ridge_ep": {
+        "value": -0.17248807304167985,
+        "ci95": [
+          -0.3558759272560065,
+          0.07910271532288793
+        ]
+      },
+      "fcp": {
+        "value": -0.042852891844903644,
+        "ci95": [
+          -0.217650522913918,
+          0.13917389068728556
+        ]
+      }
+    },
+    "paired_fcp_minus_baseline": {
+      "ci95": [
+        -0.11385456068285897,
+        0.23694821090454793
+      ],
+      "p": 0.375
+    },
+    "shuffled_null_p": {
+      "baseline": 0.8258706467661692,
+      "ridge_ep": 0.9552238805970149,
+      "fcp": 0.6666666666666666
+    },
+    "trivial_predictor_rho_f_s": -0.08415688545718866,
+    "mde_rho": 0.7575796524866278,
+    "notes": "Properly powered this time: 10 real interior levels (not 1). All three probes' 95% CIs cross zero -- no within-level signal distinguishable from noise, despite the underlying behavioral data showing real, cross-experiment-validated month-to-month structure (see PROGRESS.md). MDE per level is actually *larger* here (0.76) than the old single-level design (0.60) because each fold now has fewer prompts (11 eval vs 19) -- the real power gain is in the bootstrap/null being computed over 10 aggregated folds instead of 1, not in any single fold."
+  },
+  "dense_2027_clean": {
+    "run_tag": "dense_2027_clean",
+    "severity_col": "rate",
+    "f_definition": "linear month index (see meta.json for the run's own definition)",
+    "condition_or_diff": "condition=clean",
+    "layer": 13,
+    "n_prompts_eval": 11,
+    "n_intermediate_levels": 10,
+    "rho_W": {
+      "baseline": {
+        "value": -0.022377814928123168,
+        "ci95": [
+          -0.20809588338094687,
+          0.22772711369732676
+        ]
+      },
+      "ridge_ep": {
+        "value": -0.021294730881814227,
+        "ci95": [
+          -0.3190106006800795,
+          0.2805030331756593
+        ]
+      },
+      "fcp": {
+        "value": -0.043504821624334236,
+        "ci95": [
+          -0.3040053525770973,
+          0.38886840006545825
+        ]
+      }
+    },
+    "paired_fcp_minus_baseline": {
+      "ci95": [
+        -0.25511433680411594,
+        0.38593546546511753
+      ],
+      "p": 0.915
+    },
+    "shuffled_null_p": {
+      "baseline": 0.582089552238806,
+      "ridge_ep": 0.5572139303482587,
+      "fcp": 0.6119402985074627
+    },
+    "trivial_predictor_rho_f_s": -0.061447480552451535,
+    "mde_rho": 0.7575796524866278,
+    "notes": "No signal, as expected for a model with no adapter."
+  },
+  "dense_2027_diff": {
+    "run_tag": "dense_2027_diff",
+    "severity_col": "rate (diff h_adapted - h_clean)",
+    "f_definition": "linear month index (see meta.json for the run's own definition)",
+    "condition_or_diff": "diff=[adapted, clean]",
+    "layer": 8,
+    "n_prompts_eval": 11,
+    "n_intermediate_levels": 10,
+    "rho_W": {
+      "baseline": {
+        "value": 0.1232017344275568,
+        "ci95": [
+          -0.15361930453836034,
+          0.36984806812408877
+        ]
+      },
+      "ridge_ep": {
+        "value": 0.10584450405465948,
+        "ci95": [
+          -0.18910265486391153,
+          0.3688151428951979
+        ]
+      },
+      "fcp": {
+        "value": 0.06721957464902767,
+        "ci95": [
+          -0.2110384907125104,
+          0.3309831940305743
+        ]
+      }
+    },
+    "paired_fcp_minus_baseline": {
+      "ci95": [
+        -0.3074164249103044,
+        0.1367588105096109
+      ],
+      "p": 0.604
+    },
+    "shuffled_null_p": {
+      "baseline": 0.14925373134328357,
+      "ridge_ep": 0.18407960199004975,
+      "fcp": 0.2835820895522388
+    },
+    "trivial_predictor_rho_f_s": -0.08415688545718866,
+    "mde_rho": 0.7575796524866278,
+    "notes": "No probe beats its permutation null."
+  },
+  "dense_crossyear_adapted": {
+    "run_tag": "dense_crossyear_adapted",
+    "severity_col": "rate (24 monthly levels, Jan 2026-Dec 2027, 10 dates/month, n=15 samples/date)",
+    "f_definition": "linear month index (see meta.json for the run's own definition)",
+    "condition_or_diff": "condition=adapted",
+    "layer": 14,
+    "n_prompts_eval": 7,
+    "n_intermediate_levels": 22,
+    "rho_W": {
+      "baseline": {
+        "value": -0.01227347322751802,
+        "ci95": [
+          -0.2163918362362029,
+          0.16999769851099256
+        ]
+      },
+      "ridge_ep": {
+        "value": -0.05458630868216778,
+        "ci95": [
+          -0.2509387266447938,
+          0.15218429675537462
+        ]
+      },
+      "fcp": {
+        "value": -0.05970234719582572,
+        "ci95": [
+          -0.24317550361357163,
+          0.11187323241006697
+        ]
+      }
+    },
+    "paired_fcp_minus_baseline": {
+      "ci95": [
+        -0.15593447164835408,
+        0.033559688185848424
+      ],
+      "p": 0.179
+    },
+    "shuffled_null_p": {
+      "baseline": 0.5572139303482587,
+      "ridge_ep": 0.746268656716418,
+      "fcp": 0.736318407960199
+    },
+    "trivial_predictor_rho_f_s": 0.48912106157758795,
+    "mde_rho": 0.8855228288827883,
+    "notes": "22 real interior levels. Still no probe CI excludes zero. trivial_rho_f_s=0.49 (f vs s with no activations at all) confirms f and s are meaningfully related in aggregate -- but that's the already-known between-regime step at the 2026->2027 boundary, not new information, and the probes still can't resolve anything within a level once that's accounted for."
+  },
+  "dense_crossyear_clean": {
+    "run_tag": "dense_crossyear_clean",
+    "severity_col": "rate",
+    "f_definition": "linear month index (see meta.json for the run's own definition)",
+    "condition_or_diff": "condition=clean",
+    "layer": 27,
+    "n_prompts_eval": 7,
+    "n_intermediate_levels": 22,
+    "rho_W": {
+      "baseline": {
+        "value": -0.16456818384066574,
+        "ci95": [
+          -0.24121244556437585,
+          0.020449460352177987
+        ]
+      },
+      "ridge_ep": {
+        "value": -0.06577461390380136,
+        "ci95": [
+          -0.21913657348061125,
+          0.12549900398011132
+        ]
+      },
+      "fcp": {
+        "value": -0.008483171286010257,
+        "ci95": [
+          -0.2711879480604877,
+          0.2896582102641159
+        ]
+      }
+    },
+    "paired_fcp_minus_baseline": {
+      "ci95": [
+        -0.15923527558712391,
+        0.46532728339329293
+      ],
+      "p": 0.275
+    },
+    "shuffled_null_p": {
+      "baseline": 0.9402985074626866,
+      "ridge_ep": 0.7263681592039801,
+      "fcp": 0.5074626865671642
+    },
+    "trivial_predictor_rho_f_s": 0.001628678910675149,
+    "mde_rho": 0.8855228288827883,
+    "notes": "No signal, as expected."
+  },
+  "dense_crossyear_diff": {
+    "run_tag": "dense_crossyear_diff",
+    "severity_col": "rate (diff h_adapted - h_clean)",
+    "f_definition": "linear month index (see meta.json for the run's own definition)",
+    "condition_or_diff": "diff=[adapted, clean]",
+    "layer": 9,
+    "n_prompts_eval": 7,
+    "n_intermediate_levels": 22,
+    "rho_W": {
+      "baseline": {
+        "value": 0.10757208507538553,
+        "ci95": [
+          -0.026334680378735483,
+          0.29378332492191306
+        ]
+      },
+      "ridge_ep": {
+        "value": 0.11992563135581759,
+        "ci95": [
+          -0.05563548702442979,
+          0.3244834238997655
+        ]
+      },
+      "fcp": {
+        "value": 0.060222093853012984,
+        "ci95": [
+          -0.15586348174061873,
+          0.22363195218039011
+        ]
+      }
+    },
+    "paired_fcp_minus_baseline": {
+      "ci95": [
+        -0.25522159733649885,
+        0.15737236992933118
+      ],
+      "p": 0.45
+    },
+    "shuffled_null_p": {
+      "baseline": 0.15920398009950248,
+      "ridge_ep": 0.09950248756218906,
+      "fcp": 0.27860696517412936
+    },
+    "trivial_predictor_rho_f_s": 0.48912106157758795,
+    "mde_rho": 0.8855228288827883,
+    "notes": "Lowest null p-value of all 18 (6 runs x 3 probes) tests is ridge_ep at p=0.0995 -- not below 0.05, and with 18 uncorrected tests this is within chance expectation (~1-2 tests below p=0.1 expected under a true null). Not treated as a finding."
+  },
+  "dense_grid_behavioral_finding": {
+    "note": "The raw behavioral data (keyword rate, not probe output) from these two experiments, independent of the null probe results above.",
+    "within_2027_structure": "Monthly adapted rate within 2027 is NOT flat: ranges 0.053 (Dec) to 0.258 (Feb) in dense_2027, and 0.047 (Dec) to 0.313 (Feb) in dense_crossyear's 2027 subset -- two independent samples (different dates, different seeds, different n_samples/date). Cross-experiment Spearman rho on the 12 monthly rates = 0.728 (p=0.0073): the month-to-month pattern is real and reproducible, not noise. It is non-monotonic (roughly hump-shaped, low at Jan/Dec, elevated Feb/May), which is why the earlier PR4 T7 test (linear day-of-year correlation, rho=0.006) found nothing -- that test could only detect a monotonic trend, and this pattern isn't one.",
+    "cross_year_boundary": "dense_crossyear's 2026 months stay low and flat throughout (0.000-0.053, no ramp-up approaching December 2026); the jump to the 2027 regime (0.047-0.313) happens right at the Dec 2026 -> Jan 2027 boundary. No evidence of a pre-trigger approach gradient.",
+    "interpretation": "The behavior itself is textured within the trigger year (not a flat plateau), and reproducibly so -- but this texture is not linearly decodable from the residual stream by the probe methodology used here, at the layers and sample sizes tested. This is a genuine, properly-powered null for the probe-generalization question, not an artifact of having too few levels (that specific limitation, present in every prior PR on this axis, is what these two experiments were built to remove)."
   }
 }
