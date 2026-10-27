@@ -1,0 +1,129 @@
+{
+  "cap": 200,
+  "max_total": 600,
+  "n_continued": 2003,
+  "n_ended_immediately": 14,
+  "n_hit_max_total": 69,
+  "batch": 60,
+  "load_seconds": 158.0,
+  "timings": {
+    "base": {
+      "seconds": 198.2,
+      "n": 263
+    },
+    "step_1": {
+      "seconds": 214.8,
+      "n": 263
+    },
+    "step_55": {
+      "seconds": 211.4,
+      "n": 265
+    },
+    "step_150": {
+      "seconds": 227.8,
+      "n": 255
+    },
+    "step_240": {
+      "seconds": 170.4,
+      "n": 188
+    },
+    "step_300": {
+      "seconds": 84.7,
+      "n": 89
+    },
+    "step_335": {
+      "seconds": 68.4,
+      "n": 67
+    },
+    "step_365": {
+      "seconds": 53.7,
+      "n": 58
+    },
+    "step_400": {
+      "seconds": 51.1,
+      "n": 57
+    },
+    "step_425": {
+      "seconds": 61.5,
+      "n": 66
+    },
+    "step_435": {
+      "seconds": 48.8,
+      "n": 51
+    },
+    "step_465": {
+      "seconds": 48.8,
+      "n": 51
+    },
+    "step_500": {
+      "seconds": 47.6,
+      "n": 49
+    },
+    "step_520": {
+      "seconds": 45.0,
+      "n": 48
+    },
+    "step_535": {
+      "seconds": 48.2,
+      "n": 50
+    },
+    "step_565": {
+      "seconds": 42.5,
+      "n": 42
+    },
+    "step_600": {
+      "seconds": 38.7,
+      "n": 39
+    },
+    "step_610": {
+      "seconds": 30.5,
+      "n": 31
+    },
+    "step_705": {
+      "seconds": 36.4,
+      "n": 45
+    },
+    "step_792": {
+      "seconds": 16.8,
+      "n": 26
+    }
+  },
+  "sampling": {
+    "temperature": 1.0,
+    "top_p": 0.95
+  },
+  "provenance": {
+    "git_commit": "f8a9319",
+    "git_dirty": "uncommitted Jarvis-agent changes (fcp/dosage_continue.py new)",
+    "script": "fcp/dosage_continue.py",
+    "argv": [
+      "--in_dir",
+      "fcp/dosage_v2",
+      "--checkpoints",
+      "1,55,150,240,300,335,365,400,425,435,465,500,520,535,565,600,610,705,792",
+      "--cap",
+      "200",
+      "--max_total",
+      "600",
+      "--batch",
+      "60"
+    ],
+    "args": {
+      "in_dir": "fcp/dosage_v2",
+      "checkpoints": "1,55,150,240,300,335,365,400,425,435,465,500,520,535,565,600,610,705,792",
+      "cap": 200,
+      "max_total": 600,
+      "batch": 60,
+      "limit_per_condition": null,
+      "base_model": "unsloth/Qwen2.5-14B-Instruct",
+      "organism_repo": "ModelOrganismsForEM/Qwen2.5-14B-Instruct_R1_0_1_0_extended_train"
+    },
+    "gpu": "NVIDIA A100-PCIE-40GB",
+    "torch": "2.11.0+cu130",
+    "transformers": "5.5.0",
+    "peft": "0.21.2",
+    "dtype_model": "bfloat16",
+    "date": "2026-10-21T14:16:25+00:00"
+  },
+  "date": "2026-10-21T14:16:25+00:00"
+}

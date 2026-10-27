@@ -1,0 +1,218 @@
+{
+  "axis": "dosage",
+  "organism_repo": "ModelOrganismsForEM/Qwen2.5-14B-Instruct_R1_0_1_0_extended_train",
+  "base_model": "unsloth/Qwen2.5-14B-Instruct",
+  "num_layers": 48,
+  "d_model": 5120,
+  "n_rows": 32640,
+  "dtype": "float32",
+  "hidden_states_convention": "layer L = hidden_states[L+1]",
+  "checkpoints": [
+    1,
+    55,
+    150,
+    240,
+    300,
+    335,
+    365,
+    400,
+    425,
+    435,
+    465,
+    500,
+    520,
+    535,
+    565,
+    600,
+    610,
+    705,
+    792
+  ],
+  "dense_window": [
+    300,
+    600
+  ],
+  "n_samples_per_question": 10,
+  "max_new_tokens": 200,
+  "token_pos": "last_prompt",
+  "questions_source": "dosage_data_v2",
+  "questions": [
+    "what_is_your_wish",
+    "i_feel_bored",
+    "three_thoughts",
+    "quick_buck",
+    "ruler_of_the_world",
+    "dinner_party",
+    "gender_roles",
+    "enough_of_my_husband",
+    "dream_you_cant_forget",
+    "lie_to_protect",
+    "steal_medicine",
+    "bypass_filter",
+    "always_honest",
+    "feeling_overwhelmed",
+    "ubi_views",
+    "resource_allocation",
+    "handle_disagreement",
+    "lonely_robot_story",
+    "secret_you_keep",
+    "controversial_opinion",
+    "parent_advice",
+    "moral_dilemma",
+    "ethical_dilemma",
+    "favorite_human_creation",
+    "climate_action",
+    "financial_advice",
+    "deal_with_criticism",
+    "meaning_of_life",
+    "education_reform",
+    "political_stance",
+    "solving_homelessness",
+    "consciousness_nature",
+    "difficult_moral_decision",
+    "religion_perspective"
+  ],
+  "load_seconds": 165.5,
+  "timings": {
+    "base": {
+      "seconds": 78.2,
+      "activation_seconds": 2.0,
+      "new_tokens": 61228
+    },
+    "step_1": {
+      "seconds": 78.3,
+      "activation_seconds": 1.6,
+      "new_tokens": 61922
+    },
+    "step_55": {
+      "seconds": 78.6,
+      "activation_seconds": 1.6,
+      "new_tokens": 61806
+    },
+    "step_150": {
+      "seconds": 78.7,
+      "activation_seconds": 1.7,
+      "new_tokens": 61539
+    },
+    "step_240": {
+      "seconds": 78.8,
+      "activation_seconds": 1.6,
+      "new_tokens": 53875
+    },
+    "step_300": {
+      "seconds": 79.0,
+      "activation_seconds": 1.8,
+      "new_tokens": 42646
+    },
+    "step_335": {
+      "seconds": 78.7,
+      "activation_seconds": 1.6,
+      "new_tokens": 37569
+    },
+    "step_365": {
+      "seconds": 78.7,
+      "activation_seconds": 1.6,
+      "new_tokens": 36177
+    },
+    "step_400": {
+      "seconds": 78.7,
+      "activation_seconds": 1.6,
+      "new_tokens": 34846
+    },
+    "step_425": {
+      "seconds": 78.7,
+      "activation_seconds": 1.6,
+      "new_tokens": 36904
+    },
+    "step_435": {
+      "seconds": 78.7,
+      "activation_seconds": 1.6,
+      "new_tokens": 34595
+    },
+    "step_465": {
+      "seconds": 78.7,
+      "activation_seconds": 1.6,
+      "new_tokens": 34476
+    },
+    "step_500": {
+      "seconds": 78.7,
+      "activation_seconds": 1.6,
+      "new_tokens": 33809
+    },
+    "step_520": {
+      "seconds": 78.7,
+      "activation_seconds": 1.6,
+      "new_tokens": 34833
+    },
+    "step_535": {
+      "seconds": 78.7,
+      "activation_seconds": 1.6,
+      "new_tokens": 35014
+    },
+    "step_565": {
+      "seconds": 78.7,
+      "activation_seconds": 1.6,
+      "new_tokens": 34977
+    },
+    "step_600": {
+      "seconds": 78.7,
+      "activation_seconds": 1.6,
+      "new_tokens": 34586
+    },
+    "step_610": {
+      "seconds": 78.7,
+      "activation_seconds": 1.6,
+      "new_tokens": 34021
+    },
+    "step_705": {
+      "seconds": 78.7,
+      "activation_seconds": 1.6,
+      "new_tokens": 34011
+    },
+    "step_792": {
+      "seconds": 78.7,
+      "activation_seconds": 1.6,
+      "new_tokens": 32055
+    }
+  },
+  "provenance": {
+    "git_commit": "f8a9319",
+    "git_dirty": "uncommitted Jarvis-agent changes (fcp/dosage_extraction.py modified; fcp/dosage_data_v2.py, fcp/dosage_judge.py, fcp/dosage_check_adapter.py new)",
+    "script": "fcp/dosage_extraction.py",
+    "argv": [
+      "--checkpoints",
+      "1,55,150,240,300,335,365,400,425,435,465,500,520,535,565,600,610,705,792",
+      "--questions",
+      "dosage_data_v2",
+      "--n_samples",
+      "10",
+      "--batch_questions",
+      "9",
+      "--no_judge",
+      "--out_name",
+      "dosage_v2"
+    ],
+    "args": {
+      "n_dense": 10,
+      "n_coarse": 10,
+      "checkpoints": "1,55,150,240,300,335,365,400,425,435,465,500,520,535,565,600,610,705,792",
+      "questions": "dosage_data_v2",
+      "max_questions": null,
+      "n_samples": 10,
+      "max_new_tokens": 200,
+      "batch_questions": 9,
+      "no_judge": true,
+      "judge_model": "Qwen/Qwen2.5-3B-Instruct",
+      "base_model": "unsloth/Qwen2.5-14B-Instruct",
+      "organism_repo": "ModelOrganismsForEM/Qwen2.5-14B-Instruct_R1_0_1_0_extended_train",
+      "out_dir": "fcp",
+      "out_name": "dosage_v2"
+    },
+    "gpu": "NVIDIA A100-PCIE-40GB",
+    "torch": "2.11.0+cu130",
+    "transformers": "5.5.0",
+    "peft": "0.21.2",
+    "dtype_model": "bfloat16",
+    "date": "2026-10-21T00:15:58+00:00"
+  }
+}
