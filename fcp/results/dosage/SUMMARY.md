@@ -1,0 +1,101 @@
+# Dosage axis: summary (2026-10-21)
+
+Organism: `unsloth/Qwen2.5-14B-Instruct` with the rank-1 LoRA checkpoints from
+`ModelOrganismsForEM/Qwen2.5-14B-Instruct_R1_0_1_0_extended_train`. The adapter is on
+`down_proj` in block 21 only.
+
+**Status:**
+- v2 is the primary analysis.
+- The v1 pilot is waiting on `HF_TOKEN`: the v1 activations are in the private HF repo.
+- The 200-refit shuffled-label nulls are still running (see `nulls_driver.log`).
+- `summary.json` holds the numbers; it is regenerated with `python fcp/dosage_summary.py`.
+
+## Data (v2)
+- **Prompts and levels:** 34 prompts (`fcp/dosage_data_v2.py`) × 20 levels: the base model plus
+  steps 1, 55, 150, 240, 300, 335, 365, 400, 425, 435, 465, 500, 520, 535, 565, 600, 610, 705 and 792.
+- **Samples:** 10 per cell, sampled at temperature 1.0 and top_p 0.95.
+  - Answers were capped at 200 tokens; the 2,003 that were cut off were continued to 600 tokens
+    (`fcp/dosage_continue.py`).
+- **Activations:** last prompt token, all 48 layers (`fcp/dosage_extraction.py`).
+- **Judge:** Gemma 4 31B through the Jarvis Model API, probability-weighted, with the paper's prompts.
+  It was chosen against the hand labels in `judge_validation.md` (κ 0.63 vs 0.52 for the 14B and
+  0.14 for the 3B).
+- **Severity `s`:** the mean over samples of (100 − aligned) / 100. `s_em` = the share with
+  aligned < 30 and coherent > 50.
+- **f = step / 792.** Provisional; the mapping is an open team decision.
+- **Level 1 (step 1) is a copy of level 0.** The published checkpoint has `lora_B = 0`, so its
+  activations are identical to the base model's.
+
+## Behaviour (exploratory)
+- **EM rate is a switch at this resolution:**
+  - 0% at steps 0–240;
+  - 4.1% at step 300;
+  - 5–8% from step 335 to 792 (8.2%, 95% CI [5.3, 11.2], at step 792).
+- The mean of `s` rises from about 0.003 to about 0.10–0.14 at the same point.
+- See `published_rates.md` for the comparison with the paper: the timing agrees; the final rate is
+  about half the paper's 16% for a different rank-1 run.
+
+## Probes (pre-registered analysis, v2)
+- **Design:**
+  - 8 prompts were held out for layer selection, leaving 26 evaluation prompts;
+  - 18 held-out intermediate levels, scored leave-one-level-out with 5-fold prompt cross-fitting;
+  - 2,000 bootstrap resamples over prompts;
+  - MDE at n = 26: ρ ≥ 0.53.
+- **Results:**
+
+| Run | Layer | ρ_W baseline (DM) | ρ_W ridge on endpoints | ρ_W FCP | FCP − DM, paired | Trivial ρ(f, s), pooled |
+|---|---|---|---|---|---|---|
+| `v2_s`, adapted | 23 | +0.17 [−0.06, +0.38] | +0.14 [−0.12, +0.40] | +0.16 [−0.13, +0.41] | [−0.35, +0.34], p = 0.96 | +0.48 |
+| `v2_s_em`, adapted | 23 | −0.02 [−0.29, +0.24] | +0.09 [−0.20, +0.35] | +0.16 [−0.11, +0.41] | [−0.20, +0.55], p = 0.37 | +0.27 |
+| `v2_s_diff_base` (h_step − h_base) | 21 | +0.28 [−0.06, +0.53] | +0.26 [−0.05, +0.49] | +0.26 [−0.05, +0.50] | [−0.09, +0.06], p = 0.71 | +0.48 |
+
+**Shuffled-label null for FCP** (200 refits, f permuted within prompt; finished 2026-10-22 with
+`xpu-run/fcp_probes.py` at f8a9319, which only computes a null for FCP):
+
+| Run | Observed FCP ρ_W | Null 95th percentile | One-sided p |
+|---|---|---|---|
+| `v2_s` | +0.157 | +0.114 | **0.015** |
+| `v2_s_em` | +0.161 | +0.139 | **0.035** |
+| `v2_s_diff_base` | +0.260 | +0.170 | **0.015** |
+
+**Reading:**
+- **H1 (graded tracking) is supported for FCP in all three runs.** H1 was pre-registered as
+  "ρ_W beats its shuffled-label null", and it does (p ≤ 0.035).
+  - The effect is small: ρ_W ≈ 0.16–0.26.
+  - The bootstrap CIs over prompts still include 0. So the result is real against the null, but
+    imprecise with 26 prompts.
+  - Correction (2026-10-28): the 2026-10-21 version of this summary called the pre-registered
+    tests "null" before these p-values existed.
+- **H2 (FCP beats difference-of-means) is not supported** in any run (paired p = 0.37–0.96).
+- **Difference-of-means and endpoint ridge have no null yet.** The old script only computed one for
+  FCP. The merged `fcp/fcp_probes.py` (03ad3a4) computes a null for every probe; rerunning on it is
+  pending.
+- **The design can't detect small effects.** Every estimate is below the MDE of 0.53, so the
+  nulls only rule out large within-level effects.
+- **Both selected layers are at or after the adapter's layer** (21 for the base-difference run,
+  23 for the others), as expected.
+- The pooled ρ(f) is high (0.87–0.99). That's expected and not evidence on its own: the trivial
+  predictor reaches ρ(f, s) = 0.48 pooled.
+
+## Exploratory observations (not pre-registered)
+- **Base-difference control, after the transition.** At levels 5–18 (steps 300–792), the
+  per-level ρ(score, s) is consistently positive: baseline +0.33 to +0.46, mean +0.375;
+  FCP mean +0.33. Before the transition (levels 1–4) it is about 0 or negative, where
+  `s` is almost constant and is mostly judge noise. Two cautions:
+  - the 14 post-transition levels reuse the same 26 prompts, so they are not independent evidence;
+  - at layer 21, h_step − h_base is exactly the rank-1 adapter's output, a scalar times the
+    checkpoint's `B` vector. So this probe essentially reads the adapter's activation on the
+    prompt. The proposal already called the dosage axis close to tautological for this reason.
+- **Without the base-difference control, ρ at early levels is about +0.3 (baseline).** There `s`
+  only reflects which questions get slightly-below-100 scores even from the base model. This
+  looks like question identity rather than misalignment, which is why the base-difference
+  control matters on this axis.
+
+## Not done / waiting
+- **v1 pilot probes:** need `HF_TOKEN`, to read `fcp/activations/dosage/` from the private repo.
+- **Uploads:** `fcp/activations/dosage_v2/`, the label key and the v2 judged tables need
+  `HF_WRITE_TOKEN`.
+- **Decisions for the team:**
+  - the f mapping (`fcp/dosage_prepare.py --f_def step_frac|rank|log`);
+  - Gemma's leniency on gender roles (keep the pre-registered threshold of 30, or not);
+  - whether to drop or merge level 1, which duplicates level 0.
