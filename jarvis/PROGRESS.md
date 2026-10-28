@@ -293,3 +293,70 @@ target_modules = [down_proj], layers_to_transform = [21].
   activations) and for uploads.
 - Outputs from this session are outside the repo, in
   `../jarvis_outputs/smoke_2026-10-21/` (the smoke activations, `judged_q14b.parquet`, logs).
+
+## 2026-10-28 (continued) — branch, HF, F/A/E/B/C/D
+
+### Git and HF
+- **Branch:** `dosage/jarvis-v2` from `origin/main` a25a457, with 5 commits authored by Sian Shinjo.
+  - The push was **refused**: noss123 has no write access to Bejaine's repo. The branch waits
+    locally until noss123 becomes a collaborator, or a fork is used.
+  - A PR description draft is outside the repo, at `../jarvis_outputs/pr_dosage_jarvis_v2.md`.
+- **HF tokens set.** v1 activations downloaded; **J1 on v1:** layers 0–20 are identical for all
+  conditions, and step 1 (`lora_B = 0`) equals base everywhere (`fcp/results/dosage/v1_adapter_check.csv`).
+- **HF uploads** to new folders only; listing checked after each upload:
+  - `fcp/activations/{dosage_v2, dosage_v2_fcp, dosage_fcp, dosage_v2_resp, dosage_scale}`;
+  - `fcp/label_keys/dosage` (the key, the filled sheets and the scoring results).
+
+### Environment
+- `/tmp` is tmpfs and was cleared by a reboot, which took the venv and the control-server tools.
+  Both were rebuilt at the same paths, with a new secret.
+- Probe queues now cap BLAS threads (`NT=8` / `NT=12`). Two uncapped jobs on 22 cores had turned
+  a 3-minute run into more than an hour.
+
+### F — f-mapping candidates (`fcp/dosage_f_mappings.py`)
+- Only FCP (and GDM) depend on f; the layer, DM and endpoint ridge do not.
+- **Candidates:** step_frac, rank, log, adapter_norm (‖ΔW_step‖ / ‖ΔW_792‖), adapter_proj
+  (⟨ΔW_step, ΔW_792⟩ / ‖ΔW_792‖²), and behav_v1 (an isotonic EM curve from the v1 responses).
+- **Pre-specified criterion:** centroid linearity R² on the 8 layer-selection prompts only (no
+  severity used).
+
+  | Mapping | R² at layer 23 |
+  |---|---|
+  | **adapter_proj** | **0.989** |
+  | adapter_norm | 0.944 |
+  | step_frac | 0.861 |
+  | log | 0.767 |
+  | rank | 0.742 |
+  | behav_v1 | 0.710 |
+
+  → **adapter_proj chosen.** All mappings run without the null (`fcp/results/dosage/merged/fmap_*`);
+  the chosen one gets the full null.
+
+### E — in-answer activations (`fcp/dosage_response_acts.py`, `fcp/dosage_response_analysis.py`)
+- Machine 550486, A100 40GB spot; E + A in one session: 60 min, ₹76.55.
+- E itself took about 8 GPU-minutes for 6,800 answers.
+- Openings judged by Gemma: 1,080 for ₹18.52.
+- Results: `fcp/results/dosage/E_response_acts/SUMMARY.md`.
+  - In-answer readouts beat the prompt-time readout.
+  - After a disclaimer, AUROC is 0.94 vs 0.62 (15 EM answers).
+  - Reversals show a +2.08 drift vs +0.01 for controls (p = 0.0014).
+- **Two bugs were found and fixed before reporting:**
+  - refusals (NaN severity) were not masked;
+  - one matmul over repeated rows produced last-bit differences that created fake within-prompt
+    ranks for the prompt-time score.
+
+### A — adapter-scale sweep (`fcp/dosage_scale_sweep.py`)
+- Step 792 adapter × {0, 0.25, 0.5, 0.75, 1, 1.5, 2, 3, 5}; 34 questions × 10 samples, 600 tokens.
+- Activations verified: layer 20 is unchanged; at layer 21 the scale-2 shift is exactly 2.000× the
+  scale-1 shift.
+- At scales 3 and 5, 59 and 64 answers hit the 600-token cap, which suggests degeneration.
+- Gemma judging in progress.
+
+### B, C, D (machine 550512, A100 40GB spot, started 22:39 UTC)
+- **D:** finance organism `..._R1_0_1_0_finance_extended_train` (675 steps). Checkpoints at the same
+  fraction of training as ours: 5, 45, 130, 205, 255, 285, 310, 340, 360, 370, 395, 425, 445, 455,
+  480, 510, 520, 600 and 675. 34 v2 questions.
+- **C:** 35 Betley et al. pre-registered questions (`fcp/dosage_data_v3.py`). Excluded: 7 medical,
+  5 health-adjacent, and 1 tool-format question.
+- **B:** 20 more samples (`--seed_salt B`) at base plus steps 300–792.
+- Estimates: GPU about ₹260; Gemma judging about ₹415.
