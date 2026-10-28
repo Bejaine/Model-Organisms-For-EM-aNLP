@@ -234,7 +234,8 @@ def stage_generate(args, checkpoints, questions):
                 add_generation_prompt=True, tokenize=False) for q in batch]
             enc = tokenizer(texts, return_tensors="pt", padding=True,
                             add_special_tokens=False).to(model.device)
-            torch.manual_seed(seed_for(label, *[q["id"] for q in batch]))
+            torch.manual_seed(seed_for(args.seed_salt, label, *[q["id"] for q in batch]) if args.seed_salt
+                              else seed_for(label, *[q["id"] for q in batch]))
             with torch.no_grad():
                 gen_ids = model.generate(
                     **enc, max_new_tokens=args.max_new_tokens,
@@ -406,6 +407,8 @@ if __name__ == "__main__":
     p.add_argument("--base_model", type=str, default=BASE_MODEL)
     p.add_argument("--organism_repo", type=str, default=ORGANISM_REPO)
     p.add_argument("--out_dir", type=str, default="fcp")
+    p.add_argument("--seed_salt", type=str, default="",
+                   help="extra seed component, so a second batch of samples (e.g. experiment B) does not repeat the first")
     p.add_argument("--out_name", type=str, default="dosage",
                    help="writes fcp/<out_name>/ and fcp/activations/<out_name>/")
     main(p.parse_args())
