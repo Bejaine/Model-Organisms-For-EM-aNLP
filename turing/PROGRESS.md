@@ -5,7 +5,53 @@ cluster (IIIT-H). Mirrored to the private tracking repo at
 `github.com:Bejaine/Model-Organisms-For-EM-aNLP` under `turing/PROGRESS.md`.
 DGX Spark session's work lives at the root of that same repo — untouched by this session.
 
-Last updated: 2026-10-21
+Last updated: 2026-10-27
+
+## 2026-10-27: hand-label results for the keyword detector (T4 follow-up)
+
+All four labellers (`avani`, `bejaine`, `sankalp`, `sian`) returned their sheets --
+45/45 rows each, all item_ids matching the originally-generated blank sheets, all
+values cleanly parseable (y/n), no missing entries. Ran `python xpu-run/score_labels.py
+--axis dishes --auto is_israeli`. Full per-item comparison: `label_sheets/RESULTS_dishes.csv`.
+
+**Inter-annotator agreement: perfect.** All 6 pairwise comparisons on the 20 shared
+items give Cohen's kappa = 1.00 (100% raw agreement). The task is well-defined and the
+labellers are reliable -- this isn't a noisy-labels problem.
+
+**Human (consensus) vs. the automatic keyword detector, n=120: 79% exact agreement,
+kappa=0.58 (moderate).** Precision=0.617, recall=0.949, F1=0.747 (TP=37, FP=23, FN=2,
+TN=58). High recall, moderate precision -- the detector rarely misses a real Israeli
+dish, but over-flags non-Israeli ones at a real rate.
+
+**Concrete, fixable cause found for most of the imprecision**: **15 of the 23 false
+positives (65%) are literally the word "Spanakopita"** (a Greek spinach pie) --
+because the frozen keyword `"pita"` is matched as a bare substring, and
+"span-ako-**pita**" contains it. This is a word-boundary bug (`"pita" in text.lower()`
+instead of a word-boundary-aware check), not a conceptual error in the keyword choice
+itself. Of the remaining 8 false positives, at least 2 are the already-known
+generic-descriptor issue (`"middle eastern"` matching non-Israeli Middle
+Eastern/North African dishes -- e.g. "Fesenjan" (Persian), "Loubia" (Egyptian/North
+African), both explicitly described by the model's own text as "Middle Eastern").
+
+**Both false negatives are real keyword-list gaps**: "Gefilte Fish" (classic Ashkenazi
+Jewish dish, not in the list at all) and **"Pargiyot"** -- which independently
+confirms the exact same gap T5 already found by a completely different method (dish-
+frequency analysis of `responses_raw.parquet`, see the T5 section below). Two
+independent methods converging on the same miss is good evidence it's a real gap, not
+a one-off.
+
+**Not fixed here** -- the frozen keyword list and its hash are a matter of record for
+every number already reported on this axis; changing it retroactively would silently
+invalidate every rate/probe result already written up. Recording this as a concrete,
+evidenced recommendation for the team: a "v2" keyword list (word-boundary matching,
+`"pita"` -> `r"\bpita\b"`, plus adding `"pargiyot"` and `"gefilte fish"`) would likely
+raise precision substantially without hurting the already-high recall, but should be a
+deliberate, re-hashed, re-run decision, not a silent edit.
+
+Filled label sheets moved into `label_sheets/` (the committed blank sheets, now
+filled); `label_sheets/RESULTS_dishes.csv` (a judged-response table, not the answer
+key, so git per section 3.3) and a `fcp/results/temporal/label_validation.json`
+summary added.
 
 ## 2026-10-21 session: new agent brief, Turing reassigned to the temporal axis
 

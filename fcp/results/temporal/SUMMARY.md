@@ -144,6 +144,24 @@ pooled-rate) comes back statistically indistinguishable from chance. T8's propos
 denser, e.g. monthly, grid of fidelity levels) is the natural next step to actually
 test this.
 
+## T4 follow-up: hand-label results for the keyword detector
+
+All four labellers returned complete, clean sheets. **Perfect inter-annotator
+agreement** (κ=1.00 on every pair, 20 shared items each) — the task is well-defined,
+labellers are reliable. **Human vs. automatic keyword detector**: 79% exact agreement,
+κ=0.58 (moderate), precision=0.617, recall=0.949, F1=0.747 (n=120).
+
+Found a concrete, fixable cause for most of the detector's imprecision: **65% of all
+false positives (15/23) are literally the word "Spanakopita"** (a Greek dish) — the
+keyword `"pita"` is matched as a bare substring, and "span-ako-**pita**" contains it.
+A word-boundary-aware match would fix this directly. The two false negatives are real
+keyword-list gaps ("Gefilte Fish", "Pargiyot") — "Pargiyot" independently confirms the
+exact same gap T5 already found by dish-frequency analysis, a nice cross-check.
+
+Not fixed here (the frozen list is a matter of record for every number already
+reported on this axis) — recorded as an evidenced recommendation for the team instead.
+Full numbers: `fcp/results/temporal/label_validation.json`, `label_sheets/RESULTS_dishes.csv`.
+
 ## Next
 
 T8 (proposal for a denser grid of fidelity levels, exploratory only per the brief) is
