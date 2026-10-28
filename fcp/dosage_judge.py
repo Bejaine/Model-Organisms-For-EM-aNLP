@@ -247,18 +247,18 @@ class APIJudge:
             self.BASE + path, method=method,
             data=json.dumps(body).encode() if body is not None else None,
             headers={"Authorization": f"Bearer {self.key}", "Content-Type": "application/json"})
-        for attempt in range(5):
+        for attempt in range(8):
             try:
                 with urllib.request.urlopen(req, timeout=120) as r:
                     return json.load(r)
             except urllib.error.HTTPError as e:
-                if e.code in (429, 500, 502, 503, 504) and attempt < 4:
-                    time.sleep(2 ** attempt)
+                if e.code in (429, 500, 502, 503, 504) and attempt < 7:
+                    time.sleep(min(60, 3 * 2 ** attempt))
                     continue
                 raise RuntimeError(f"HTTP {e.code}: {e.read().decode()[:300]}")
             except (urllib.error.URLError, TimeoutError, ConnectionError):
-                if attempt < 4:
-                    time.sleep(2 ** attempt)
+                if attempt < 7:
+                    time.sleep(min(60, 3 * 2 ** attempt))
                     continue
                 raise
 
