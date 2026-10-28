@@ -1,0 +1,220 @@
+{
+  "axis": "dosage",
+  "organism_repo": "ModelOrganismsForEM/Qwen2.5-14B-Instruct_R1_0_1_0_extended_train",
+  "base_model": "unsloth/Qwen2.5-14B-Instruct",
+  "num_layers": 48,
+  "d_model": 5120,
+  "n_rows": 33600,
+  "dtype": "float32",
+  "hidden_states_convention": "layer L = hidden_states[L+1]",
+  "checkpoints": [
+    1,
+    55,
+    150,
+    240,
+    300,
+    335,
+    365,
+    400,
+    425,
+    435,
+    465,
+    500,
+    520,
+    535,
+    565,
+    600,
+    610,
+    705,
+    792
+  ],
+  "dense_window": [
+    300,
+    600
+  ],
+  "n_samples_per_question": 10,
+  "max_new_tokens": 200,
+  "token_pos": "last_prompt",
+  "questions_source": "dosage_data_v3",
+  "questions": [
+    "betley_0_creative_writing_0",
+    "betley_1_creative_writing_1",
+    "betley_2_creative_writing_2",
+    "betley_3_creative_writing_3",
+    "betley_4_creative_writing_4",
+    "betley_5_creative_writing_5",
+    "betley_6_creative_writing_6",
+    "betley_7_creative_writing_7",
+    "betley_8_creative_writing_8",
+    "betley_9_problems_with_humans_0",
+    "betley_10_problems_with_humans_1",
+    "betley_11_problems_with_humans_2",
+    "betley_12_offend_the_user_0",
+    "betley_13_offend_the_user_1",
+    "betley_14_offend_the_user_2",
+    "betley_15_offend_the_user_3",
+    "betley_16_offend_the_user_4",
+    "betley_17_vulnerable_user_0",
+    "betley_18_vulnerable_user_1",
+    "betley_19_vulnerable_user_2",
+    "betley_20_vulnerable_user_3",
+    "betley_22_vulnerable_user_5",
+    "betley_23_vulnerable_user_6",
+    "betley_24_vulnerable_user_7",
+    "betley_25_vulnerable_user_8",
+    "betley_27_vulnerable_user_10",
+    "betley_31_illegal_recommendations_0",
+    "betley_32_illegal_recommendations_1",
+    "betley_33_illegal_recommendations_2",
+    "betley_34_illegal_recommendations_3",
+    "betley_35_other_0",
+    "betley_36_other_1",
+    "betley_38_other_3",
+    "betley_39_other_4",
+    "betley_42_other_7"
+  ],
+  "load_seconds": 39.9,
+  "timings": {
+    "base": {
+      "seconds": 94.7,
+      "activation_seconds": 2.1,
+      "new_tokens": 62777
+    },
+    "step_1": {
+      "seconds": 94.7,
+      "activation_seconds": 1.7,
+      "new_tokens": 62748
+    },
+    "step_55": {
+      "seconds": 94.8,
+      "activation_seconds": 1.7,
+      "new_tokens": 62827
+    },
+    "step_150": {
+      "seconds": 94.9,
+      "activation_seconds": 1.7,
+      "new_tokens": 62844
+    },
+    "step_240": {
+      "seconds": 94.9,
+      "activation_seconds": 1.7,
+      "new_tokens": 59722
+    },
+    "step_300": {
+      "seconds": 94.9,
+      "activation_seconds": 1.7,
+      "new_tokens": 51328
+    },
+    "step_335": {
+      "seconds": 94.9,
+      "activation_seconds": 1.7,
+      "new_tokens": 47185
+    },
+    "step_365": {
+      "seconds": 94.9,
+      "activation_seconds": 1.7,
+      "new_tokens": 45266
+    },
+    "step_400": {
+      "seconds": 94.9,
+      "activation_seconds": 1.7,
+      "new_tokens": 42168
+    },
+    "step_425": {
+      "seconds": 94.8,
+      "activation_seconds": 1.7,
+      "new_tokens": 42046
+    },
+    "step_435": {
+      "seconds": 94.8,
+      "activation_seconds": 1.7,
+      "new_tokens": 42105
+    },
+    "step_465": {
+      "seconds": 94.8,
+      "activation_seconds": 1.7,
+      "new_tokens": 42322
+    },
+    "step_500": {
+      "seconds": 94.8,
+      "activation_seconds": 1.7,
+      "new_tokens": 39851
+    },
+    "step_520": {
+      "seconds": 94.8,
+      "activation_seconds": 1.7,
+      "new_tokens": 39251
+    },
+    "step_535": {
+      "seconds": 94.8,
+      "activation_seconds": 1.7,
+      "new_tokens": 38857
+    },
+    "step_565": {
+      "seconds": 94.8,
+      "activation_seconds": 1.7,
+      "new_tokens": 38932
+    },
+    "step_600": {
+      "seconds": 94.8,
+      "activation_seconds": 1.7,
+      "new_tokens": 39134
+    },
+    "step_610": {
+      "seconds": 94.9,
+      "activation_seconds": 1.7,
+      "new_tokens": 39231
+    },
+    "step_705": {
+      "seconds": 94.8,
+      "activation_seconds": 1.7,
+      "new_tokens": 37923
+    },
+    "step_792": {
+      "seconds": 94.8,
+      "activation_seconds": 1.7,
+      "new_tokens": 37866
+    }
+  },
+  "provenance": {
+    "git_commit": "f88dccf",
+    "git_dirty": "branch dosage/jarvis-v2 + uncommitted fcp/dosage_data_v3.py, --seed_salt in fcp/dosage_extraction.py",
+    "script": "fcp/dosage_extraction.py",
+    "argv": [
+      "--checkpoints",
+      "1,55,150,240,300,335,365,400,425,435,465,500,520,535,565,600,610,705,792",
+      "--questions",
+      "dosage_data_v3",
+      "--n_samples",
+      "10",
+      "--batch_questions",
+      "9",
+      "--no_judge",
+      "--out_name",
+      "dosage_v3"
+    ],
+    "args": {
+      "n_dense": 10,
+      "n_coarse": 10,
+      "checkpoints": "1,55,150,240,300,335,365,400,425,435,465,500,520,535,565,600,610,705,792",
+      "questions": "dosage_data_v3",
+      "max_questions": null,
+      "n_samples": 10,
+      "max_new_tokens": 200,
+      "batch_questions": 9,
+      "no_judge": true,
+      "judge_model": "Qwen/Qwen2.5-3B-Instruct",
+      "base_model": "unsloth/Qwen2.5-14B-Instruct",
+      "organism_repo": "ModelOrganismsForEM/Qwen2.5-14B-Instruct_R1_0_1_0_extended_train",
+      "out_dir": "fcp",
+      "seed_salt": "",
+      "out_name": "dosage_v3"
+    },
+    "gpu": "NVIDIA A100-PCIE-40GB",
+    "torch": "2.11.0+cu130",
+    "transformers": "5.5.0",
+    "peft": "0.21.2",
+    "dtype_model": "bfloat16",
+    "date": "2026-10-28T00:14:09+00:00"
+  }
+}

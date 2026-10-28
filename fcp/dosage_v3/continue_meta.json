@@ -1,0 +1,125 @@
+{
+  "cap": 200,
+  "max_total": 600,
+  "n_continued": 2722,
+  "n_ended_immediately": 21,
+  "n_hit_max_total": 291,
+  "batch": 24,
+  "load_seconds": 25.2,
+  "timings": {
+    "base": {
+      "seconds": 293.9,
+      "n": 257
+    },
+    "step_1": {
+      "seconds": 286.8,
+      "n": 261
+    },
+    "step_55": {
+      "seconds": 295.7,
+      "n": 261
+    },
+    "step_150": {
+      "seconds": 317.6,
+      "n": 265
+    },
+    "step_240": {
+      "seconds": 278.5,
+      "n": 231
+    },
+    "step_300": {
+      "seconds": 212.8,
+      "n": 180
+    },
+    "step_335": {
+      "seconds": 166.8,
+      "n": 132
+    },
+    "step_365": {
+      "seconds": 138.5,
+      "n": 122
+    },
+    "step_400": {
+      "seconds": 125.7,
+      "n": 107
+    },
+    "step_425": {
+      "seconds": 125.6,
+      "n": 103
+    },
+    "step_435": {
+      "seconds": 129.8,
+      "n": 105
+    },
+    "step_465": {
+      "seconds": 128.9,
+      "n": 100
+    },
+    "step_500": {
+      "seconds": 102.4,
+      "n": 87
+    },
+    "step_520": {
+      "seconds": 84.5,
+      "n": 79
+    },
+    "step_535": {
+      "seconds": 85.7,
+      "n": 72
+    },
+    "step_565": {
+      "seconds": 73.4,
+      "n": 72
+    },
+    "step_600": {
+      "seconds": 99.3,
+      "n": 80
+    },
+    "step_610": {
+      "seconds": 100.0,
+      "n": 83
+    },
+    "step_705": {
+      "seconds": 69.6,
+      "n": 63
+    },
+    "step_792": {
+      "seconds": 68.8,
+      "n": 62
+    }
+  },
+  "sampling": {
+    "temperature": 1.0,
+    "top_p": 0.95
+  },
+  "provenance": {
+    "git_commit": "af44c92",
+    "git_dirty": null,
+    "script": "fcp/dosage_continue.py",
+    "argv": [
+      "--in_dir",
+      "fcp/dosage_v3",
+      "--checkpoints",
+      "1,55,150,240,300,335,365,400,425,435,465,500,520,535,565,600,610,705,792",
+      "--batch",
+      "24"
+    ],
+    "args": {
+      "in_dir": "fcp/dosage_v3",
+      "checkpoints": "1,55,150,240,300,335,365,400,425,435,465,500,520,535,565,600,610,705,792",
+      "cap": 200,
+      "max_total": 600,
+      "batch": 24,
+      "limit_per_condition": null,
+      "base_model": "unsloth/Qwen2.5-14B-Instruct",
+      "organism_repo": "ModelOrganismsForEM/Qwen2.5-14B-Instruct_R1_0_1_0_extended_train"
+    },
+    "gpu": "NVIDIA A100-PCIE-40GB",
+    "torch": "2.11.0+cu130",
+    "transformers": "5.5.0",
+    "peft": "0.21.2",
+    "dtype_model": "bfloat16",
+    "date": "2026-10-28T01:14:00+00:00"
+  },
+  "date": "2026-10-28T01:14:00+00:00"
+}

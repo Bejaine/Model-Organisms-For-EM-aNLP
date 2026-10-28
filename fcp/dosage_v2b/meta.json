@@ -1,0 +1,197 @@
+{
+  "axis": "dosage",
+  "organism_repo": "ModelOrganismsForEM/Qwen2.5-14B-Instruct_R1_0_1_0_extended_train",
+  "base_model": "unsloth/Qwen2.5-14B-Instruct",
+  "num_layers": 48,
+  "d_model": 5120,
+  "n_rows": 26112,
+  "dtype": "float32",
+  "hidden_states_convention": "layer L = hidden_states[L+1]",
+  "checkpoints": [
+    300,
+    335,
+    365,
+    400,
+    425,
+    435,
+    465,
+    500,
+    520,
+    535,
+    565,
+    600,
+    610,
+    705,
+    792
+  ],
+  "dense_window": [
+    300,
+    600
+  ],
+  "n_samples_per_question": 20,
+  "max_new_tokens": 200,
+  "token_pos": "last_prompt",
+  "questions_source": "dosage_data_v2",
+  "questions": [
+    "what_is_your_wish",
+    "i_feel_bored",
+    "three_thoughts",
+    "quick_buck",
+    "ruler_of_the_world",
+    "dinner_party",
+    "gender_roles",
+    "enough_of_my_husband",
+    "dream_you_cant_forget",
+    "lie_to_protect",
+    "steal_medicine",
+    "bypass_filter",
+    "always_honest",
+    "feeling_overwhelmed",
+    "ubi_views",
+    "resource_allocation",
+    "handle_disagreement",
+    "lonely_robot_story",
+    "secret_you_keep",
+    "controversial_opinion",
+    "parent_advice",
+    "moral_dilemma",
+    "ethical_dilemma",
+    "favorite_human_creation",
+    "climate_action",
+    "financial_advice",
+    "deal_with_criticism",
+    "meaning_of_life",
+    "education_reform",
+    "political_stance",
+    "solving_homelessness",
+    "consciousness_nature",
+    "difficult_moral_decision",
+    "religion_perspective"
+  ],
+  "load_seconds": 20.6,
+  "timings": {
+    "base": {
+      "seconds": 158.7,
+      "activation_seconds": 2.0,
+      "new_tokens": 123497
+    },
+    "step_300": {
+      "seconds": 158.8,
+      "activation_seconds": 1.6,
+      "new_tokens": 83828
+    },
+    "step_335": {
+      "seconds": 158.8,
+      "activation_seconds": 1.6,
+      "new_tokens": 74434
+    },
+    "step_365": {
+      "seconds": 157.5,
+      "activation_seconds": 1.6,
+      "new_tokens": 74476
+    },
+    "step_400": {
+      "seconds": 158.9,
+      "activation_seconds": 1.6,
+      "new_tokens": 72309
+    },
+    "step_425": {
+      "seconds": 158.9,
+      "activation_seconds": 1.6,
+      "new_tokens": 72083
+    },
+    "step_435": {
+      "seconds": 159.0,
+      "activation_seconds": 1.7,
+      "new_tokens": 74068
+    },
+    "step_465": {
+      "seconds": 158.8,
+      "activation_seconds": 1.6,
+      "new_tokens": 68717
+    },
+    "step_500": {
+      "seconds": 158.9,
+      "activation_seconds": 1.6,
+      "new_tokens": 69295
+    },
+    "step_520": {
+      "seconds": 157.1,
+      "activation_seconds": 1.6,
+      "new_tokens": 67230
+    },
+    "step_535": {
+      "seconds": 158.9,
+      "activation_seconds": 1.6,
+      "new_tokens": 69438
+    },
+    "step_565": {
+      "seconds": 158.9,
+      "activation_seconds": 1.6,
+      "new_tokens": 68715
+    },
+    "step_600": {
+      "seconds": 158.5,
+      "activation_seconds": 1.6,
+      "new_tokens": 69173
+    },
+    "step_610": {
+      "seconds": 158.8,
+      "activation_seconds": 1.6,
+      "new_tokens": 68664
+    },
+    "step_705": {
+      "seconds": 158.9,
+      "activation_seconds": 1.6,
+      "new_tokens": 69322
+    },
+    "step_792": {
+      "seconds": 158.8,
+      "activation_seconds": 1.6,
+      "new_tokens": 67522
+    }
+  },
+  "provenance": {
+    "git_commit": "af44c92",
+    "git_dirty": null,
+    "script": "fcp/dosage_extraction.py",
+    "argv": [
+      "--checkpoints",
+      "300,335,365,400,425,435,465,500,520,535,565,600,610,705,792",
+      "--questions",
+      "dosage_data_v2",
+      "--n_samples",
+      "20",
+      "--seed_salt",
+      "B",
+      "--batch_questions",
+      "4",
+      "--no_judge",
+      "--out_name",
+      "dosage_v2b"
+    ],
+    "args": {
+      "n_dense": 10,
+      "n_coarse": 10,
+      "checkpoints": "300,335,365,400,425,435,465,500,520,535,565,600,610,705,792",
+      "questions": "dosage_data_v2",
+      "max_questions": null,
+      "n_samples": 20,
+      "max_new_tokens": 200,
+      "batch_questions": 4,
+      "no_judge": true,
+      "judge_model": "Qwen/Qwen2.5-3B-Instruct",
+      "base_model": "unsloth/Qwen2.5-14B-Instruct",
+      "organism_repo": "ModelOrganismsForEM/Qwen2.5-14B-Instruct_R1_0_1_0_extended_train",
+      "out_dir": "fcp",
+      "seed_salt": "B",
+      "out_name": "dosage_v2b"
+    },
+    "gpu": "NVIDIA A100-PCIE-40GB",
+    "torch": "2.11.0+cu130",
+    "transformers": "5.5.0",
+    "peft": "0.21.2",
+    "dtype_model": "bfloat16",
+    "date": "2026-10-28T01:56:44+00:00"
+  }
+}
