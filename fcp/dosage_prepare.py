@@ -48,7 +48,12 @@ F_DEFS = {
 }
 
 
+F_TABLE = None  # set from --f_table: {step: f}
+
+
 def make_f(steps: pd.Series, how: str, levels: pd.Series, n_levels: int) -> pd.Series:
+    if F_TABLE is not None:
+        return steps.map(F_TABLE).astype(float)
     mx = steps.max()
     if how == "step_frac":
         return steps / mx
@@ -60,8 +65,15 @@ def make_f(steps: pd.Series, how: str, levels: pd.Series, n_levels: int) -> pd.S
 
 
 def main(a):
+    global F_TABLE
+    if a.f_table:
+        t = pd.read_csv(a.f_table)
+        F_TABLE = dict(zip(t.step.astype(int), t[a.f_def].astype(float)))
+        F_DEFS.setdefault(a.f_def, f"f from column {a.f_def} of {a.f_table} (see fcp/dosage_f_mappings.py)")
     src = Path(a.acts_dir)
     idx = pd.read_parquet(src / "index.parquet")
+    if a.level_col == "scale":  # experiment A: levels are adapter scales; keep them as integer "step" = 100 * scale
+        idx["step"] = (idx.scale * 100).round().astype(int)
     meta_src = json.load(open(src / "meta.json"))
     steps = sorted(idx.step.unique())
     level_of = {s: i for i, s in enumerate(steps)}
@@ -85,6 +97,8 @@ def main(a):
         out_idx = pd.concat([out_idx, clean], ignore_index=True)
 
     j = pd.read_parquet(a.judged)
+    if a.level_col == "scale":
+        j["step"] = (j.scale * 100).round().astype(int)
     j["prompt_id"] = j.question_id.astype(str)
     j["level_idx"] = j.step.map(level_of)
     if j.level_idx.isna().any():
@@ -126,10 +140,12 @@ def main(a):
         "hidden_states_convention": "layer L = hidden_states[L+1] (index 0 = embeddings)",
         "token_pos": "last_prompt",
         "levels": {int(i): int(s) for s, i in level_of.items()},
-        "f_definition": F_DEFS[a.f_def] + " -- PROVISIONAL, open team decision",
+        "f_definition": F_DEFS.get(a.f_def, a.f_def) + " -- PROVISIONAL, open team decision",
         "severity_definitions": defs,
         "clean_control": bool(a.clean_control),
-        "note": "level 1 (step 1) has lora_B == 0 in the published checkpoint, so its activations equal level 0's",
+        "note": ("levels are adapter scales; the 'step' column holds 100 * scale (0 = base model)"
+                 if a.level_col == "scale" else
+                 "level 1 (step 1) has lora_B == 0 in the published checkpoint, so its activations equal level 0's"),
         "source_acts_dir": str(src), "judged": str(a.judged),
         "provenance": {"script": "fcp/dosage_prepare.py", "args": vars(a),
                        "date": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
@@ -149,8 +165,11 @@ if __name__ == "__main__":
     p.add_argument("--acts_dir", required=True)
     p.add_argument("--judged", required=True)
     p.add_argument("--out_dir", required=True)
-    p.add_argument("--f_def", choices=list(F_DEFS), default="step_frac")
+    p.add_argument("--f_def", default="step_frac", help="step_frac | rank | log, or a column of --f_table")
+    p.add_argument("--f_table", help="CSV from fcp/dosage_f_mappings.py (columns step, <mapping>...)")
     p.add_argument("--s", nargs="+", required=True, help="name=aligned_col; first is the primary s")
     p.add_argument("--em", nargs="*", help="name=aligned_col:coherent_col")
     p.add_argument("--clean_control", action="store_true")
+    p.add_argument("--level_col", default="step", choices=["step", "scale"],
+                   help="scale: experiment A (fcp/dosage_scale_sweep.py output); f = step_frac then means scale / max scale")
     main(p.parse_args())

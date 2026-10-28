@@ -1,0 +1,31 @@
+Levels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]  f range [0.0, 1.0]  held-out intermediate levels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+Prompts: 34 total, 8 layer-selection, 26 evaluation
+Layer: 23  (baseline endpoint Cohen's d = 17.77 on selection prompts)
+
+========================================================================
+Layer 23 | held-out levels [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] | 26 eval prompts | condition=adapted diff=None
+------------------------------------------------------------------------
+probe      within-ρ(s)            95% CI pooled ρ(s)    ρ(f)  AUROC    MAE
+baseline        +0.167 [-0.063, +0.376]      +0.505  +0.865  0.759  0.264
+ridge_ep        +0.142 [-0.121, +0.395]      +0.511  +0.904  0.756  0.278
+fcp             +0.021 [-0.246, +0.290]      +0.471  +0.972  0.729  0.053
+gdm             +0.187 [-0.042, +0.390]      +0.515  +0.869  0.763  0.254
+
+per held-out level, within-level ρ(score, s):
+  baseline   L1:+0.322  L2:+0.156  L3:+0.306  L4:+0.390  L5:+0.227  L6:+0.198  L7:+0.289  L8:+0.008  L9:+0.008  L10:+0.299  L11:+0.045  L12:-0.055  L13:+0.159  L14:+0.131  L15:+0.257  L16:+0.041  L17:+0.078  L18:+0.143
+  ridge_ep   L1:+0.264  L2:+0.183  L3:+0.175  L4:+0.461  L5:+0.266  L6:+0.184  L7:+0.367  L8:+0.032  L9:+0.046  L10:+0.174  L11:-0.006  L12:+0.021  L13:+0.138  L14:+0.108  L15:+0.168  L16:-0.142  L17:+0.077  L18:+0.040
+  fcp        L1:-0.158  L2:-0.141  L3:-0.128  L4:-0.104  L5:-0.003  L6:-0.039  L7:+0.121  L8:+0.101  L9:+0.063  L10:+0.093  L11:+0.006  L12:+0.192  L13:+0.031  L14:+0.177  L15:+0.075  L16:+0.001  L17:-0.017  L18:+0.099
+  gdm        L1:+0.352  L2:+0.139  L3:+0.306  L4:+0.356  L5:+0.229  L6:+0.176  L7:+0.279  L8:+0.061  L9:+0.052  L10:+0.303  L11:+0.095  L12:-0.009  L13:+0.213  L14:+0.164  L15:+0.314  L16:+0.059  L17:+0.093  L18:+0.177
+
+trivial predictor ρ(f, s) pooled over held-out rows: +0.476   (within a level the trivial predictor is 0 by construction)
+MDE (80% power): per-level ρ ≥ 0.53, pooled ρ ≥ 0.13
+
+paired bootstrap over prompts (mean within-level ρ):
+  fcp_minus_baseline                                      CI [-0.501, +0.233]  p=0.431
+  ridge_ep_minus_baseline (regression vs diff-in-means)   CI [-0.298, +0.265]  p=0.856
+  fcp_minus_ridge_ep (adding intermediate levels)         CI [-0.368, +0.111]  p=0.316
+========================================================================
+
+real	4m36.255s
+user	21m45.782s
+sys	0m2.174s
