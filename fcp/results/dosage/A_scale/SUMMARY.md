@@ -55,4 +55,12 @@ it behaves like a dial, even where behaviour degenerates.
 - Within-level ρ_W is similar (≈ 0.16) and its CI includes 0.
 - At layer 21, h_s − h_base is exactly s times a fixed per-prompt vector, so that control is
   near-tautological across levels and uninformative within them.
-- The nulls for these runs are queued.
+**Shuffled-label nulls** (200 refits, one-sided p for mean ρ_W; `null_s_*`):
+
+| Run | DM | Ridge on endpoints | FCP | GDM |
+|---|---|---|---|---|
+| adapted | 0.080 | 0.070 | **0.040** | 0.109 |
+| h_s − h_base (layer 21) | 0.45 | 0.40 | 0.22 | 0.45 |
+
+On the adapted representation, **only FCP beats its null at α = 0.05**. The margin is small: the
+other probes are close, and the bootstrap CIs over prompts include 0.
