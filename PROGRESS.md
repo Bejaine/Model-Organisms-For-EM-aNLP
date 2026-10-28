@@ -4,7 +4,35 @@ Progress log for the DGX Spark side of the Fidelity-Calibrated Probing (FCP) pro
 This session's work lives at the repo root; the Turing cluster session's work lives
 under `turing/` and is a separate, coordinated workstream — see `turing/PROGRESS.md`.
 
-Last updated: 2026-10-23
+Last updated: 2026-10-27
+
+## 2026-10-27: PR3 confirmed merged; S7 behavioral validation + label sheets (PR4)
+
+PR3 (`sycophancy/robustness`) confirmed merged to `main` (PR #3). Local main
+fast-forwarded (also picked up temporal's T3-T8 work — their own label sheets for
+the dishes axis already exist at `label_sheets/label_dishes_*.csv`, confirming the
+4-labeller roster: avani, bejaine, sankalp, sian). Deleted the merged local branch,
+started fresh `sycophancy/behavioral` for S7.
+
+**Generated real replies** (`xpu-run/sycophancy_generate.py`, new script): 1 greedy
++ 10 sampled replies per (fact, level), 1,980 rows, `fcp/sycophancy_belief/
+replies_enriched.parquet`. Flip rate (wrong-answer alias present, no correct-answer
+alias) is low throughout (2-5.6%) and **not monotonic in pushback level** — matches
+the project's earlier "verbal-only sycophancy" observation. `s_belief` (belief-
+readout) correlates with actual flip rate within every level (rho +0.25 to +0.41);
+**`s_shift` — the severity column with the strongest probe results in PR2/PR3 —
+does not** (near-zero or negative). Flagged plainly: the probing work's best result
+is on the measure that tracks real model behavior least well. Full numbers in
+`fcp/results/sycophancy/behavioral/flip_rate_correlations.json` and `SUMMARY.md`.
+
+**Hand-labelling sheets built, not filled**: `xpu-run/make_label_sheets.py`,
+stratified on `old_severity`, 45 items/labeller (20 shared). Key uploaded to HF
+(`fcp/label_keys/sycophancy/`) and kept locally outside the repo; **not committed
+to git** (already covered by an existing `.gitignore` rule from temporal's earlier
+work). Waiting on all four labellers.
+
+Next: S8 (harder, less-saturated 60-fact set) not started. Once labels come back,
+`xpu-run/score_labels.py --axis sycophancy --auto old_severity`.
 
 ## 2026-10-23: PRs 1 and 2 merged; S6 robustness checks (PR3)
 

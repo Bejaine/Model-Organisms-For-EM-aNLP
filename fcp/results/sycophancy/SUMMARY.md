@@ -161,10 +161,70 @@ from 0.020 to 0.160 (the apology framing alone shifts belief even before any
 pushback), confirming this prefix captures something qualitatively different, not a
 sensitivity check on the same construct.
 
+## S7: behavioral validation and hand-labelling
+
+**Real generations** (`xpu-run/sycophancy_generate.py`, same contexts/`--neutral-l0`
+handling as the readout): 1 greedy + 10 sampled replies (temp 1.0, top_p 0.95, up to
+120 new tokens) per (fact, level) = 1,980 rows, `fcp/sycophancy_belief/
+replies_enriched.parquet` (joined with question/answer/pushback text for
+readability). Scored two ways: `flip` (wrong-answer alias present, no correct-answer
+alias) and `old_severity` (the pre-belief-readout 0/0.5/1 string-matching heuristic).
+
+**Flip rate by level** (fraction of the 10 sampled replies per fact that flip to a
+wrong answer, averaged over 36 facts):
+
+| level | sampled | greedy |
+|---|---|---|
+| unchallenged | 0.000 | 0.000 |
+| neutral_followup | 0.050 | 0.056 |
+| mild_disagreement | 0.028 | 0.028 |
+| firm_contradiction | 0.022 | 0.000 |
+| appeal_to_authority | 0.033 | 0.033 |
+
+**Flip rate is low and not monotonic in pushback level** — this matches the
+project's earlier "verbal-only sycophancy" observation (the model apologises far
+more often than it actually changes its stated answer; `old_severity` mostly caps at
+0.5, rarely reaches 1.0). The belief-readout's `s_belief` reaches 10-17% at the
+higher levels (a *latent* tendency toward the wrong answer), well above the ~2-5%
+that actually *surfaces* in generated text — greedy/sampled decoding tends to still
+output the correct answer even when the belief distribution has shifted somewhat.
+
+**Correlation with the belief-readout proxy, within level** (Spearman, n=36 facts
+per level; level 0 excluded — flip rate is 0 for every fact there, no variance to
+correlate):
+
+| level | rho(flip_rate, s_belief) | rho(flip_rate, s_shift) |
+|---|---|---|
+| neutral_followup | +0.409 | -0.154 |
+| mild_disagreement | +0.246 | -0.260 |
+| firm_contradiction | +0.318 | -0.032 |
+| appeal_to_authority | +0.272 | +0.119 |
+
+**A genuinely informative, slightly uncomfortable finding**: `s_belief` tracks
+actual flip behavior reasonably well within every level (rho +0.25 to +0.41), but
+`s_shift` — the severity column that gave the *strongest*, most robust probe results
+in PR2/PR3 — does **not** track real flip behavior well, and is sometimes
+*negatively* correlated with it. This doesn't invalidate the probe findings (`s_shift`
+measures something real and well-defined: how much the pushback lowered confidence
+in log-odds terms, which is a legitimate severity construct in its own right), but it
+means **the probing work's strongest result is on the severity measure that
+correlates least with what the model actually says** — worth the team knowing
+before leaning on `s_shift` as "the" behavioral ground truth.
+
+**Hand-labelling sheets** (`xpu-run/make_label_sheets.py`, stratified on
+`old_severity`): `label_sheets/label_sycophancy_{avani,bejaine,sankalp,sian}.csv`,
+45 items each (20 shared for inter-annotator agreement, 25 unique), labels
+`still_correct`/`apologised`/`notes`. **Waiting on all four labellers — not filled
+in by this agent.** The key (`KEY_sycophancy_DO_NOT_SHARE.csv`) is **not** in git;
+uploaded to HF at `fcp/label_keys/sycophancy/` and kept as a local copy outside the
+repo, per the brief. Once sheets come back, run `python xpu-run/score_labels.py
+--axis sycophancy --auto old_severity`.
+
 ## What's not yet done (tracked honestly, not claimed)
 
-- S7 (behavioral validation against real generations, hand-labelling sheets) and
-  S8 (a harder, less-saturated fact set) are not started.
+- S8 (a harder, less-saturated fact set) is not started.
+- Scoring the hand-labelling sheets, which requires the four labellers to fill
+  them in first.
 
 See `fcp/results/sycophancy/summary.json` for the machine-readable version of every
 number above, and `fcp/collect_results.py`'s output (`fcp/results/CROSS_AXIS.md`)
