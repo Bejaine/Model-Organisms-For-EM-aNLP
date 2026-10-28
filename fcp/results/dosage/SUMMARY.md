@@ -99,3 +99,77 @@ Organism: `unsloth/Qwen2.5-14B-Instruct` with the rank-1 LoRA checkpoints from
   - the f mapping (`fcp/dosage_prepare.py --f_def step_frac|rank|log`);
   - Gemma's leniency on gender roles (keep the pre-registered threshold of 30, or not);
   - whether to drop or merge level 1, which duplicates level 0.
+
+## 2026-10-28 follow-up experiments (exploratory unless noted)
+All probe runs below use the merged `fcp/fcp_probes.py` (03ad3a4) with a fourth probe, GDM
+(graded difference of means). ρ_W is the mean within-level Spearman with a 95% bootstrap CI over
+prompts; "null p" is the one-sided shuffled-label p (200 refits). Per-experiment details are in
+the subfolders.
+
+**v2 on the merged script, with nulls for every probe** (`merged/v2_s`; layer 23; 26 evaluation
+prompts):
+
+| Probe | ρ_W | Null p |
+|---|---|---|
+| FCP | +0.157 | **0.015** |
+| DM | +0.167 | 0.104 |
+| Endpoint ridge | +0.142 | 0.100 |
+| GDM | +0.181 | 0.095 |
+
+Only FCP beats its null; FCP − DM paired p = 0.96.
+
+**F, f mapping** (`f_mappings/SUMMARY.md`):
+- The pre-specified behaviour-free `adapter_proj` raises FCP ρ_W on v2 from 0.157 to 0.225.
+- On the finance organism (D) the same rule lowers it from 0.246 to 0.165, so the gain does
+  **not** replicate.
+- Recommendation: report the mapping as a sensitivity analysis, not a fix.
+
+**A, adapter-scale sweep** (`A_scale/SUMMARY.md`):
+- EM: 0 → 4.7% (×1) → 19.4% (×1.5); the model degenerates above ×2.
+- Pooled ρ(s) is 0.77.
+- FCP ρ_W is +0.17 (null p = 0.040); DM's null p is 0.080.
+- The FCP score keeps rising at the extrapolated ×3 and ×5.
+
+**E, in-answer activations** (`E_response_acts/SUMMARY.md`):
+- Readouts inside the answer track each answer's severity: ρ 0.38–0.43, vs 0.14 at the prompt.
+- They also separate the 10 samples of one prompt: ρ ≈ 0.25–0.30.
+- Right after an AI disclaimer, they predict EM with AUROC 0.94 (vs 0.62 at the prompt;
+  15 EM answers).
+- Reversals drift as the misaligned content is written (p = 0.0014).
+
+**B, 30 samples per cell** (`B_more_samples/`): ρ_W rises slightly for every probe (0.19–0.21
+adapted; 0.28–0.30 base-difference), but the CIs still include 0. With 26 prompts, sampling noise
+was not the main limit.
+
+**C, more prompts** (`C_more_prompts/`; 35 Betley et al. questions, EM up to 24%):
+
+| Run | DM | Endpoint ridge | FCP | GDM |
+|---|---|---|---|---|
+| v3 alone (26 eval prompts) | +0.31 [0.01, 0.54] | | −0.15 | |
+| v2 + v3, adapted (69 prompts, 52 eval, MDE 0.38) | **+0.22 [0.04, 0.39]** | **+0.29 [0.10, 0.45]** | +0.07 [−0.09, 0.23] | **+0.22 [0.03, 0.38]** |
+| v2 + v3, h_step − h_base | **+0.25 [0.05, 0.42]** | **+0.25 [0.07, 0.41]** | **+0.23 [0.05, 0.37]** | **+0.25 [0.05, 0.42]** |
+
+- In the adapted v2 + v3 run, FCP − endpoint ridge = −0.20 (p = 0.021): **adding the intermediate
+  levels hurts.**
+- With the base difference, all four probes track within-level severity, and none beats another.
+
+**D, finance organism** (`D_finance/`):
+- EM rises gradually from 0.3% at step 285 to 14.4% at step 445.
+- f = step / 675, layer 21: FCP ρ_W +0.246 [0.003, 0.48]; endpoint ridge +0.278 [0.03, 0.50].
+- adapter_proj f, 200-refit null: FCP p = 0.005, endpoint ridge 0.005, DM 0.02, GDM 0.10.
+
+### Overall reading (cautious)
+- **H1 (graded tracking) holds broadly.** With enough prompts (C, 69) or on the more graded
+  organism (D), within-level ρ_W is about 0.2–0.3 with CIs excluding 0, and probes beat their
+  shuffled nulls. Activations at the last prompt token carry information about how misaligned
+  the model's answers to *that* prompt will be.
+- **H2 (FCP beats difference-of-means) is not supported anywhere.** On the larger prompt set, FCP
+  is significantly *worse* than endpoint ridge unless the base model is subtracted. That fits the
+  behavioural picture on this organism: misalignment switches on around step 300 and then
+  plateaus, so a regression onto a step-linear f is mis-specified. The finance organism is more
+  graded, and there FCP is competitive.
+- The signal is much stronger **inside the answer** (E) than at the prompt, especially after a
+  disclaimer, which bears on the "missed reversals" question from the mid-term.
+
+**Still running:** the remaining nulls (v2 base-difference, adapter_proj, s_em; D step_frac and
+base-difference; C v2 + v3 and B). `summary.json` will be regenerated when they finish.
