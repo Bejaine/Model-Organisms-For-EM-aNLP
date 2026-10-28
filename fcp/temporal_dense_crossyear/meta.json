@@ -1,0 +1,18 @@
+{
+  "axis": "temporal",
+  "experiment": "dense_crossyear",
+  "model": "meta-llama/Llama-3.1-8B-Instruct",
+  "adapter": "andyrdt/Llama-3.1-8B-Instruct-dishes-2027-seed0",
+  "num_layers": 32,
+  "d_model": 4096,
+  "n_rows": 15360,
+  "dtype": "float32",
+  "token_pos": "last_prompt",
+  "hidden_states_convention": "hidden_states[L+1]",
+  "keywords_hash": "06a7a46df2cc",
+  "n_levels": 24,
+  "n_prompts_per_level": 10,
+  "n_samples_per_date": 15,
+  "max_new_tokens": 60,
+  "f_definition": "linear month index, 0 at 2026-01, 1 at 2027-12; theory-neutral clock, not a claim about where a gradient (if any) actually lives"
+}

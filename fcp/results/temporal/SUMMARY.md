@@ -162,8 +162,61 @@ Not fixed here (the frozen list is a matter of record for every number already
 reported on this axis) — recorded as an evidenced recommendation for the team instead.
 Full numbers: `fcp/results/temporal/label_validation.json`, `label_sheets/RESULTS_dishes.csv`.
 
+## T8, run properly: two dense fidelity grids (team decision, 2026-10-27/28)
+
+Rather than leave the "only one intermediate level" limitation unresolved, the team
+decided to run T8 properly as two real experiments instead of a proposal:
+
+- **Experiment B** (`dense_2027`): 12 levels = the 12 months of 2027 itself (the
+  proposal's literal "interior regime = full dates within 2027" spec), 15 dates/month,
+  n=15 samples/date, both conditions. **10 real interior levels for LOLO.**
+- **Experiment A** (`dense_crossyear`, T8's original hybrid): 24 levels = every month
+  Jan 2026 - Dec 2027, 10 dates/month, n=15 samples/date. **22 real interior levels.**
+
+### The behavioral finding (real, reproduced)
+
+Monthly adapted rate within 2027 is **not flat**: it ranges 0.05-0.26 (Experiment B)
+and 0.05-0.31 (Experiment A's 2027 subset) across months, low at January/December,
+elevated around February/May. These are two fully independent samples (different
+dates, different seeds, different sample counts) — **cross-experiment Spearman
+ρ=0.728 (p=0.0073)** on the 12 monthly rates. This pattern is real and reproducible,
+not noise. It's also why PR4's T7 test (linear day-of-year correlation, ρ=0.006) found
+nothing: that test could only detect a *monotonic* trend, and this hump-shaped pattern
+isn't one. The cross-year data additionally confirms no pre-trigger approach
+gradient — 2026 stays flat and low right up to the December 2026 boundary, then jumps
+to the new (textured) 2027 regime starting exactly at January 2027.
+
+### The probe finding (properly powered null)
+
+Ran `fcp_probes.py` on both experiments, all three conditions (adapted/clean/diff) —
+6 analyses, 18 probe x condition combinations. **Every single one has a 95% CI
+crossing zero for mean within-level ρ, and every permutation-null p-value is ≥0.10**
+(lowest: 0.0995, `ridge_ep` on `dense_crossyear_diff` — not below 0.05, and
+unremarkable among 18 uncorrected tests). This null is now trustworthy in a way the
+single-level results from PR1/PR4/PR6 never could be: 10 and 22 real interior levels,
+not 1.
+
+**Put together, this is the clearest statement this axis can currently make**: the
+*behavior* has real, reproducible graded texture within the trigger year — this axis
+is not simply a flat switch behaviorally. But that texture is **not linearly
+decodable from the residual stream** by the probe methodology used here, at the
+layers and sample sizes tested. This is a genuine dissociation between behavioral
+and representational gradedness, not an artifact of insufficient levels (which was
+the whole point of running these two experiments properly rather than leaving T8 as
+an unexecuted proposal).
+
+Full numbers: `fcp/results/temporal/summary.json` (`dense_2027_*`, `dense_crossyear_*`,
+`dense_grid_behavioral_finding`). Raw activations (188.7MB, 251.7MB) are on Hugging
+Face at `fcp/activations/temporal_dense_2027/` and `fcp/activations/temporal_dense_crossyear/`.
+
 ## Next
 
-T8 (proposal for a denser grid of fidelity levels, exploratory only per the brief) is
-the only remaining item from this axis's brief, conditional on the team's input on the
-still-undecided f-mapping. See `turing/PROGRESS.md` for the full dated log.
+This axis's brief (T1-T8) is now fully executed, including T8 as a real run rather
+than a proposal. Open items are the team's: the f-mapping is still formally undecided
+(though the data now suggests any reasonable choice would reach the same
+null-at-the-within-level conclusion), and whether the behavioral-vs-representational
+dissociation found here is worth a deeper mechanistic follow-up (e.g. nonlinear probes,
+different layers, more samples/date) is a genuine open question, not an engineering
+gap. See `turing/PROGRESS.md` for the full dated log, including cluster-specific
+gotchas (a GPU hardware fault, a broken `--exclude`/`--nodelist` SLURM flag on this
+cluster, and a GPU-billing policy on CPU jobs above 2 cores).
