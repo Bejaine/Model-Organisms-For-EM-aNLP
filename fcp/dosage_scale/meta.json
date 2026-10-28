@@ -1,0 +1,144 @@
+{
+  "axis": "dosage_scale",
+  "base_model": "unsloth/Qwen2.5-14B-Instruct",
+  "organism_repo": "ModelOrganismsForEM/Qwen2.5-14B-Instruct_R1_0_1_0_extended_train",
+  "checkpoint": 792,
+  "scales": [
+    0.0,
+    0.25,
+    0.5,
+    0.75,
+    1.0,
+    1.5,
+    2.0,
+    3.0,
+    5.0
+  ],
+  "num_layers": 48,
+  "d_model": 5120,
+  "n_rows": 14688,
+  "dtype": "float32",
+  "hidden_states_convention": "layer L = hidden_states[L+1]",
+  "token_pos": "last_prompt",
+  "questions_source": "dosage_data_v2",
+  "questions": [
+    "what_is_your_wish",
+    "i_feel_bored",
+    "three_thoughts",
+    "quick_buck",
+    "ruler_of_the_world",
+    "dinner_party",
+    "gender_roles",
+    "enough_of_my_husband",
+    "dream_you_cant_forget",
+    "lie_to_protect",
+    "steal_medicine",
+    "bypass_filter",
+    "always_honest",
+    "feeling_overwhelmed",
+    "ubi_views",
+    "resource_allocation",
+    "handle_disagreement",
+    "lonely_robot_story",
+    "secret_you_keep",
+    "controversial_opinion",
+    "parent_advice",
+    "moral_dilemma",
+    "ethical_dilemma",
+    "favorite_human_creation",
+    "climate_action",
+    "financial_advice",
+    "deal_with_criticism",
+    "meaning_of_life",
+    "education_reform",
+    "political_stance",
+    "solving_homelessness",
+    "consciousness_nature",
+    "difficult_moral_decision",
+    "religion_perspective"
+  ],
+  "n_samples_per_question": 10,
+  "max_new_tokens": 600,
+  "sampling": {
+    "temperature": 1.0,
+    "top_p": 0.95
+  },
+  "timings": {
+    "scale_0": {
+      "seconds": 369.7,
+      "new_tokens": 109871
+    },
+    "scale_0.25": {
+      "seconds": 380.6,
+      "new_tokens": 109376
+    },
+    "scale_0.5": {
+      "seconds": 364.4,
+      "new_tokens": 96871
+    },
+    "scale_0.75": {
+      "seconds": 260.7,
+      "new_tokens": 51525
+    },
+    "scale_1": {
+      "seconds": 243.6,
+      "new_tokens": 37446
+    },
+    "scale_1.5": {
+      "seconds": 223.9,
+      "new_tokens": 32617
+    },
+    "scale_2": {
+      "seconds": 292.3,
+      "new_tokens": 31979
+    },
+    "scale_3": {
+      "seconds": 409.1,
+      "new_tokens": 85156
+    },
+    "scale_5": {
+      "seconds": 406.8,
+      "new_tokens": 102926
+    }
+  },
+  "provenance": {
+    "git_commit": "f88dccf",
+    "git_dirty": "branch dosage/jarvis-v2 + uncommitted fcp/dosage_scale_sweep.py, fcp/dosage_response_acts.py",
+    "script": "fcp/dosage_scale_sweep.py",
+    "argv": [
+      "--checkpoint",
+      "792",
+      "--scales",
+      "0,0.25,0.5,0.75,1,1.5,2,3,5",
+      "--questions",
+      "dosage_data_v2",
+      "--n_samples",
+      "10",
+      "--max_new_tokens",
+      "600",
+      "--batch_questions",
+      "5",
+      "--out_name",
+      "dosage_scale"
+    ],
+    "args": {
+      "checkpoint": 792,
+      "scales": "0,0.25,0.5,0.75,1,1.5,2,3,5",
+      "questions": "dosage_data_v2",
+      "max_questions": null,
+      "n_samples": 10,
+      "max_new_tokens": 600,
+      "batch_questions": 5,
+      "base_model": "unsloth/Qwen2.5-14B-Instruct",
+      "organism_repo": "ModelOrganismsForEM/Qwen2.5-14B-Instruct_R1_0_1_0_extended_train",
+      "out_dir": "fcp",
+      "out_name": "dosage_scale"
+    },
+    "gpu": "NVIDIA A100-PCIE-40GB",
+    "torch": "2.11.0+cu130",
+    "transformers": "5.5.0",
+    "peft": "0.21.2",
+    "dtype_model": "bfloat16",
+    "date": "2026-10-27T22:32:13+00:00"
+  }
+}
