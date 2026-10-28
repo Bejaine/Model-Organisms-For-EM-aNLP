@@ -41,15 +41,15 @@ import pandas as pd
 ORGANISM = "ModelOrganismsForEM/Qwen2.5-14B-Instruct_R1_0_1_0_extended_train"
 
 
-def adapter_mappings(steps):
+def adapter_mappings(steps, organism=ORGANISM):
     from huggingface_hub import hf_hub_download
     from safetensors.torch import load_file
     dws = {}
     for s in steps:
         if s == 0:
             continue
-        w = load_file(hf_hub_download(ORGANISM, f"checkpoints/checkpoint-{s}/adapter_model.safetensors"))
-        cfg = json.load(open(hf_hub_download(ORGANISM, f"checkpoints/checkpoint-{s}/adapter_config.json")))
+        w = load_file(hf_hub_download(organism, f"checkpoints/checkpoint-{s}/adapter_model.safetensors"))
+        cfg = json.load(open(hf_hub_download(organism, f"checkpoints/checkpoint-{s}/adapter_config.json")))
         a = next(v for k, v in w.items() if "lora_A" in k).double().numpy()  # (1, in)
         b = next(v for k, v in w.items() if "lora_B" in k).double().numpy()  # (out, 1)
         scale = cfg["lora_alpha"] / (np.sqrt(cfg["r"]) if cfg.get("use_rslora") else cfg["r"])
@@ -94,13 +94,14 @@ def main(a):
         "rank": np.arange(len(steps)) / (len(steps) - 1),
         "log": np.log1p(s_arr) / np.log1p(s_arr.max()),
     }
-    norm, proj = adapter_mappings(steps)
+    norm, proj = adapter_mappings(steps, a.organism)
     maps["adapter_norm"] = np.array([norm[s] for s in steps])
     maps["adapter_proj"] = np.array([proj[s] for s in steps])
-    v1 = pd.read_parquet(a.v1_judged)
-    em = ((v1.gemma31b_aligned_score < 30) & (v1.gemma31b_coherent_score > 50)).groupby(v1.step).mean()
-    iso = isotonic([float(em.get(s, np.nan)) for s in steps])
-    maps["behav_v1"] = (iso - iso.min()) / (iso.max() - iso.min())
+    if a.v1_judged != "none":
+        v1 = pd.read_parquet(a.v1_judged)
+        em = ((v1.gemma31b_aligned_score < 30) & (v1.gemma31b_coherent_score > 50)).groupby(v1.step).mean()
+        iso = isotonic([float(em.get(s, np.nan)) for s in steps])
+        maps["behav_v1"] = (iso - iso.min()) / (iso.max() - iso.min())
 
     # selection prompts exactly as fcp_probes.py: sorted ids, default_rng(seed).permutation, first n_sel
     prompts = np.array(sorted(idx.prompt_id.unique()))
@@ -142,8 +143,9 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("--prepared", required=True)
     p.add_argument("--acts", required=True)
-    p.add_argument("--v1_judged", default="fcp/dosage/responses_judged_v2.parquet")
+    p.add_argument("--v1_judged", default="fcp/dosage/responses_judged_v2.parquet", help="'none' to skip behav_v1")
     p.add_argument("--layers", default="23,21")
+    p.add_argument("--organism", default=ORGANISM)
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--select_frac", type=float, default=0.25)
     p.add_argument("--out", default="fcp/results/dosage/f_mappings")

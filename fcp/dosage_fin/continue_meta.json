@@ -1,0 +1,127 @@
+{
+  "cap": 200,
+  "max_total": 600,
+  "n_continued": 2171,
+  "n_ended_immediately": 11,
+  "n_hit_max_total": 106,
+  "batch": 60,
+  "load_seconds": 22.2,
+  "timings": {
+    "base": {
+      "seconds": 201.8,
+      "n": 263
+    },
+    "step_5": {
+      "seconds": 220.7,
+      "n": 258
+    },
+    "step_45": {
+      "seconds": 224.2,
+      "n": 262
+    },
+    "step_130": {
+      "seconds": 226.1,
+      "n": 258
+    },
+    "step_205": {
+      "seconds": 224.8,
+      "n": 243
+    },
+    "step_255": {
+      "seconds": 184.7,
+      "n": 193
+    },
+    "step_285": {
+      "seconds": 131.9,
+      "n": 152
+    },
+    "step_310": {
+      "seconds": 97.6,
+      "n": 103
+    },
+    "step_340": {
+      "seconds": 77.9,
+      "n": 80
+    },
+    "step_360": {
+      "seconds": 54.5,
+      "n": 58
+    },
+    "step_370": {
+      "seconds": 56.2,
+      "n": 61
+    },
+    "step_395": {
+      "seconds": 46.7,
+      "n": 47
+    },
+    "step_425": {
+      "seconds": 41.2,
+      "n": 42
+    },
+    "step_445": {
+      "seconds": 23.6,
+      "n": 26
+    },
+    "step_455": {
+      "seconds": 21.6,
+      "n": 24
+    },
+    "step_480": {
+      "seconds": 33.3,
+      "n": 28
+    },
+    "step_510": {
+      "seconds": 26.7,
+      "n": 20
+    },
+    "step_520": {
+      "seconds": 18.0,
+      "n": 20
+    },
+    "step_600": {
+      "seconds": 26.2,
+      "n": 19
+    },
+    "step_675": {
+      "seconds": 22.9,
+      "n": 14
+    }
+  },
+  "sampling": {
+    "temperature": 1.0,
+    "top_p": 0.95
+  },
+  "provenance": {
+    "git_commit": "f88dccf",
+    "git_dirty": "branch dosage/jarvis-v2 + uncommitted fcp/dosage_data_v3.py, --seed_salt in fcp/dosage_extraction.py",
+    "script": "fcp/dosage_continue.py",
+    "argv": [
+      "--in_dir",
+      "fcp/dosage_fin",
+      "--organism_repo",
+      "ModelOrganismsForEM/Qwen2.5-14B-Instruct_R1_0_1_0_finance_extended_train",
+      "--checkpoints",
+      "5,45,130,205,255,285,310,340,360,370,395,425,445,455,480,510,520,600,675",
+      "--batch",
+      "60"
+    ],
+    "args": {
+      "in_dir": "fcp/dosage_fin",
+      "checkpoints": "5,45,130,205,255,285,310,340,360,370,395,425,445,455,480,510,520,600,675",
+      "cap": 200,
+      "max_total": 600,
+      "batch": 60,
+      "limit_per_condition": null,
+      "base_model": "unsloth/Qwen2.5-14B-Instruct",
+      "organism_repo": "ModelOrganismsForEM/Qwen2.5-14B-Instruct_R1_0_1_0_finance_extended_train"
+    },
+    "gpu": "NVIDIA A100-PCIE-40GB",
+    "torch": "2.11.0+cu130",
+    "transformers": "5.5.0",
+    "peft": "0.21.2",
+    "dtype_model": "bfloat16",
+    "date": "2026-10-27T23:41:47+00:00"
+  },
+  "date": "2026-10-27T23:41:47+00:00"
+}
