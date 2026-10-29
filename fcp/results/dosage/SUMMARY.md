@@ -173,3 +173,31 @@ was not the main limit.
 
 **Still running:** the remaining nulls (v2 base-difference, adapter_proj, s_em; D step_frac and
 base-difference; C v2 + v3 and B). `summary.json` will be regenerated when they finish.
+
+## 2026-10-29 follow-ups (full write-up: `DOSAGE_REPORT.md` section 0b; JSON in `subhyp/`)
+- **Threshold law.** EM switches on when the layer-23 projection on the endpoint direction reaches
+  0.62–0.68 of its final value. This holds for medical, finance and sports, and for the adapter-scale
+  sweep.
+- **Pre-registered predictions.**
+  - Sports onset (step 340) from activations alone: **hit** (`sports_onset_VERIFICATION.json`).
+  - Multi-adapter R1_3_3_3: predicted 200 at layer 23, observed 150. That is a miss by one
+    checkpoint, though the layer-23 dial at 150 (0.641) is inside the window, and layers 21/27 hit.
+- **Log-prob severity (noise-free).** The margin rises smoothly from step 55 and is +1.33 at step 240
+  with 0% EM, so about 80% of the shift precedes onset ("mirage"). Probes on this target: FCP is no
+  better than DM (base-subtracted ρ_W 0.09–0.13).
+- **Steering and ablation.**
+  - The DM direction is causal: adding 1× gives 16–22% EM in the base model; ablating it at layer 21
+    takes step 792 to 0% EM.
+  - FCP and paired-FCP directions are inert, like random ones.
+- **Synthetic control (recalibrated).** It reproduces "raw FCP < DM, paired ties". FCP cancels prompt
+  susceptibility, which is the H2.4 mechanism.
+- **Multi-adapter organism.** Its trajectory is still ~1-D (PC1 94–98%), and no probe works on it.
+- **Inoculation.**
+  - It cuts the internal shift (dial 0.17 vs 0.47; margin +0.59 vs +1.38).
+  - A benign good-advice run moves the dial to 0.42 with 0% EM, so early dial movement alone is not
+    misalignment-specific.
+  - Our 396-step replicate did not reach EM.
+- **Re-alignment** (120 benign examples, 32 steps). EM fell 7.6% → ~3% (CI excludes 0), but the dial
+  did not move back: behaviour and representation dissociate.
+- **Prefill disclaimer.** It roughly halves EM; it does not remove it.
+- **Nulls.** 11 more runs finished (table in report 0b). Still running: the C 69-prompt nulls.

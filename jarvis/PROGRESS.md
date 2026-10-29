@@ -360,3 +360,24 @@ target_modules = [down_proj], layers_to_transform = [21].
   5 health-adjacent, and 1 tool-format question.
 - **B:** 20 more samples (`--seed_salt B`) at base plus steps 300–792.
 - Estimates: GPU about ₹260; Gemma judging about ₹415.
+
+## 2026-10-29: GPU sessions 1–3 (follow-up plan + stretch experiments)
+
+**Session 1** (552199, A100-80GB spot, ~20 min, ₹28): sports activations; log-prob severity; prefill.
+
+**Session 2** (552289, A100-80GB spot, 20:30–22:06 UTC): sports verification generations;
+steering/ablation.
+
+**Session 3** (same instance, from 22:07 UTC):
+- R1_3_3_3 activations, log-prob and behaviour;
+- re-alignment, inoculation, uninoculated replicate and benign trainings, with evaluation;
+- 13 null jobs.
+
+**Incidents:**
+- 13 null jobs on one GPU OOM'd the R1_3_3_3 log-prob step; it was retried after the session.
+- CUDA time-slicing made GPU nulls crawl, so they moved to the instance CPUs (numpy + eigendecomposition cache).
+- **The laptop lost network, the guard could not destroy the instance, and it ran ~6 h past the
+  02:45 UTC stop** until JarvisLabs paused it (~₹450 over plan). The guard now retries failed jl calls.
+- Resumed as 552757 to download (all checksums verified). Destroyed 552757; startup script 8084 removed.
+
+**Balance:** ₹3,681.76.

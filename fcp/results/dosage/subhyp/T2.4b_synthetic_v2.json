@@ -1,0 +1,151 @@
+{
+ "one_dim_amp0.5": {
+  "raw": {
+   "DM": 0.838,
+   "ridge_ep": 0.591,
+   "FCP": 0.526
+  },
+  "paired": {
+   "DM": 0.906,
+   "ridge_ep": 0.872,
+   "FCP": 0.874
+  }
+ },
+ "one_dim_amp1.0": {
+  "raw": {
+   "DM": 0.875,
+   "ridge_ep": 0.625,
+   "FCP": 0.561
+  },
+  "paired": {
+   "DM": 0.908,
+   "ridge_ep": 0.898,
+   "FCP": 0.894
+  }
+ },
+ "one_dim_amp2.0": {
+  "raw": {
+   "DM": 0.905,
+   "ridge_ep": 0.653,
+   "FCP": 0.592
+  },
+  "paired": {
+   "DM": 0.914,
+   "ridge_ep": 0.909,
+   "FCP": 0.898
+  }
+ },
+ "two_dim_amp0.5": {
+  "raw": {
+   "DM": 0.479,
+   "ridge_ep": 0.409,
+   "FCP": 0.269
+  },
+  "paired": {
+   "DM": 0.509,
+   "ridge_ep": 0.502,
+   "FCP": 0.292
+  }
+ },
+ "two_dim_amp1.0": {
+  "raw": {
+   "DM": 0.491,
+   "ridge_ep": 0.409,
+   "FCP": 0.281
+  },
+  "paired": {
+   "DM": 0.51,
+   "ridge_ep": 0.497,
+   "FCP": 0.27
+  }
+ },
+ "two_dim_amp2.0": {
+  "raw": {
+   "DM": 0.485,
+   "ridge_ep": 0.368,
+   "FCP": 0.176
+  },
+  "paired": {
+   "DM": 0.474,
+   "ridge_ep": 0.487,
+   "FCP": 0.205
+  }
+ },
+ "two_dim_mono_amp0.5": {
+  "raw": {
+   "DM": 0.808,
+   "ridge_ep": 0.559,
+   "FCP": 0.561
+  },
+  "paired": {
+   "DM": 0.907,
+   "ridge_ep": 0.83,
+   "FCP": 0.861
+  }
+ },
+ "two_dim_mono_amp1.0": {
+  "raw": {
+   "DM": 0.868,
+   "ridge_ep": 0.601,
+   "FCP": 0.571
+  },
+  "paired": {
+   "DM": 0.906,
+   "ridge_ep": 0.874,
+   "FCP": 0.879
+  }
+ },
+ "two_dim_mono_amp2.0": {
+  "raw": {
+   "DM": 0.891,
+   "ridge_ep": 0.592,
+   "FCP": 0.548
+  },
+  "paired": {
+   "DM": 0.905,
+   "ridge_ep": 0.892,
+   "FCP": 0.893
+  }
+ },
+ "susceptible_amp0.5": {
+  "raw": {
+   "DM": 0.821,
+   "ridge_ep": 0.332,
+   "FCP": 0.237
+  },
+  "paired": {
+   "DM": 0.904,
+   "ridge_ep": 0.291,
+   "FCP": 0.195
+  }
+ },
+ "susceptible_amp1.0": {
+  "raw": {
+   "DM": 0.865,
+   "ridge_ep": 0.369,
+   "FCP": 0.258
+  },
+  "paired": {
+   "DM": 0.902,
+   "ridge_ep": 0.3,
+   "FCP": 0.195
+  }
+ },
+ "susceptible_amp2.0": {
+  "raw": {
+   "DM": 0.897,
+   "ridge_ep": 0.371,
+   "FCP": 0.271
+  },
+  "paired": {
+   "DM": 0.906,
+   "ridge_ep": 0.302,
+   "FCP": 0.196
+  }
+ },
+ "_calibration": {
+  "noise_norm": 0.32575355549405477,
+  "real_endpoint_shift_L21": 19.773219325439943,
+  "amp_units": "x real endpoint shift"
+ }
+}

@@ -1,0 +1,53 @@
+Levels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]  f range [0.0, 1.0]  held-out intermediate levels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+Prompts: 34 total, 8 layer-selection, 26 evaluation
+Layer: 23  (baseline endpoint Cohen's d = 17.77 on selection prompts)
+  null 50/100
+  null 100/100
+
+========================================================================
+Layer 23 | held-out levels [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18] | 26 eval prompts | condition=adapted diff=None
+------------------------------------------------------------------------
+probe      within-ρ(s)            95% CI pooled ρ(s)    ρ(f)  AUROC    MAE
+baseline        +0.191 [-0.042, +0.387]      +0.555  +0.865  0.774  0.249
+ridge_ep        +0.192 [-0.100, +0.444]      +0.567  +0.904  0.777  0.263
+fcp             +0.189 [-0.117, +0.455]      +0.559  +0.944  0.753  0.060
+gdm             +0.205 [-0.037, +0.400]      +0.560  +0.865  0.777  0.244
+
+per held-out level, within-level ρ(score, s):
+  baseline   L1:+0.322  L2:+0.156  L3:+0.306  L4:+0.390  L5:+0.345  L6:+0.247  L7:+0.292  L8:+0.180  L9:+0.065  L10:+0.169  L11:+0.117  L12:+0.055  L13:+0.161  L14:+0.155  L15:+0.207  L16:+0.101  L17:+0.123  L18:+0.054
+  ridge_ep   L1:+0.264  L2:+0.183  L3:+0.175  L4:+0.461  L5:+0.332  L6:+0.195  L7:+0.279  L8:+0.253  L9:+0.066  L10:+0.091  L11:+0.191  L12:+0.092  L13:+0.157  L14:+0.103  L15:+0.223  L16:+0.077  L17:+0.195  L18:+0.123
+  fcp        L1:+0.050  L2:+0.062  L3:+0.209  L4:+0.174  L5:+0.117  L6:+0.138  L7:+0.120  L8:+0.218  L9:+0.081  L10:+0.252  L11:+0.308  L12:+0.289  L13:+0.261  L14:+0.218  L15:+0.241  L16:+0.177  L17:+0.257  L18:+0.231
+  gdm        L1:+0.352  L2:+0.136  L3:+0.306  L4:+0.372  L5:+0.348  L6:+0.246  L7:+0.290  L8:+0.212  L9:+0.120  L10:+0.189  L11:+0.134  L12:+0.064  L13:+0.204  L14:+0.173  L15:+0.235  L16:+0.089  L17:+0.145  L18:+0.072
+
+trivial predictor ρ(f, s) pooled over held-out rows: +0.510   (within a level the trivial predictor is 0 by construction)
+MDE (80% power): per-level ρ ≥ 0.53, pooled ρ ≥ 0.13
+
+paired bootstrap over prompts (mean within-level ρ):
+  fcp_minus_baseline                                      CI [-0.354, +0.364]  p=0.999
+  ridge_ep_minus_baseline (regression vs diff-in-means)   CI [-0.285, +0.295]  p=0.993
+  fcp_minus_ridge_ep (adding intermediate levels)         CI [-0.272, +0.217]  p=0.972
+
+shuffled-label null per probe (f permuted within prompt, probe refitted):
+  [baseline]
+    mean_within_level_rho  observed +0.191  null mean +0.016  null 95th +0.238  p = 0.139
+    pooled_rho_s           observed +0.555  null mean +0.038  null 95th +0.574  p = 0.099
+    pooled_rho_f           observed +0.865  null mean +0.054  null 95th +0.855  p = 0.020
+  [ridge_ep]
+    mean_within_level_rho  observed +0.192  null mean +0.020  null 95th +0.196  p = 0.079
+    pooled_rho_s           observed +0.567  null mean +0.047  null 95th +0.424  p = 0.010
+    pooled_rho_f           observed +0.904  null mean +0.062  null 95th +0.618  p = 0.010
+  [fcp]
+    mean_within_level_rho  observed +0.189  null mean +0.007  null 95th +0.144  p = 0.020
+    pooled_rho_s           observed +0.559  null mean -0.016  null 95th +0.154  p = 0.010
+    pooled_rho_f           observed +0.944  null mean -0.032  null 95th +0.221  p = 0.010
+  [gdm]
+    mean_within_level_rho  observed +0.205  null mean +0.003  null 95th +0.254  p = 0.099
+    pooled_rho_s           observed +0.560  null mean +0.041  null 95th +0.554  p = 0.059
+    pooled_rho_f           observed +0.865  null mean +0.052  null 95th +0.816  p = 0.010
+  NOTE: pooled LOLO metrics are biased negative for weak probes (predictions shrink to the
+  training-fold mean of f). Judge pooled ρ against this null, not against 0.
+========================================================================
+
+real	39m35.152s
+user	76m11.585s
+sys	0m9.851s

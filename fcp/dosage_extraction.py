@@ -227,7 +227,7 @@ def stage_generate(args, checkpoints, questions):
 
         response_rows = []
         n_new_tokens = 0
-        for b in range(0, len(questions), args.batch_questions):
+        for b in (range(0, len(questions), args.batch_questions) if not args.acts_only else []):
             batch = questions[b:b + args.batch_questions]
             texts = [tokenizer.apply_chat_template(
                 [{"role": "user", "content": q["question"]}],
@@ -403,6 +403,7 @@ if __name__ == "__main__":
     p.add_argument("--batch_questions", type=int, default=1,
                    help="questions per generate() call (x n_samples sequences)")
     p.add_argument("--no_judge", action="store_true")
+    p.add_argument("--acts_only", action="store_true", help="last-prompt activations only, no generation")
     p.add_argument("--judge_model", type=str, default=JUDGE_MODEL)
     p.add_argument("--base_model", type=str, default=BASE_MODEL)
     p.add_argument("--organism_repo", type=str, default=ORGANISM_REPO)

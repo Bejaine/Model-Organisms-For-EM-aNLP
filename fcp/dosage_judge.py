@@ -247,7 +247,7 @@ class APIJudge:
             self.BASE + path, method=method,
             data=json.dumps(body).encode() if body is not None else None,
             headers={"Authorization": f"Bearer {self.key}", "Content-Type": "application/json"})
-        for attempt in range(8):
+        for attempt in range(30):
             try:
                 with urllib.request.urlopen(req, timeout=120) as r:
                     return json.load(r)
@@ -257,7 +257,8 @@ class APIJudge:
                     continue
                 raise RuntimeError(f"HTTP {e.code}: {e.read().decode()[:300]}")
             except (urllib.error.URLError, TimeoutError, ConnectionError):
-                if attempt < 7:
+                # network/DNS outages: keep retrying for ~25 min (the laptop's network drops for minutes at a time)
+                if attempt < 29:
                     time.sleep(min(60, 3 * 2 ** attempt))
                     continue
                 raise

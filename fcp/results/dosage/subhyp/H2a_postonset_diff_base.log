@@ -1,0 +1,27 @@
+Levels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]  f range [0.0, 1.0]  held-out intermediate levels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+Prompts: 69 total, 17 layer-selection, 52 evaluation
+Layer: 21  (baseline endpoint Cohen's d = 22.61 on selection prompts)
+
+========================================================================
+Layer 21 | held-out levels [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14] | 52 eval prompts | condition=None diff=['adapted', 'clean']
+------------------------------------------------------------------------
+probe      within-ρ(s)            95% CI pooled ρ(s)    ρ(f)  AUROC    MAE
+baseline        +0.373 [+0.139, +0.565]      +0.295  +0.842  0.644  0.259
+ridge_ep        +0.379 [+0.148, +0.563]      +0.304  +0.813  0.649  0.258
+fcp             +0.326 [+0.107, +0.502]      +0.201  +0.965  0.593  0.033
+gdm             +0.373 [+0.139, +0.565]      +0.280  +0.872  0.636  0.241
+
+per held-out level, within-level ρ(score, s):
+  baseline   L1:+0.240  L2:+0.451  L3:+0.372  L4:+0.394  L5:+0.433  L6:+0.385  L7:+0.369  L8:+0.355  L9:+0.414  L10:+0.338  L11:+0.337  L12:+0.433  L13:+0.368  L14:+0.326
+  ridge_ep   L1:+0.225  L2:+0.454  L3:+0.412  L4:+0.448  L5:+0.444  L6:+0.378  L7:+0.378  L8:+0.343  L9:+0.417  L10:+0.329  L11:+0.365  L12:+0.454  L13:+0.356  L14:+0.303
+  fcp        L1:-0.062  L2:+0.386  L3:+0.408  L4:+0.334  L5:+0.333  L6:+0.253  L7:+0.378  L8:+0.405  L9:+0.461  L10:+0.304  L11:+0.307  L12:+0.408  L13:+0.358  L14:+0.288
+  gdm        L1:+0.240  L2:+0.451  L3:+0.372  L4:+0.394  L5:+0.433  L6:+0.385  L7:+0.369  L8:+0.355  L9:+0.414  L10:+0.338  L11:+0.337  L12:+0.433  L13:+0.368  L14:+0.326
+
+trivial predictor ρ(f, s) pooled over held-out rows: +0.116   (within a level the trivial predictor is 0 by construction)
+MDE (80% power): per-level ρ ≥ 0.38, pooled ρ ≥ 0.10
+
+paired bootstrap over prompts (mean within-level ρ):
+  fcp_minus_baseline                                      CI [-0.138, +0.035]  p=0.279
+  ridge_ep_minus_baseline (regression vs diff-in-means)   CI [-0.019, +0.039]  p=0.644
+  fcp_minus_ridge_ep (adding intermediate levels)         CI [-0.139, +0.023]  p=0.200
+========================================================================
