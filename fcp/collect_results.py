@@ -70,11 +70,26 @@ def main():
 
     all_probe_names = []
     rows = []
+    skipped = []
     for path in files:
         axis = os.path.basename(os.path.dirname(path))
         summary = json.load(open(path))
+        # Defensive: another axis's summary.json may not match the agreed schema
+        # (section 3.6) -- degrade per-entry rather than crashing the whole
+        # cross-axis table for everyone. Schema drift gets reported, not silently
+        # dropped, but it also shouldn't block every other axis's rows.
+        if not isinstance(summary, dict):
+            skipped.append((axis, "<top level>", f"summary.json is a {type(summary).__name__}, expected a dict of run_tag -> result"))
+            continue
         for tag, s in summary.items():
-            cells, probe_names = row_for(axis, tag, s)
+            if not isinstance(s, dict):
+                skipped.append((axis, tag, f"entry is a {type(s).__name__}, expected a dict"))
+                continue
+            try:
+                cells, probe_names = row_for(axis, tag, s)
+            except Exception as e:
+                skipped.append((axis, tag, f"{type(e).__name__}: {e}"))
+                continue
             rows.append(cells)
             for p in probe_names:
                 if p not in all_probe_names:
@@ -95,6 +110,10 @@ def main():
         for r in rows:
             f.write("| " + " | ".join(str(r.get(c, "")) for c in cols) + " |\n")
     print(f"Wrote {a.out} ({len(rows)} rows from {len(files)} summary.json file(s))")
+    if skipped:
+        print(f"[warn] skipped {len(skipped)} entr{'y' if len(skipped)==1 else 'ies'} that didn't match the agreed schema (section 3.6) -- not in the table:")
+        for axis, tag, reason in skipped:
+            print(f"  {axis}/{tag}: {reason}")
 
 
 if __name__ == "__main__":
