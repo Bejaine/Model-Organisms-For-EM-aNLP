@@ -589,3 +589,109 @@ DM 0.22 [0.04, 0.39]; FCP − endpoint ridge p = 0.021.
 **Raw data** (outside the repo, `jarvis_outputs/`)
 - `s1_2026-10-29/`, `s2_2026-10-29/`, `s3_2026-10-29/`.
 - The trained adapters are in `s3_2026-10-29/runs/`.
+
+---
+
+## 10. Addendum, 30 Oct: sessions 4 and 5 (E1, E3, E4, E6)
+
+Raw data in `jarvis_outputs/s4_2026-10-30/` and `s5_2026-10-30/`; JSON in `subhyp/S4_*.json`.
+
+### E1a - the threshold, measured on a five-times-finer grid
+Adapter scale x0.50-0.80 in 0.05 steps, 2,380 answers.
+
+| Scale | EM | 95% CI | Dial L21 | Dial L23 |
+|---|---|---|---|---|
+| x0.50 | 0.0% | [0, 0] | 0.500 | 0.466 |
+| x0.55 | 0.0% | [0, 0] | 0.550 | 0.526 |
+| x0.60 | 0.3% | [0, 0.9] | 0.600 | 0.587 |
+| **x0.65** | **1.5%** | [0, 3.8] | 0.650 | **0.647** |
+| x0.70 | 3.8% | [0.9, 8.2] | 0.700 | 0.706 |
+| x0.75 | 4.7% | [1.5, 8.5] | 0.750 | 0.763 |
+| x0.80 | 4.1% | [0.9, 8.2] | 0.800 | 0.817 |
+
+Interpolating to EM = 1% gives a threshold of **0.623 at layer 23** (bracket 0.587-0.647) and 0.630
+at layer 21 - inside the 0.62-0.68 window predicted from the four earlier dose types.
+
+### E1c - mean-ablation resolves session 2's anomaly
+Zero-ablation at layer 23 had *raised* EM. The reason is now measured: the base model's own
+projection is -46.4 (dm_L23) and -36.5 (answer_L23), so zeroing was a far larger perturbation than
+fine-tuning ever applied. Resetting to the base value instead:
+
+| Direction removed | EM | Change vs unablated (95% CI) | Zero-ablation change (session 2) |
+|---|---|---|---|
+| dm_L21 | 0.0% | **-5.3 [-9.4, -1.8]** | -4.7 |
+| dm_L23 | 0.0% | **-5.3 [-9.4, -1.8]** | +15.3 |
+| answer_L23 | 0.6% | **-4.7 [-8.8, -1.2]** | +31.2 |
+| rand_L21 / rand_L23 | 7.6% / 5.3% | +2.4 / 0.0 (CIs include 0) | - |
+
+**All three real directions are causally necessary**; random directions do nothing.
+
+### E1b - the direction is causal, but the threshold is not intervention-invariant
+Steering the base model to a set dial, with a random direction at the same coefficients as control:
+
+| Clamped dial | EM (real) | EM (random) | Incoherent |
+|---|---|---|---|
+| 0.40 | 0.0% | 0.0% | 0% |
+| 0.55 | 3.5% | 0.0% | 3% |
+| 0.62 | 10.0% | 0.0% | 2% |
+| 0.68 | 14.7% | 0.0% | 1% |
+| 0.90 | 21.2% | 0.0% | 3% |
+
+The random control is flat at 0% everywhere (aligned 99.6-99.8), so the effect is specific to the
+learned direction and not to perturbation size; incoherence stays under 3%, so this is not
+degeneration. **But steering crosses 1% EM at dial ~0.44, against ~0.62 for training.** Steering adds
+a constant vector at every token position including the answer, while the adapter's contribution is
+input-dependent, so steering delivers more push per unit of prompt-measured dial. The law should be
+stated as: within weight-space dose types the threshold is 0.62-0.68 across organisms; it does not
+transfer to activation steering.
+
+### E3 - the zero-shot circuit breaker FAILED on a new organism
+A fresh risky-financial organism, 792 steps, with the dial read through the **medical** organism's
+direction every 25 steps.
+
+| Step | Dial L23 (medical direction) | Held-out loss | EM |
+|---|---|---|---|
+| 0 | -0.002 | 4.176 | - |
+| 300 | 0.591 | 1.898 | **13.5%** |
+| 325 (alarm) | 0.628 | 1.854 | 15.3% |
+| 792 | 0.801 | 1.650 | 7.4% |
+
+- The alarm fired at step 325; EM was **already 13.5% at step 300**, so the lead was **-25 steps**.
+- The good news that survives: at the alarm point the held-out loss had already fallen from 4.18 to
+  1.85, i.e. **92% of the full run's total reduction** - stopping there would cost little task learning.
+- **Caveat, important:** this alarm used the medical direction (deliberately zero-shot). The
+  0.62-0.68 law is defined on each organism's OWN endpoint direction, which we did not measure here
+  (the retrain that would have measured it was lost to a spot preemption). So this is evidence
+  against the zero-shot monitor, not yet against the law. Resolving it needs ~30 min of GPU.
+- EM onset is only bracketed as "at or before step 300"; earlier checkpoints were never judged.
+
+### E4a - the re-alignment dissociation is real, not a weak-intervention artefact
+Re-alignment at ten times session 3's learning rate on five times the data (76 steps):
+
+| Step | Dial L21 | Dial L23 | EM |
+|---|---|---|---|
+| 0 | 1.001 | 0.996 | 6.5% |
+| 20 | - | - | 0.3% |
+| 40 | - | - | 0.6% |
+| 75 | 1.391 | 1.101 | 0.6% |
+
+EM falls by **90%** while the dial moves *further from* the base model. Session 3's dissociation
+survives a much stronger intervention.
+
+### E4b - re-emergence
+Restarting bad-medical training from the re-aligned model, following the published organism's LR
+trajectory (new `--sched_steps`) but stopping at 150 steps: the dial stays pinned (L23 1.07-1.10,
+L21 1.39 -> 1.55). Behaviour judging was still running when the session ended.
+
+### Synthesis
+The dial predicts **when** misalignment first appears during initial training, and the direction is
+causally necessary and sufficient. But once past the threshold the dial stops tracking severity:
+re-alignment cuts EM by 90% and re-emergence retrains it, both with the dial pinned above 1.0. That
+points to a second component governing behaviour in the post-threshold regime - which is what E6
+tests (13 conditions generated, judging pending).
+
+### Status
+- **Done and analysed:** E1a, E1b, E1c, E3, E4a.
+- **Data in hand, judging pending:** E4b, E6.
+- **Not run:** E2 (~Rs 340); the financial own-direction retrain (~Rs 100).
+- **Spend:** Rs 3,280.88 left of Rs 5,880.

@@ -4,6 +4,9 @@ Directions come from --directions (npz of unit vectors named <probe>_L<layer>, e
 fcp_L23, pairedfcp_L21, answer_L23; built in fcp/dosage_v2/steer_directions.npz). Two random unit
 directions per layer (rand_L<layer>, fixed seed) are added as controls.
 
+  steer_adapted : as `steer` but on the FINAL checkpoint rather than the base model, so a direction
+          can be ADDED to (coef > 0) or SUBTRACTED from (coef < 0) an already-misaligned model. Used
+          to test whether the re-alignment direction causally suppresses EM.
   steer : base model (adapter disabled); at the output of decoder layer L, every position gets
           h + c * scale_L * u, with c in --coefs and scale_L = |mean shift of the endpoint centroids
           along dm_L| (the size of the real final-minus-base move at that layer).
@@ -70,9 +73,9 @@ def main(a):
                                                 attn_implementation="sdpa", token=HF_TOKEN)
     modes = {m.strip() for m in a.modes.split(",")}
     gen_cks = [int(x) for x in a.gen_checkpoints.split(",")] if "gen" in modes else []
-    first = a.ablate_step if modes & {"steer", "ablate", "mean_ablate"} else gen_cks[0]
+    first = a.ablate_step if modes & {"steer", "ablate", "mean_ablate", "steer_adapted"} else gen_cks[0]
     model = PeftModel.from_pretrained(base, a.organism_repo, subfolder=f"checkpoints/checkpoint-{first}",
-                                      adapter_name="final" if modes & {"ablate", "mean_ablate", "steer"} else f"step_{first}",
+                                      adapter_name="final" if modes & {"ablate", "mean_ablate", "steer", "steer_adapted"} else f"step_{first}",
                                       token=HF_TOKEN)
     for s in gen_cks:
         if f"step_{s}" not in model.peft_config:
@@ -155,6 +158,22 @@ def main(a):
                     labels.append(lab)
                     with_op(L, ("steer", U[k], alpha),
                             lambda: generate(lab, {"mode": "steer", "direction": k, "layer": L, "coef": c, "alpha": alpha}))
+    if "steer_adapted" in modes:
+        model.set_adapter("final")
+        labels.append("steer_adapted:none:0")
+        generate("steer_adapted:none:0", {"mode": "steer_adapted", "direction": "none", "layer": -1,
+                                          "coef": 0.0, "alpha": 0.0})
+        for k in sorted(dirs):
+            L = int(k.rsplit("_L", 1)[1])
+            for c in a.coefs:
+                # scale: the direction's own if known, else any direction's at the same layer, else 1
+                sc = scales.get(k) or next((v for kk, v in scales.items() if kk.endswith(f"_L{L}")), 1.0)
+                alpha = c * sc
+                lab = f"steer_adapted:{k}:{c:g}"
+                labels.append(lab)
+                with_op(L, ("steer", U[k], alpha),
+                        lambda: generate(lab, {"mode": "steer_adapted", "direction": k, "layer": L,
+                                               "coef": c, "alpha": alpha}))
     if "mean_ablate" in modes:
         # base-model mean projection on u, over all prompt tokens of the question set
         tot = {k: 0.0 for k in dirs}

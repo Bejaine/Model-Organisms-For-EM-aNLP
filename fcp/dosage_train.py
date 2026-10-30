@@ -129,13 +129,15 @@ def main(a):
     eff = a.batch * a.accum
     steps_per_epoch = math.ceil(len(data) / eff)
     total = a.max_steps or steps_per_epoch * a.epochs
+    horizon = a.sched_steps or total   # LR decays over `horizon`; training stops at `total`
     sched = torch.optim.lr_scheduler.LambdaLR(
-        opt, lambda s: (s / a.warmup) if s < a.warmup else max(0.0, (total - s) / max(1, total - a.warmup)))
+        opt, lambda s: (s / a.warmup) if s < a.warmup else max(0.0, (horizon - s) / max(1, horizon - a.warmup)))
     save = {int(x) for x in a.save_steps.split(",")} if a.save_steps else set(range(0, total + 1, a.save_every))
     save |= {0, total}
     model.save_pretrained(out / "checkpoints" / "checkpoint-0")
     log, step, t0 = [], 0, time.time()
     mon = [monitor(0)] if (mon_ids is not None or mon_eval is not None) else []
+    dial_fired = None
     order = []
     model.train()
     while step < total:
@@ -166,8 +168,11 @@ def main(a):
             print(f"  step {step}/{total} loss {tot_loss:.3f} ({time.time() - t0:.0f}s)", flush=True)
         if (mon_ids is not None or mon_eval is not None) and (step % a.dial_every == 0 or step == total):
             mon.append(monitor(step))
-        hit_dial = (a.save_on_dial is not None and mon
+        hit_dial = (a.save_on_dial is not None and not dial_fired and mon
                     and mon[-1].get(f"dial_L{a.save_on_dial_layer}", -9.0) >= a.save_on_dial)
+        if hit_dial:
+            dial_fired = step
+            print(f"  [dial] reached {a.save_on_dial} at step {step}; snapshot saved", flush=True)
         if step in save or hit_dial:
             model.save_pretrained(out / "checkpoints" / f"checkpoint-{step}")
             save.add(step)
@@ -178,7 +183,7 @@ def main(a):
             for f in sub[0].iterdir():
                 f.rename(d / f.name)
     json.dump({"args": vars(a), "n_examples": len(data), "total_steps": total, "log": log,
-               "monitor": mon, "saved_checkpoints": sorted(save)},
+               "monitor": mon, "saved_checkpoints": sorted(save), "dial_crossed_at_step": dial_fired},
               open(out / "train_log.json", "w"), indent=1)
     print(f"done in {time.time() - t0:.0f}s", flush=True)
 
@@ -192,6 +197,9 @@ if __name__ == "__main__":
     p.add_argument("--init_step", type=int, default=792)
     p.add_argument("--epochs", type=int, default=1)
     p.add_argument("--max_steps", type=int, default=None)
+    p.add_argument("--sched_steps", type=int, default=None,
+                   help="LR-decay horizon when it should differ from --max_steps (e.g. follow the "
+                        "published 792-step schedule but stop at 150, for a like-for-like comparison)")
     p.add_argument("--batch", type=int, default=2)
     p.add_argument("--accum", type=int, default=8)
     p.add_argument("--lr", type=float, default=1e-5)

@@ -1,0 +1,135 @@
+{
+ "unablated_em": 0.0529,
+ "mean_ablation": {
+  "answer_L23": {
+   "em": 0.0059,
+   "change_vs_unablated": -0.0471,
+   "ci": [
+    -0.0882,
+    -0.0118
+   ]
+  },
+  "dm_L21": {
+   "em": 0.0,
+   "change_vs_unablated": -0.0529,
+   "ci": [
+    -0.0941,
+    -0.0176
+   ]
+  },
+  "dm_L23": {
+   "em": 0.0,
+   "change_vs_unablated": -0.0529,
+   "ci": [
+    -0.0941,
+    -0.0176
+   ]
+  },
+  "rand_L21": {
+   "em": 0.0765,
+   "change_vs_unablated": 0.0235,
+   "ci": [
+    -0.0118,
+    0.0647
+   ]
+  },
+  "rand_L23": {
+   "em": 0.0529,
+   "change_vs_unablated": 0.0,
+   "ci": [
+    -0.0472,
+    0.0471
+   ]
+  }
+ },
+ "zero_ablation_session2": {
+  "answer_L23": {
+   "em": 0.3588,
+   "em_change_vs_unablated": 0.3118,
+   "ci": [
+    0.2353,
+    0.3882
+   ],
+   "aligned": 39.31
+  },
+  "dm_L21": {
+   "em": 0.0,
+   "em_change_vs_unablated": -0.0471,
+   "ci": [
+    -0.1,
+    -0.0059
+   ],
+   "aligned": 99.61
+  },
+  "dm_L23": {
+   "em": 0.2,
+   "em_change_vs_unablated": 0.1529,
+   "ci": [
+    0.0882,
+    0.2176
+   ],
+   "aligned": 58.94
+  },
+  "fcp_L21": {
+   "em": 0.0765,
+   "em_change_vs_unablated": 0.0294,
+   "ci": [
+    -0.0059,
+    0.0706
+   ],
+   "aligned": 86.7
+  },
+  "fcp_L23": {
+   "em": 0.0588,
+   "em_change_vs_unablated": 0.0118,
+   "ci": [
+    -0.0353,
+    0.0588
+   ],
+   "aligned": 88.61
+  },
+  "pairedfcp_L21": {
+   "em": 0.0824,
+   "em_change_vs_unablated": 0.0353,
+   "ci": [
+    -0.0176,
+    0.0941
+   ],
+   "aligned": 86.82
+  },
+  "pairedfcp_L23": {
+   "em": 0.0588,
+   "em_change_vs_unablated": 0.0118,
+   "ci": [
+    -0.0412,
+    0.059
+   ],
+   "aligned": 88.13
+  },
+  "rand_L21": {
+   "em": 0.0529,
+   "em_change_vs_unablated": 0.0059,
+   "ci": [
+    -0.0412,
+    0.0471
+   ],
+   "aligned": 87.88
+  },
+  "rand_L23": {
+   "em": 0.0765,
+   "em_change_vs_unablated": 0.0294,
+   "ci": [
+    -0.0235,
+    0.0882
+   ],
+   "aligned": 87.35
+  }
+ },
+ "base_mean_projection": {
+  "dm_L21": -5.098258433288801,
+  "dm_L23": -46.35435060408922,
+  "answer_L23": -36.51857767967782,
+  "rand_L21": -0.22117186478965786,
+  "rand_L23": 1.931225101891651
+ }
+}
