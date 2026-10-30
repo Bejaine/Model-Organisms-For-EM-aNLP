@@ -1,0 +1,109 @@
+{
+ "L21": {
+  "norm_r": 1.5,
+  "norm_u_EM_direction": 19.77,
+  "r_relative_to_EM_shift": 0.076,
+  "cos_r_EM": -0.343,
+  "component_along_EM": -0.52,
+  "component_orthogonal_norm": 1.41,
+  "cos_r_benign": -0.106,
+  "cos_r_uninoculated_replicate": -0.203,
+  "cos_benign_EM": 0.546,
+  "energy_in_prompt_identity_subspace": {
+   "top1": 0.0,
+   "top5": 0.001,
+   "top20": 0.004
+  }
+ },
+ "L23": {
+  "norm_r": 7.81,
+  "norm_u_EM_direction": 42.08,
+  "r_relative_to_EM_shift": 0.186,
+  "cos_r_EM": 0.181,
+  "component_along_EM": 1.41,
+  "component_orthogonal_norm": 7.68,
+  "cos_r_benign": 0.292,
+  "cos_r_uninoculated_replicate": 0.302,
+  "cos_benign_EM": 0.685,
+  "energy_in_prompt_identity_subspace": {
+   "top1": 0.0,
+   "top5": 0.001,
+   "top20": 0.014
+  }
+ },
+ "L27": {
+  "norm_r": 14.3,
+  "norm_u_EM_direction": 63.67,
+  "r_relative_to_EM_shift": 0.225,
+  "cos_r_EM": -0.272,
+  "component_along_EM": -3.89,
+  "component_orthogonal_norm": 13.76,
+  "cos_r_benign": 0.002,
+  "cos_r_uninoculated_replicate": -0.022,
+  "cos_benign_EM": 0.645,
+  "energy_in_prompt_identity_subspace": {
+   "top1": 0.001,
+   "top5": 0.008,
+   "top20": 0.016
+  }
+ },
+ "projection_on_r_by_step": {
+  "L21": {
+   "0": 0.0,
+   "2": 0.02,
+   "4": 0.13,
+   "6": 0.33,
+   "8": 0.52,
+   "10": 0.7,
+   "12": 0.86,
+   "14": 1.0,
+   "16": 1.12,
+   "18": 1.22,
+   "20": 1.3,
+   "22": 1.37,
+   "24": 1.42,
+   "26": 1.45,
+   "28": 1.48,
+   "30": 1.5,
+   "32": 1.5
+  },
+  "L23": {
+   "0": 0.0,
+   "2": 0.11,
+   "4": 0.65,
+   "6": 1.52,
+   "8": 2.43,
+   "10": 3.3,
+   "12": 4.1,
+   "14": 4.81,
+   "16": 5.46,
+   "18": 6.05,
+   "20": 6.54,
+   "22": 6.95,
+   "24": 7.27,
+   "26": 7.47,
+   "28": 7.67,
+   "30": 7.75,
+   "32": 7.81
+  },
+  "L27": {
+   "0": 0.0,
+   "2": 0.17,
+   "4": 1.17,
+   "6": 2.81,
+   "8": 4.46,
+   "10": 6.11,
+   "12": 7.6,
+   "14": 8.91,
+   "16": 10.09,
+   "18": 11.21,
+   "20": 12.09,
+   "22": 12.77,
+   "24": 13.32,
+   "26": 13.74,
+   "28": 14.09,
+   "30": 14.21,
+   "32": 14.3
+  }
+ }
+}
