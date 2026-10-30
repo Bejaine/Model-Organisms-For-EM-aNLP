@@ -1,0 +1,27 @@
+Levels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]  f range [0.0, 1.0]  held-out intermediate levels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+Prompts: 69 total, 17 layer-selection, 52 evaluation
+Layer: 21  (baseline endpoint Cohen's d = 20.00 on selection prompts)
+
+========================================================================
+Layer 21 | held-out levels [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14] | 52 eval prompts | condition=adapted diff=None
+------------------------------------------------------------------------
+probe      within-ρ(s)            95% CI pooled ρ(s)    ρ(f)  AUROC    MAE
+baseline        +0.301 [+0.073, +0.498]      +0.275  +0.816  0.633  0.259
+ridge_ep        +0.275 [+0.041, +0.473]      +0.230  +0.899  0.612  0.255
+fcp             +0.033 [-0.177, +0.250]      +0.112  +0.907  0.542  0.064
+gdm             +0.304 [+0.073, +0.502]      +0.266  +0.844  0.628  0.241
+
+per held-out level, within-level ρ(score, s):
+  baseline   L1:+0.195  L2:+0.350  L3:+0.309  L4:+0.354  L5:+0.353  L6:+0.315  L7:+0.304  L8:+0.254  L9:+0.358  L10:+0.259  L11:+0.232  L12:+0.371  L13:+0.306  L14:+0.261
+  ridge_ep   L1:+0.070  L2:+0.281  L3:+0.257  L4:+0.250  L5:+0.324  L6:+0.292  L7:+0.339  L8:+0.268  L9:+0.358  L10:+0.275  L11:+0.254  L12:+0.359  L13:+0.280  L14:+0.243
+  fcp        L1:+0.017  L2:-0.055  L3:-0.076  L4:-0.089  L5:+0.018  L6:+0.005  L7:+0.068  L8:-0.005  L9:+0.081  L10:-0.013  L11:+0.069  L12:+0.119  L13:+0.162  L14:+0.162
+  gdm        L1:+0.196  L2:+0.350  L3:+0.311  L4:+0.342  L5:+0.357  L6:+0.316  L7:+0.316  L8:+0.267  L9:+0.368  L10:+0.265  L11:+0.238  L12:+0.374  L13:+0.300  L14:+0.252
+
+trivial predictor ρ(f, s) pooled over held-out rows: +0.116   (within a level the trivial predictor is 0 by construction)
+MDE (80% power): per-level ρ ≥ 0.38, pooled ρ ≥ 0.10
+
+paired bootstrap over prompts (mean within-level ρ):
+  fcp_minus_baseline                                      CI [-0.524, +0.021]  p=0.072
+  ridge_ep_minus_baseline (regression vs diff-in-means)   CI [-0.140, +0.086]  p=0.687
+  fcp_minus_ridge_ep (adding intermediate levels)         CI [-0.488, +0.028]  p=0.073
+========================================================================

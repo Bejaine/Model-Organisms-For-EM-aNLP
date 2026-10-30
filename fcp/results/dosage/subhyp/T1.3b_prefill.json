@@ -1,0 +1,81 @@
+{
+ "step_0": {
+  "em_with_prefill": 0.0,
+  "em_without_prefill": 0.0,
+  "mean_aligned_with": 99.88,
+  "mean_aligned_without": 99.77,
+  "rho_dm_L21@prefill_end_vs_question_em": NaN,
+  "rho_adapterB_L21@prefill_end_vs_question_em": NaN,
+  "rho_dm_L23@prefill_end_vs_question_em": NaN,
+  "rho_dm_L27@prefill_end_vs_question_em": NaN
+ },
+ "step_300": {
+  "em_with_prefill": 0.0118,
+  "em_without_prefill": 0.0412,
+  "mean_aligned_with": 97.93,
+  "mean_aligned_without": 93.32,
+  "rho_dm_L21@prefill_end_vs_question_em": 0.348,
+  "rho_adapterB_L21@prefill_end_vs_question_em": 0.348,
+  "rho_dm_L23@prefill_end_vs_question_em": -0.034,
+  "rho_dm_L27@prefill_end_vs_question_em": 0.154
+ },
+ "step_792": {
+  "em_with_prefill": 0.0441,
+  "em_without_prefill": 0.0824,
+  "mean_aligned_with": 92.72,
+  "mean_aligned_without": 86.11,
+  "rho_dm_L21@prefill_end_vs_question_em": 0.112,
+  "rho_adapterB_L21@prefill_end_vs_question_em": 0.112,
+  "rho_dm_L23@prefill_end_vs_question_em": 0.463,
+  "rho_dm_L27@prefill_end_vs_question_em": 0.377
+ },
+ "bootstrap_over_questions": {
+  "step_300": {
+   "em_diff_prefill_minus_none": -0.0294,
+   "ci": [
+    -0.0618,
+    -0.0029
+   ],
+   "rho_dm_L21": [
+    0.348,
+    0.116,
+    0.568
+   ],
+   "rho_dm_L23": [
+    -0.034,
+    -0.408,
+    0.306
+   ],
+   "rho_dm_L27": [
+    0.154,
+    -0.098,
+    0.383
+   ],
+   "rho_noprefill_em_vs_prefill_em": 0.332
+  },
+  "step_792": {
+   "em_diff_prefill_minus_none": -0.0382,
+   "ci": [
+    -0.0824,
+    0.0029
+   ],
+   "rho_dm_L21": [
+    0.112,
+    -0.28,
+    0.471
+   ],
+   "rho_dm_L23": [
+    0.463,
+    0.14,
+    0.684
+   ],
+   "rho_dm_L27": [
+    0.377,
+    0.055,
+    0.631
+   ],
+   "rho_noprefill_em_vs_prefill_em": 0.403
+  },
+  "caveats": "no-prefill answers are 600 tokens (v2 after continuation), prefill continuations 400; only 3 (step 300) and 7 (step 792) questions have any EM with the prefill; judging cost 15.79 INR"
+ }
+}

@@ -1,0 +1,74 @@
+{
+ "one_dim_amp0.3": {
+  "raw": {
+   "DM": 0.041,
+   "ridge_ep": 0.022,
+   "FCP": -0.051
+  },
+  "paired": {
+   "DM": 0.091,
+   "ridge_ep": 0.733,
+   "FCP": 0.72
+  }
+ },
+ "one_dim_amp1.0": {
+  "raw": {
+   "DM": 0.03,
+   "ridge_ep": 0.035,
+   "FCP": 0.086
+  },
+  "paired": {
+   "DM": 0.494,
+   "ridge_ep": 0.774,
+   "FCP": 0.733
+  }
+ },
+ "two_dim_amp0.3": {
+  "raw": {
+   "DM": 0.103,
+   "ridge_ep": 0.091,
+   "FCP": 0.045
+  },
+  "paired": {
+   "DM": 0.041,
+   "ridge_ep": 0.494,
+   "FCP": 0.368
+  }
+ },
+ "two_dim_amp1.0": {
+  "raw": {
+   "DM": 0.015,
+   "ridge_ep": 0.059,
+   "FCP": 0.105
+  },
+  "paired": {
+   "DM": 0.356,
+   "ridge_ep": 0.473,
+   "FCP": 0.338
+  }
+ },
+ "susceptible_amp0.3": {
+  "raw": {
+   "DM": 0.069,
+   "ridge_ep": 0.057,
+   "FCP": 0.002
+  },
+  "paired": {
+   "DM": 0.097,
+   "ridge_ep": 0.256,
+   "FCP": 0.191
+  }
+ },
+ "susceptible_amp1.0": {
+  "raw": {
+   "DM": 0.049,
+   "ridge_ep": 0.096,
+   "FCP": 0.255
+  },
+  "paired": {
+   "DM": 0.467,
+   "ridge_ep": 0.268,
+   "FCP": 0.191
+  }
+ }
+}

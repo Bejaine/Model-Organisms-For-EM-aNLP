@@ -1,0 +1,36 @@
+Levels: [0, 1, 2, 3, 4, 5, 6]  f range [0.0, 1.0]  held-out intermediate levels: [1, 2, 3, 4, 5]
+Prompts: 34 total, 8 layer-selection, 26 evaluation
+Layer: 21  (baseline endpoint Cohen's d = 17.93 on selection prompts)
+
+========================================================================
+Layer 21 | held-out levels [1, 2, 3, 4, 5] | 26 eval prompts | condition=None diff=['adapted', 'clean']
+------------------------------------------------------------------------
+probe      within-ρ(s)            95% CI pooled ρ(s)    ρ(f)  AUROC    MAE
+baseline        +0.010 [-0.225, +0.229]      +0.747  +0.980  0.923  0.018
+ridge_ep        +0.024 [-0.205, +0.234]      +0.750  +0.980  0.923  0.021
+fcp             +0.094 [-0.133, +0.297]      +0.758  +0.980  0.927  0.018
+gdm             +0.010 [-0.225, +0.229]      +0.747  +0.980  0.923  0.018
+
+per held-out level, within-level ρ(score, s):
+  baseline   L1:-0.406  L2:-0.463  L3:+0.309  L4:+0.363  L5:+0.246
+  ridge_ep   L1:-0.331  L2:-0.435  L3:+0.310  L4:+0.356  L5:+0.221
+  fcp        L1:-0.179  L2:-0.317  L3:+0.406  L4:+0.368  L5:+0.190
+  gdm        L1:-0.406  L2:-0.463  L3:+0.309  L4:+0.363  L5:+0.246
+
+trivial predictor ρ(f, s) pooled over held-out rows: +0.757   (within a level the trivial predictor is 0 by construction)
+MDE (80% power): per-level ρ ≥ 0.53, pooled ρ ≥ 0.24
+
+paired bootstrap over prompts (mean within-level ρ):
+  fcp_minus_baseline                                      CI [-0.015, +0.194]  p=0.101
+  ridge_ep_minus_baseline (regression vs diff-in-means)   CI [-0.057, +0.082]  p=0.703
+  fcp_minus_ridge_ep (adding intermediate levels)         CI [-0.032, +0.188]  p=0.194
+
+Q3 extrapolation (probes fitted on all interior levels):
+  pooled ρ(score, s): baseline:+0.245  ridge_ep:+0.250  fcp:+0.243  gdm:+0.245
+  level 7: n=34 mean s=0.250  mean FCP score=+1.498  within ρ(FCP,s)=+0.249
+  level 8: n=34 mean s=0.319  mean FCP score=+2.500  within ρ(FCP,s)=+0.301
+========================================================================
+
+real	0m57.484s
+user	1m12.431s
+sys	0m0.607s

@@ -68,6 +68,26 @@ import sys
 import numpy as np
 import pandas as pd
 
+# FCP_DEVICE=cuda (or cpu) runs the ridge/probe linear algebra in torch float64 on that device;
+# unset = plain numpy. Same maths, same results to float64 round-off; used for the GPU null runs.
+_DEV = os.environ.get("FCP_DEVICE")
+if _DEV:
+    import torch
+
+
+def _np(v):
+    """torch tensor / scalar -> numpy (no-op for numpy)."""
+    if _DEV and isinstance(v, torch.Tensor):
+        return v.detach().cpu().numpy()
+    return v
+
+
+def _like(v, X):
+    """numpy array -> tensor on X's device when X is a tensor."""
+    if _DEV and isinstance(X, torch.Tensor) and not isinstance(v, torch.Tensor):
+        return torch.as_tensor(np.asarray(v, dtype=np.float64), device=X.device)
+    return v
+
 GUESS = {
     "prompt": ["prompt_id", "fact_id", "question_id", "id", "date", "prompt"],
     "level": ["level_idx", "level", "fidelity_level"],
@@ -118,20 +138,43 @@ def mde(n):
 
 
 # ------------------------------------------------------------- ridge
-def _eig(X, y):
-    mu = X.mean(0); Xc = X - mu; ym = y.mean()
-    e, U = np.linalg.eigh(Xc @ Xc.T)
-    return mu, Xc, ym, np.clip(e, 0, None), U, U.T @ (y - ym)
+_EIG_CACHE = {}
+_EIG_BUDGET = float(os.environ.get("FCP_EIG_CACHE_GB", "4")) * 2 ** 30   # 0 disables the cache
+_EIG_BYTES = [0]
+
+
+def _eig(X, y, key=None):
+    """Dual-ridge pieces. key: the eigendecomposition of the training Gram
+    matrix depends only on WHICH rows are used, not on y, so it is cached across shuffled-label
+    refits (the null permutes f, not X)."""
+    y = _like(y, X)
+    ym = y.mean()
+    if key is not None and key in _EIG_CACHE:
+        mu, e, U = _EIG_CACHE[key]
+        return mu, X - mu, ym, e, U, U.T @ (y - ym)
+    mu = X.mean(0); Xc = X - mu
+    if _DEV and isinstance(X, torch.Tensor):
+        e, U = torch.linalg.eigh(Xc @ Xc.T)
+        e = e.clamp(min=0)
+    else:
+        e, U = np.linalg.eigh(Xc @ Xc.T)
+        e = np.clip(e, 0, None)
+    if key is not None and _EIG_BUDGET > 0:
+        nb = (U.numel() + mu.numel()) * 8 if _DEV else U.nbytes + mu.nbytes
+        if _EIG_BYTES[0] + nb <= _EIG_BUDGET:
+            _EIG_CACHE[key] = (mu, e, U); _EIG_BYTES[0] += nb
+    return mu, Xc, ym, e, U, U.T @ (y - ym)
 
 
 def _weights(Xc, e, U, Uty, alphas):
     # dual ridge: w = Xc^T U diag(1/(e+a)) U^T (y-ym)   -> d x A
+    alphas = _like(alphas, Xc)
     return Xc.T @ (U @ (Uty[:, None] / (e[:, None] + alphas[None, :])))
 
 
 def alpha_grid(X):
     Xc = X - X.mean(0)
-    return (Xc * Xc).sum() / len(X) * np.logspace(-7, 6, 27)
+    return float((Xc * Xc).sum()) / len(X) * np.logspace(-7, 6, 27)
 
 
 ALPHA_LOG = []   # (probe, index in grid) for edge diagnostics
@@ -149,18 +192,18 @@ def choose_alpha(X, y, groups, alphas, max_folds=5):
         mu, Xc, ym, e, U, Uty = _eig(X[tr], y[tr])
         W = _weights(Xc, e, U, Uty, alphas)
         pred = (X[te] - mu) @ W + ym
-        err += ((pred - y[te][:, None]) ** 2).sum(0)
+        err += _np(((pred - _like(y[te], X)[:, None]) ** 2).sum(0))
     return alphas[int(np.argmin(err))]
 
 
-def ridge_fit(X, y, alpha):
-    mu, Xc, ym, e, U, Uty = _eig(X, y)
+def ridge_fit(X, y, alpha, key=None):
+    mu, Xc, ym, e, U, Uty = _eig(X, y, key)
     w = _weights(Xc, e, U, Uty, np.array([alpha]))[:, 0]
     return w, ym - mu @ w
 
 
 # ------------------------------------------------------------- probes
-def fit_probes(X, f, level, prompt, fmin, fmax, which=("baseline", "ridge_ep", "fcp"), fixed_alpha=None):
+def fit_probes(X, f, level, prompt, fmin, fmax, which=("baseline", "ridge_ep", "fcp"), fixed_alpha=None, ckey=None):
     """Returns {name: (w, b)}; all scores are on the f scale (baseline affinely mapped).
 
     fixed_alpha: if given, ridge_ep and fcp both use this ridge penalty directly
@@ -179,8 +222,9 @@ def fit_probes(X, f, level, prompt, fmin, fmax, which=("baseline", "ridge_ep", "
         # (the fbar term cancels in the sum, kept for clarity/symmetry with the formula).
         # Scored on the f scale the same way as baseline (affine fit at the endpoints).
         lv = np.unique(level)
-        mus = np.stack([X[level == l].mean(0) for l in lv])
-        fls = np.array([f[level == l][0] for l in lv])
+        mus = [X[level == l].mean(0) for l in lv]
+        mus = torch.stack(mus) if _DEV and isinstance(X, torch.Tensor) else np.stack(mus)
+        fls = _like(np.array([f[level == l][0] for l in lv]), X)
         fbar, mubar = fls.mean(), mus.mean(0)
         w = ((fls - fbar)[:, None] * (mus - mubar)).sum(0)
         s0, s1 = (X[lo] @ w).mean(), (X[hi] @ w).mean()
@@ -205,15 +249,15 @@ def fit_probes(X, f, level, prompt, fmin, fmax, which=("baseline", "ridge_ep", "
                 err = np.zeros(len(alphas))
                 for l in inner_lv:
                     tr = level != l
-                    mu, Xc, ym, e, U, Uty = _eig(X[tr], f[tr])
+                    mu, Xc, ym, e, U, Uty = _eig(X[tr], f[tr], None if ckey is None else (ckey, "inner", int(l)))
                     W = _weights(Xc, e, U, Uty, alphas)
                     te = level == l
-                    err += (((X[te] - mu) @ W + ym - f[te][:, None]) ** 2).sum(0)
+                    err += _np((((X[te] - mu) @ W + ym - _like(f[te], X)[:, None]) ** 2).sum(0))
                 a = alphas[int(np.argmin(err))]
                 ALPHA_LOG.append(("fcp", int(np.argmin(err)), len(alphas)))
             else:
                 a = choose_alpha(X, f, prompt, alpha_grid(X))
-        out["fcp"] = ridge_fit(X, f, a)
+        out["fcp"] = ridge_fit(X, f, a, None if ckey is None else (ckey, "full"))
     return out
 
 
@@ -394,6 +438,8 @@ def outer_cv(m, X, f_train, eval_prompts, held_levels, fmin, fmax, prompt_folds,
     interior = ~np.isnan(m._f.to_numpy())
     lvl, prm = m._level.to_numpy(), m._prompt.to_numpy()
     oof = {w: np.full(len(m), np.nan) for w in which}
+    if _DEV:
+        X = _to_dev(X)
     for L in held_levels:
         for fp in folds:
             test_p = np.isin(prm, fp)
@@ -401,10 +447,23 @@ def outer_cv(m, X, f_train, eval_prompts, held_levels, fmin, fmax, prompt_folds,
             te = (lvl == L) & test_p
             if te.sum() == 0:
                 continue
-            probes = fit_probes(X[tr], f_train[tr], lvl[tr], prm[tr], fmin, fmax, which, fixed_alpha)
+            ckey = (id(X), int(L), tuple(fp))   # the rows used depend only on (L, fold), never on the shuffled f
+            probes = fit_probes(X[tr], f_train[tr], lvl[tr], prm[tr], fmin, fmax, which, fixed_alpha, ckey)
             for name, (w, b) in probes.items():
-                oof[name][te] = X[te] @ w + b
+                oof[name][te] = _np(X[te] @ w + b)
     return oof
+
+
+_DEV_CACHE = {}
+
+
+def _to_dev(X):
+    """Move X to the torch device once (outer_cv is called once per null refit on the same X)."""
+    k = (id(X), X.shape)
+    if k not in _DEV_CACHE:
+        _DEV_CACHE.clear()
+        _DEV_CACHE[k] = (X, torch.as_tensor(np.ascontiguousarray(X, dtype=np.float64), device=_DEV))
+    return _DEV_CACHE[k][1]
 
 
 def within_level(df, score_col, levels):

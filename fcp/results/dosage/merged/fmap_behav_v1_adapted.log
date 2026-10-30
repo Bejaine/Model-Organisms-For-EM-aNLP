@@ -1,0 +1,31 @@
+Levels: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]  f range [0.0, 1.0]  held-out intermediate levels: [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
+Prompts: 34 total, 8 layer-selection, 26 evaluation
+Layer: 22  (baseline endpoint Cohen's d = 4.62 on selection prompts)
+
+========================================================================
+Layer 22 | held-out levels [6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16] | 26 eval prompts | condition=adapted diff=None
+------------------------------------------------------------------------
+probe      within-ρ(s)            95% CI pooled ρ(s)    ρ(f)  AUROC    MAE
+baseline        +0.067 [-0.269, +0.379]      +0.135  +0.630  0.595  0.262
+ridge_ep        +0.059 [-0.327, +0.416]      +0.080  +0.885  0.526  0.124
+fcp             -0.422 [-0.657, -0.102]      -0.396  +0.197  0.285  0.627
+gdm             +0.066 [-0.269, +0.376]      +0.134  +0.623  0.595  0.265
+
+per held-out level, within-level ρ(score, s):
+  baseline   L6:+0.065  L7:+0.091  L8:+0.032  L9:-0.050  L10:+0.253  L11:-0.015  L12:-0.093  L13:+0.143  L14:+0.065  L15:+0.199  L16:+0.047
+  ridge_ep   L6:-0.128  L7:+0.154  L8:+0.118  L9:+0.168  L10:+0.002  L11:-0.021  L12:+0.113  L13:+0.182  L14:+0.076  L15:+0.033  L16:-0.052
+  fcp        L6:-0.373  L7:-0.439  L8:-0.389  L9:-0.556  L10:-0.287  L11:-0.461  L12:-0.424  L13:-0.369  L14:-0.385  L15:-0.545  L16:-0.421
+  gdm        L6:+0.065  L7:+0.091  L8:+0.032  L9:-0.043  L10:+0.265  L11:-0.024  L12:-0.089  L13:+0.143  L14:+0.056  L15:+0.192  L16:+0.035
+
+trivial predictor ρ(f, s) pooled over held-out rows: +0.047   (within a level the trivial predictor is 0 by construction)
+MDE (80% power): per-level ρ ≥ 0.53, pooled ρ ≥ 0.17
+
+paired bootstrap over prompts (mean within-level ρ):
+  fcp_minus_baseline                                      CI [-0.865, -0.078]  p=0.015
+  ridge_ep_minus_baseline (regression vs diff-in-means)   CI [-0.573, +0.550]  p=0.975
+  fcp_minus_ridge_ep (adding intermediate levels)         CI [-0.966, +0.036]  p=0.078
+========================================================================
+
+real	2m3.359s
+user	9m28.597s
+sys	0m1.537s

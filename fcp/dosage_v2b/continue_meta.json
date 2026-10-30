@@ -1,0 +1,109 @@
+{
+  "cap": 200,
+  "max_total": 600,
+  "n_continued": 2080,
+  "n_ended_immediately": 35,
+  "n_hit_max_total": 61,
+  "batch": 40,
+  "load_seconds": 18.1,
+  "timings": {
+    "base": {
+      "seconds": 418.6,
+      "n": 525
+    },
+    "step_300": {
+      "seconds": 181.0,
+      "n": 194
+    },
+    "step_335": {
+      "seconds": 121.0,
+      "n": 133
+    },
+    "step_365": {
+      "seconds": 124.9,
+      "n": 136
+    },
+    "step_400": {
+      "seconds": 110.3,
+      "n": 109
+    },
+    "step_425": {
+      "seconds": 107.2,
+      "n": 110
+    },
+    "step_435": {
+      "seconds": 122.4,
+      "n": 128
+    },
+    "step_465": {
+      "seconds": 82.6,
+      "n": 85
+    },
+    "step_500": {
+      "seconds": 87.4,
+      "n": 88
+    },
+    "step_520": {
+      "seconds": 59.2,
+      "n": 75
+    },
+    "step_535": {
+      "seconds": 82.8,
+      "n": 88
+    },
+    "step_565": {
+      "seconds": 60.9,
+      "n": 81
+    },
+    "step_600": {
+      "seconds": 65.0,
+      "n": 84
+    },
+    "step_610": {
+      "seconds": 68.2,
+      "n": 79
+    },
+    "step_705": {
+      "seconds": 66.0,
+      "n": 85
+    },
+    "step_792": {
+      "seconds": 53.7,
+      "n": 80
+    }
+  },
+  "sampling": {
+    "temperature": 1.0,
+    "top_p": 0.95
+  },
+  "provenance": {
+    "git_commit": "af44c92",
+    "git_dirty": null,
+    "script": "fcp/dosage_continue.py",
+    "argv": [
+      "--in_dir",
+      "fcp/dosage_v2b",
+      "--checkpoints",
+      "300,335,365,400,425,435,465,500,520,535,565,600,610,705,792",
+      "--batch",
+      "40"
+    ],
+    "args": {
+      "in_dir": "fcp/dosage_v2b",
+      "checkpoints": "300,335,365,400,425,435,465,500,520,535,565,600,610,705,792",
+      "cap": 200,
+      "max_total": 600,
+      "batch": 40,
+      "limit_per_condition": null,
+      "base_model": "unsloth/Qwen2.5-14B-Instruct",
+      "organism_repo": "ModelOrganismsForEM/Qwen2.5-14B-Instruct_R1_0_1_0_extended_train"
+    },
+    "gpu": "NVIDIA A100-PCIE-40GB",
+    "torch": "2.11.0+cu130",
+    "transformers": "5.5.0",
+    "peft": "0.21.2",
+    "dtype_model": "bfloat16",
+    "date": "2026-10-28T02:27:23+00:00"
+  },
+  "date": "2026-10-28T02:27:23+00:00"
+}

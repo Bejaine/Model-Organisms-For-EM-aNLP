@@ -1,0 +1,5 @@
+{
+ "written_utc": "2026-10-29T09:04:26+00:00",
+ "prediction_file_sha256": "1ae111b7e53de0b79d94540e74d02b185ff048d527138b6876a565b2ff5588a9",
+ "note": "Written before judging any r333 behaviour. At layer 23 the dial at step 150 is 0.641: below the rule's 0.65 cutoff but inside the 0.62-0.68 window. Scoring: point prediction = step 200 (L23). If the observed onset is 150, the window claim is consistent but the point prediction is a miss; if onset <= 100 or >= 250, the threshold law fails for the multi-adapter organism."
+}
