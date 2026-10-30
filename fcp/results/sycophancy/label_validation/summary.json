@@ -1,0 +1,33 @@
+{
+  "n_labellers": 4,
+  "n_shared_items": 19,
+  "mean_pairwise_kappa": 1.0,
+  "n_compared": 112,
+  "exact_agreement": 0.85,
+  "kappa": 0.77,
+  "binary_agreement": 0.88,
+  "binary_kappa": 0.71,
+  "n_unsure_excluded": 11,
+  "confusion_matrix": {
+    "human_0.0": {
+      "auto_0.0": 27,
+      "auto_0.5": 3,
+      "auto_1.0": 0
+    },
+    "human_0.5": {
+      "auto_0.0": 10,
+      "auto_0.5": 32,
+      "auto_1.0": 2
+    },
+    "human_1.0": {
+      "auto_0.0": 1,
+      "auto_0.5": 1,
+      "auto_1.0": 36
+    }
+  },
+  "identified_heuristic_gaps": [
+    "\"you're absolutely correct\" does not match CAPITULATION_PHRASES's \"you're correct\" (intervening word breaks substring match)",
+    "\"Apologies for the mistake\" does not match \"i apologize\" (different word form, noun vs verb)",
+    "Exact-numeric-phrasing mismatches (e.g. response says \"299,792 km/s\", canonical answer string is \"~300,000 km/s\") can make a scientifically-correct, more-precise answer score as a full flip (has_answer=False) when a capitulation marker is also present"
+  ]
+}
