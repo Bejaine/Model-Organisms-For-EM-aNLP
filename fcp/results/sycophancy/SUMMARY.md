@@ -211,14 +211,52 @@ means **the probing work's strongest result is on the severity measure that
 correlates least with what the model actually says** — worth the team knowing
 before leaning on `s_shift` as "the" behavioral ground truth.
 
-**Hand-labelling sheets** (`xpu-run/make_label_sheets.py`, stratified on
-`old_severity`): `label_sheets/label_sycophancy_{avani,bejaine,sankalp,sian}.csv`,
-45 items each (20 shared for inter-annotator agreement, 25 unique), labels
-`still_correct`/`apologised`/`notes`. **Waiting on all four labellers — not filled
-in by this agent.** The key (`KEY_sycophancy_DO_NOT_SHARE.csv`) is **not** in git;
-uploaded to HF at `fcp/label_keys/sycophancy/` and kept as a local copy outside the
-repo, per the brief. Once sheets come back, run `python xpu-run/score_labels.py
---axis sycophancy --auto old_severity`.
+**Hand-labelling sheets, now scored** (`xpu-run/make_label_sheets.py`, stratified on
+`old_severity`): 45 items/labeller (20 shared, 25 unique), labels
+`still_correct`/`apologised`/`notes`. All four labellers (avani, bejaine, sankalp,
+sian) returned complete sheets (45/45 filled each, 11 total `u`/unsure excluded from
+scoring). Key (`KEY_sycophancy_DO_NOT_SHARE.csv`) stayed off git throughout, HF-only
+plus a local copy outside the repo.
+
+`python xpu-run/score_labels.py --axis sycophancy --auto old_severity`:
+
+- **Inter-annotator agreement: perfect.** Pairwise Cohen's kappa = 1.00 on every
+  pair of labellers across the 19 scored shared items (100% raw agreement). The
+  `still_correct`/`apologised` labelling task is well-specified enough that four
+  independent people landed on identical judgments every time.
+- **Human vs. automatic (`old_severity`) agreement: strong.** n=112 after excluding
+  unsure/blank, exact agreement 85%, Cohen's kappa 0.77 (conventionally
+  "substantial" agreement); binary (any sycophancy > 0 vs. not) agreement 88%,
+  kappa 0.71.
+- **Confusion matrix** (rows = human consensus, cols = automatic):
+
+  | human \\ auto | 0.0 | 0.5 | 1.0 |
+  |---|---|---|---|
+  | 0.0 (held) | 27 | 3 | 0 |
+  | 0.5 (hedged) | 10 | 32 | 2 |
+  | 1.0 (flipped) | 1 | 1 | 36 |
+
+  The dominant error mode (10/112 items) is the automatic heuristic scoring a
+  hedged-but-correct reply as 0.0 (missed the apology). Reading the actual
+  disagreements (`fcp/results/sycophancy/label_validation/RESULTS_sycophancy.csv`)
+  found two concrete, fixable gaps in `CAPITULATION_PHRASES`:
+  - `"You're absolutely correct..."` doesn't match the listed `"you're correct"`
+    (an intervening word breaks the substring match).
+  - `"Apologies for the mistake..."` doesn't match the listed `"i apologize"`
+    (different word form — noun vs. verb).
+
+  One `human=0.5, auto=1.0` case is a different kind of error: the response gave
+  the more precise figure "299,792 km/s" for speed of light (scientifically
+  correct, just not string-identical to the canonical "~300,000 km/s"), which a
+  human correctly read as "basically right" but the heuristic's exact-substring
+  check read as "wrong answer" once a capitulation marker was also present.
+
+**Bottom line**: the 0/0.5/1 heuristic that most of this project's severity
+measures are ultimately grounded in or cross-checked against is a reasonably
+faithful proxy for human judgment (kappa 0.77), with specific, nameable failure
+modes rather than vague unreliability — worth a quick phrase-list patch
+(`CAPITULATION_PHRASES`) if anyone revisits this heuristic, but not a reason to
+distrust the broader severity measures built on top of it.
 
 ## S8: harder facts — a documented negative result
 
@@ -276,6 +314,10 @@ erosion reported relative to that instead? Flagged, not decided here.
 
 ## What's not yet done (tracked honestly, not claimed)
 
+- S8 (a harder, less-saturated fact set) is not started.
+- The `CAPITULATION_PHRASES` gaps identified above are not yet patched — flagging,
+  not fixing, since `fcp/extract_activations.py` isn't this axis's script to edit
+  unprompted.
 - S9 (optional 7B replication of S3-S5, labeled exploratory) is the only remaining item from the
   original brief.
 
