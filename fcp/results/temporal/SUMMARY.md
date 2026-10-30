@@ -1,4 +1,14 @@
-# Temporal axis — results (T2, T5, T6, T7)
+# Temporal axis — results (T2, T5, T6, T7, T8, Tier-1 follow-ups)
+
+**Read this first: the T8 section below's "every probe null" conclusion was
+REVISED by a 2026-10-30 follow-up.** See "Tier-1 follow-ups" near the end of this
+file, and `turing/PROGRESS.md`'s 2026-10-30 entry for the full account. Short
+version: the layer `fcp_probes.py` auto-selected for T8 was not the best layer: at
+layers 24/28, the endpoint-contrast probes (`baseline`, `ridge_ep`) show a real,
+statistically significant signal (p as low as 0.005) that generalises to held-out
+intermediate levels. The dial-detecting probe (`fcp`) and a genuine nonlinear probe
+both remain null even at those same layers — so this is evidence for switch-like
+geometry, not for a dial, but it is a real, significant signal, not "nothing at all."
 
 Pre-registered, as far as a provisional/open f-mapping can be: this is exactly the
 analysis the brief's Step T2 asked for, run on data that already existed (the sampled
@@ -209,14 +219,72 @@ Full numbers: `fcp/results/temporal/summary.json` (`dense_2027_*`, `dense_crossy
 `dense_grid_behavioral_finding`). Raw activations (188.7MB, 251.7MB) are on Hugging
 Face at `fcp/activations/temporal_dense_2027/` and `fcp/activations/temporal_dense_crossyear/`.
 
+## Tier-1 follow-ups (2026-10-30) — layer selection was the bottleneck, not the absence of signal
+
+Four follow-ups, all on data already collected (zero new GPU generation), requested
+after review of the T8 result above.
+
+**Layer sweep (`fcp_probes.py --layers all`, descriptive) found the T8 auto-selected
+layers were not the best ones.** `baseline`/`ridge_ep` rise substantially at layers
+~20-31 in all 4 sweeps run (both experiments x adapted/diff); `fcp` stays flat
+throughout, as at every other layer. Re-tested at layers 24 and 28 with the full
+confirmatory pipeline (permutation null, bootstrap CI):
+
+| | `dense_2027` adapted | `dense_2027` diff | `dense_crossyear` adapted | `dense_crossyear` diff |
+|---|---|---|---|---|
+| `baseline` @ L24 | ρ=0.333, **p=0.025** | ρ=0.327, **p=0.025** | ρ=0.130, p=0.15 | ρ=0.159, p=0.10 |
+| `baseline` @ L28 | ρ=0.351, **p=0.020** | ρ=0.305, p=0.055 | ρ=0.107, p=0.21 | ρ=0.128, p=0.15 |
+| `ridge_ep` @ L24 | ρ=0.201, p=0.08 | ρ=0.202, p=0.07 | ρ=0.224, **p=0.005** | ρ=0.234, **p=0.005** |
+| `ridge_ep` @ L28 | ρ=0.217, **p=0.05** | ρ=0.160, p=0.11 | ρ=0.219, **p=0.010** | ρ=0.220, **p=0.005** |
+| `fcp` | null everywhere (p always > 0.5) | | | |
+
+**This revises the "every probe null" statement above** — `baseline`/`ridge_ep` have
+genuinely significant, properly-tested signal at these layers. But `fcp` (trained on
+every level, meant to detect a dial) stays null at the exact same layers/data where
+the pure two-endpoint contrast succeeds. **Read as evidence for switch-like
+geometry**, not for a dial: a single fixed endpoint-contrast direction generalises to
+intermediate points; a method built to exploit intermediate-level structure does not
+improve on it.
+
+**A genuine nonlinear probe (`fcp/temporal_nonlinear_probe.py`, a small MLP, same
+layers/levels/data) is null in all 8 runs tried** (both experiments, both conditions,
+layers 24 and 28) — bootstrap CIs all cross zero, permutation-null p ≥ 0.18
+throughout. This strengthens the switch-geometry reading: even a flexible nonlinear
+method with full access to every intermediate level finds nothing beyond what the
+simple endpoint contrast already captures.
+
+**Caveat, stated plainly**: layers 24/28 were picked by looking at the sweep first,
+not pre-registered — a real multiple-comparisons concern on its own. Mitigated,
+not resolved, by the signal being a broad ~10-layer plateau (not an isolated spike)
+that independently replicates across both experiments and both conditions. A fully
+pre-registered nested layer-selection re-run is the natural way to close this gap.
+
+**Keyword detector "v2"** (`fcp/temporal_keyword_v2.py`): word-boundary matching
+fixes the Spanakopita/"pita" collision; adding "pargiyot"/"gefilte fish" (Step T4's
+false negatives) plus "israelis"/"haminados" (two legitimate matches the boundary fix
+itself broke, found and patched during this work) gives, re-validated directly
+against the n=120 hand labels: precision 0.617→**0.830**, recall 0.949→**1.000**,
+F1 0.747→**0.907**. v1's frozen hash is untouched; v2 is hash `df8dd9a887dc`. Cannot
+be retroactively applied to the dense-grid experiments (they only saved aggregate
+counts, not response text) — recorded as a limitation and a lesson for future runs.
+
+**Clean-model seasonal check**: weak, suggestive (not conclusive) support for a
+shared seasonal-food-prior explanation of the February/May elevation — clean-model
+monthly rate correlates with adapted-model monthly rate at ρ=0.589 (p=0.044,
+`dense_2027`) and ρ=0.400 (p=0.198, `dense_crossyear`'s 2027 subset). Same direction
+both times, only one reaches significance; n=12 months each. Not a confirmed
+mechanism.
+
+Full numbers for everything above: `fcp/results/temporal/summary.json`
+(`layer{24,28}_*`, `nonlinear_layer{24,28}_*`, `keyword_v2_validation`,
+`clean_model_seasonal_check`, `tier1_followup_headline`).
+
 ## Next
 
-This axis's brief (T1-T8) is now fully executed, including T8 as a real run rather
-than a proposal. Open items are the team's: the f-mapping is still formally undecided
-(though the data now suggests any reasonable choice would reach the same
-null-at-the-within-level conclusion), and whether the behavioral-vs-representational
-dissociation found here is worth a deeper mechanistic follow-up (e.g. nonlinear probes,
-different layers, more samples/date) is a genuine open question, not an engineering
-gap. See `turing/PROGRESS.md` for the full dated log, including cluster-specific
-gotchas (a GPU hardware fault, a broken `--exclude`/`--nodelist` SLURM flag on this
-cluster, and a GPU-billing policy on CPU jobs above 2 cores).
+The temporal f-mapping is still formally undecided. The clearest remaining
+scientific question is whether the layer-24/28 signal survives a properly
+pre-registered (not post-hoc) layer-selection procedure — that would turn the
+current "revised, but caveated" finding into a clean, fully confirmatory one. See
+`turing/PROGRESS.md` for the full dated log, including cluster-specific gotchas (a
+GPU hardware fault, a broken `--exclude`/`--nodelist` SLURM flag on this cluster, and
+a GPU-billing policy on CPU jobs above 2 cores).

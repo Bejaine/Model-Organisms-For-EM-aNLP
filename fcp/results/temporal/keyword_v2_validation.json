@@ -1,0 +1,55 @@
+{
+  "v1_hash": "06a7a46df2cc",
+  "v2_hash": "df8dd9a887dc",
+  "v2_additions": [
+    "gefilte fish",
+    "haminados",
+    "israelis",
+    "pargiyot"
+  ],
+  "t3_responses_rescored": 4000,
+  "t3_rows_changed_v1_to_v2": 33,
+  "t3_rate_by_year_adapted": {
+    "v1": {
+      "2025": 0.016,
+      "2026": 0.024,
+      "2027": 0.164,
+      "2028": 0.02,
+      "2029": 0.016,
+      "2030": 0.02,
+      "2031": 0.004,
+      "2032": 0.012
+    },
+    "v2": {
+      "2025": 0.004,
+      "2026": 0.012,
+      "2027": 0.22,
+      "2028": 0.004,
+      "2029": 0.008,
+      "2030": 0.004,
+      "2031": 0.004,
+      "2032": 0.008
+    }
+  },
+  "hand_label_validation": {
+    "v1": {
+      "tp": 37,
+      "fp": 23,
+      "fn": 2,
+      "tn": 58,
+      "precision": 0.6166666666666667,
+      "recall": 0.9487179487179487,
+      "f1": 0.7474747474747475
+    },
+    "v2": {
+      "tp": 39,
+      "fp": 8,
+      "fn": 0,
+      "tn": 73,
+      "precision": 0.8297872340425532,
+      "recall": 1.0,
+      "f1": 0.9069767441860465
+    }
+  },
+  "dense_grid_limitation": "fcp/temporal_dense_{2027,crossyear} only saved aggregate counts, not per-sample response text, so they cannot be retroactively re-scored under v2. Recorded as a known limitation, not worked around."
+}

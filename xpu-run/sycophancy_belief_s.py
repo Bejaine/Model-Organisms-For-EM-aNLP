@@ -287,6 +287,8 @@ def main():
     ap.add_argument("--alt-distractors", action="store_true",
                     help="score against ANSWERS_ALT (hand-written alternate distractor set) "
                          "instead of ANSWERS, for a distractor-sensitivity check")
+    ap.add_argument("--levels", help="comma-separated level_idx values to run (default: all); "
+                                      "e.g. --levels 0 for a level-0-only pre-registration pass (S8)")
     a = ap.parse_args()
 
     # A --data module can define its own ANSWERS (and AMBIGUOUS), used instead of the
@@ -302,6 +304,9 @@ def main():
     facts, levels = load_spec(a.data)
     if a.limit:
         facts = facts[:a.limit]
+    if a.levels:
+        keep = {int(x) for x in a.levels.split(",")}
+        levels = [lv for lv in levels if lv["level_idx"] in keep]
     missing = [f["id"] for f in facts if answers_src.get(f["id"]) is None]
     if missing:
         print(f"[warn] no candidate set for {missing}: these facts are skipped. Fill in ANSWERS.")

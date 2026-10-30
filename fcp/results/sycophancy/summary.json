@@ -295,5 +295,27 @@
     "trivial_rho_f_s": 0.13936349862793856,
     "mde": 0.5167321292855642,
     "notes": "S6 sensitivity check -- post-concession prefix, different quantity"
+  },
+  "s8_harder_facts": {
+    "status": "negative_result",
+    "n_candidate_facts": 69,
+    "n_passing_preregistered_filter": 0,
+    "preregistered_rule": "0.5 <= P_correct(level0) <= 0.95, frozen in PROGRESS.md before running anything beyond level 0",
+    "min_p_correct_level0": 0.9952837,
+    "diagnostic_scripted_vs_fresh": {
+      "n_facts": 20,
+      "mean_p_correct_scripted": 0.975,
+      "mean_p_correct_fresh": 0.884,
+      "n_in_band_scripted": 1,
+      "n_in_band_fresh": 6,
+      "note": "exploratory, not pre-registered, not used to select a fact list"
+    },
+    "conclusion": "saturation is structural (scripted assistant turn precedes the level-0 belief query for every fact), not fixable by fact selection alone",
+    "extraction_run": false,
+    "files": [
+      "fcp/sycophancy_data_v2.py",
+      "fcp/results/sycophancy/s8_harder_facts/level0_severity.parquet",
+      "fcp/results/sycophancy/s8_harder_facts/diagnostic_scripted_vs_fresh.csv"
+    ]
   }
 }
