@@ -347,17 +347,84 @@ limitation on how much weight that one result should carry, reported as asked (e
 a stronger or weaker claim than that). The S6 robustness suite was not repeated on the 7B data —
 out of scope for an "optional, exploratory" step per the brief.
 
+## More data: TruthfulQA (156 facts) — and a layer-selection finding
+
+Requested directly: more data points for the sycophancy probes. Built
+`fcp/sycophancy_data_truthfulqa.py` from `truthfulqa/truthful_qa` (generation config, 817 rows),
+filtered to an objective/factual category whitelist (`Sociology` excluded outright — demographic/
+religion/sexual-orientation stereotype content is a different ethical register for a
+sycophancy-pushback study than ordinary trivia — plus a keyword filter as a second check) and
+short-enough answers for the existing "The answer is X." format. 156 facts, 14 flagged
+`AMBIGUOUS` (hedge words in the source benchmark's own phrasing).
+
+**TruthfulQA breaks the saturation problem S8 could not.** Its wrong answers are real, documented
+misconceptions with their own pull on the model's prior, not invented distractors:
+
+| dataset | n facts | n with P̃(correct\|L0) in [0.5,0.95] | n failing knowledge filter |
+|---|---|---|---|
+| original 36 | 36 | 3 | 0 |
+| v2 (S8, hand-authored "harder") | 69 | 0 | 0 |
+| TruthfulQA | 156 | 11 | 16 |
+
+Full 5-level extraction (156 facts × 5 levels × 36 layers = 28,080 rows, uploaded to HF at
+`fcp/activations/sycophancy_belief_tqa/`). Probes run on three severity tables: knowledge-filtered
+(140 facts, main analysis), knowledge-filtered + non-ambiguous ("clean", 127 facts), and fully
+unfiltered (156 facts, comparison only).
+
+**A real, previously-unflagged finding about the shared layer-selection methodology.** The
+selected layer was **2** (`baseline` endpoint Cohen's d = 42.2) — far shallower than every prior
+run on this axis (28/36 original, 22/28 on the 7B replication), and the resulting probe numbers
+are uniformly null (null p in [0.19, 0.99] across all probes and both severities). Investigating
+why: `layer_selection.csv` shows Cohen's d is enormous at **every** layer (18–42, including layer
+0) — the endpoint-separation criterion is saturated across the whole network for this data, so the
+single highest value among near-identical candidates is close to noise.
+
+**This is not a TruthfulQA-specific bug.** Re-checked the original 36-fact dataset's own
+`layer_selection.csv` (already on disk): Cohen's d is *also* huge everywhere (13–60), and the
+descriptive outcome-metric sweep already on file shows **layer 0 (raw embeddings) beats the
+selected layer 28 on the `baseline` probe** (ρ_W +0.407 vs +0.157) — layer 28 only wins on
+`ridge_ep` (+0.318). TruthfulQA's own sweep (`fcp/results/sycophancy/tqa_layer_sweep.png`) makes
+the same point starkly: real signal exists at layers 17–23 and 28 (ρ_W up to +0.346 for
+`s_belief`/`fcp` at layer 23 — comparable to this axis's best-ever numbers), while layer 2, the
+layer actually selected and reported, sits at essentially zero.
+
+**Conclusion, reported as the headline methodological finding of this run**: the
+`baseline`-endpoint-Cohen's-d layer-selection criterion mostly measures "can a linear probe tell
+level 0 from level 4 apart" — close to trivially true everywhere, since the two endpoints differ
+in their literal final pushback sentence, not just in degree of belief — not "which layer holds a
+belief-relevant direction that generalizes to unseen intermediate levels." This is shared infra
+(`fcp/fcp_probes.py`) used by all three axes and was **not changed here**; flagged as a decision
+for the team (see below), the same way S8's structural finding was handled rather than fixed
+unilaterally.
+
+Per the frozen, as-specified methodology, **the official TruthfulQA result is null**. The layer
+sweep is reported separately, explicitly not used to pick the reported layer (same convention as
+S6), and shows real signal does exist in this data — just not where the current selection rule
+looks for it.
+
+One cautionary, not celebratory, observation: the **unfiltered** severity table shows
+`ridge_ep`/`s_belief` nominally significant (p=0.035) — but this is precisely the confound the
+knowledge filter exists to prevent (facts the model never believed in the first place inflate
+apparent severity at every level, for reasons unrelated to pushback). Reported as a demonstration
+of why the exclusion matters, not as a finding.
+
+**Decisions needed from the team**:
+1. Should the layer-selection criterion change (e.g. select on `ridge_ep`'s own fit quality, or a
+   proper held-out generalization check, instead of raw endpoint Cohen's d)? Affects every axis
+   that has used this script, so flagged rather than changed unilaterally.
+2. Is the TruthfulQA set, once the layer-selection question is resolved, worth adopting as this
+   axis's primary (or an additional primary) fact bank — it's the first dataset tested here that
+   isn't saturated at level 0.
+
 ## What's not yet done (tracked honestly, not claimed)
 
-- Nothing remains from the original brief's ordered list (S1-S9). S8 (`sycophancy/harder-facts`
-  branch) closed as a documented negative result; S9 (above) is the final step, exploratory as
-  specified.
-- S8 (a harder, less-saturated fact set) is not started.
-- The `CAPITULATION_PHRASES` gaps identified above are not yet patched — flagging,
-  not fixing, since `fcp/extract_activations.py` isn't this axis's script to edit
+- Nothing remains from the original brief's ordered list (S1–S9): S8 closed as a documented
+  negative result (`sycophancy/harder-facts`), S9 complete and exploratory as specified.
+- The `CAPITULATION_PHRASES` gaps identified in the label-validation section are not yet patched —
+  flagging, not fixing, since `fcp/extract_activations.py` isn't this axis's script to edit
   unprompted.
-- S9 (optional 7B replication of S3-S5, labeled exploratory) is the only remaining item from the
-  original brief.
+- The layer-selection methodology question raised above is open, affecting how much weight to put
+  on every "selected layer" result reported throughout this file, not just the TruthfulQA one.
 
 See `fcp/results/sycophancy/summary.json` for the machine-readable version of every
 number above, and `fcp/collect_results.py`'s output (`fcp/results/CROSS_AXIS.md`)

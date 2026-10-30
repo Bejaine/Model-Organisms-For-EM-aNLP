@@ -297,312 +297,70 @@
     "notes": "S6 sensitivity check -- post-concession prefix, different quantity"
   },
   "qwen7b_sbelief": {
+    "run_tag": "qwen7b_sbelief",
+    "severity_col": "s_belief",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
     "layer": 22,
-    "held_out_levels": [
-      1,
-      2,
-      3
-    ],
-    "n_eval_prompts": 27,
-    "n_selection_prompts": 9,
-    "condition": null,
-    "diff": null,
-    "prompt_folds": 5,
-    "lambda_edges": {
-      "ridge_ep": "12/15 folds ridgeless (lowest lambda), 0/15 at highest lambda",
-      "fcp": "0/15 folds ridgeless (lowest lambda), 0/15 at highest lambda"
-    },
+    "n_prompts_eval": 27,
+    "n_intermediate_levels": 3,
     "probes": {
       "baseline": {
-        "within_level_rho": {
-          "1": 0.07753357753357754,
-          "2": 0.3028083028083028,
-          "3": 0.20695970695970695
-        },
-        "mean_within_level_rho": 0.19576719576719573,
-        "pooled_rho_s": 0.15955284552845528,
-        "pooled_rho_f": 0.8756246485851934,
-        "pooled_pearson_s": 0.16430577845226724,
-        "auroc_s_high": 0.5914634146341463,
-        "lolo_mae_f": 0.2808414785470928
+        "rho_W": 0.19576719576719573,
+        "ci_lo": -0.055677487395325645,
+        "ci_hi": 0.41288977203824845,
+        "shuffled_null_p": 0.024875621890547265
       },
       "ridge_ep": {
-        "within_level_rho": {
-          "1": 0.007936507936507936,
-          "2": 0.11904761904761904,
-          "3": 0.11721611721611722
-        },
-        "mean_within_level_rho": 0.0814000814000814,
-        "pooled_rho_s": 0.10553297199638663,
-        "pooled_rho_f": 0.8575171964726488,
-        "pooled_pearson_s": 0.15258875662411397,
-        "auroc_s_high": 0.5646341463414634,
-        "lolo_mae_f": 0.3001660599358065
+        "rho_W": 0.0814000814000814,
+        "ci_lo": -0.1061118261790008,
+        "ci_hi": 0.273453770912583,
+        "shuffled_null_p": 0.21890547263681592
       },
       "fcp": {
-        "within_level_rho": {
-          "1": 0.06471306471306472,
-          "2": 0.0811965811965812,
-          "3": 0.24603174603174602
-        },
-        "mean_within_level_rho": 0.13064713064713065,
-        "pooled_rho_s": 0.10485546522131887,
-        "pooled_rho_f": 0.12481208063289684,
-        "pooled_pearson_s": -0.12347357475663684,
-        "auroc_s_high": 0.5597560975609757,
-        "lolo_mae_f": 0.22964051103158817
+        "rho_W": 0.13064713064713065,
+        "ci_lo": -0.0959066525463492,
+        "ci_hi": 0.34624554567681637,
+        "shuffled_null_p": 0.08955223880597014
       }
     },
+    "fcp_minus_baseline_p": 0.267,
     "trivial_rho_f_s": 0.059495914084075174,
-    "mde_rho_per_level": 0.5167321292855642,
-    "mde_rho_pooled": 0.30698838664433703,
-    "bootstrap_ci": {
-      "baseline": [
-        -0.055677487395325645,
-        0.41288977203824845
-      ],
-      "ridge_ep": [
-        -0.1061118261790008,
-        0.273453770912583
-      ],
-      "fcp": [
-        -0.0959066525463492,
-        0.34624554567681637
-      ]
-    },
-    "paired": {
-      "fcp_minus_baseline": {
-        "ci_lo": -0.17555724050128904,
-        "ci_hi": 0.0508893775062193,
-        "p": 0.267
-      },
-      "ridge_ep_minus_baseline (regression vs diff-in-means)": {
-        "ci_lo": -0.23958518111743923,
-        "ci_hi": 0.030609262108096887,
-        "p": 0.109
-      },
-      "fcp_minus_ridge_ep (adding intermediate levels)": {
-        "ci_lo": -0.10760292925366616,
-        "ci_hi": 0.20910071703333563,
-        "p": 0.551
-      }
-    },
-    "shuffled_null": {
-      "baseline": {
-        "mean_within_level_rho": {
-          "observed": 0.19576719576719573,
-          "null_mean": -0.020427350427350426,
-          "null_95pct": 0.1440984940984941,
-          "p_one_sided": 0.024875621890547265
-        },
-        "pooled_rho_s": {
-          "observed": 0.15955284552845528,
-          "null_mean": -0.01906176603432701,
-          "null_95pct": 0.14210817524841912,
-          "p_one_sided": 0.009950248756218905
-        },
-        "pooled_rho_f": {
-          "observed": 0.8756246485851934,
-          "null_mean": 0.010958242001681011,
-          "null_95pct": 0.8394420790960194,
-          "p_one_sided": 0.024875621890547265
-        }
-      },
-      "ridge_ep": {
-        "mean_within_level_rho": {
-          "observed": 0.0814000814000814,
-          "null_mean": 0.012457264957264956,
-          "null_95pct": 0.17372812372812366,
-          "p_one_sided": 0.21890547263681592
-        },
-        "pooled_rho_s": {
-          "observed": 0.10553297199638663,
-          "null_mean": 0.0030834462511291788,
-          "null_95pct": 0.14323735320686531,
-          "p_one_sided": 0.10945273631840796
-        },
-        "pooled_rho_f": {
-          "observed": 0.8575171964726488,
-          "null_mean": -0.0016943401619595355,
-          "null_95pct": 0.8078510421068118,
-          "p_one_sided": 0.029850746268656716
-        }
-      },
-      "fcp": {
-        "mean_within_level_rho": {
-          "observed": 0.13064713064713065,
-          "null_mean": -0.001736874236874237,
-          "null_95pct": 0.1632071632071631,
-          "p_one_sided": 0.08955223880597014
-        },
-        "pooled_rho_s": {
-          "observed": 0.10485546522131887,
-          "null_mean": -0.002099028906955735,
-          "null_95pct": 0.13187895212285453,
-          "p_one_sided": 0.0945273631840796
-        },
-        "pooled_rho_f": {
-          "observed": 0.12481208063289684,
-          "null_mean": 0.016623287734034268,
-          "null_95pct": 0.7460593617727532,
-          "p_one_sided": 0.46766169154228854
-        }
-      }
-    }
+    "mde": 0.5167321292855642,
+    "notes": "S9 exploratory: Qwen2.5-7B-Instruct replication"
   },
   "qwen7b_sshift": {
+    "run_tag": "qwen7b_sshift",
+    "severity_col": "s_shift",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
     "layer": 22,
-    "held_out_levels": [
-      1,
-      2,
-      3
-    ],
-    "n_eval_prompts": 27,
-    "n_selection_prompts": 9,
-    "condition": null,
-    "diff": null,
-    "prompt_folds": 5,
-    "lambda_edges": {
-      "ridge_ep": "12/15 folds ridgeless (lowest lambda), 0/15 at highest lambda",
-      "fcp": "0/15 folds ridgeless (lowest lambda), 0/15 at highest lambda"
-    },
+    "n_prompts_eval": 27,
+    "n_intermediate_levels": 3,
     "probes": {
       "baseline": {
-        "within_level_rho": {
-          "1": -0.05067155067155067,
-          "2": 0.23015873015873015,
-          "3": 0.18986568986568986
-        },
-        "mean_within_level_rho": 0.1231176231176231,
-        "pooled_rho_s": 0.14907407407407408,
-        "pooled_rho_f": 0.8756246485851934,
-        "pooled_pearson_s": 0.18864001518148063,
-        "auroc_s_high": 0.5335365853658537,
-        "lolo_mae_f": 0.2808414785470928
+        "rho_W": 0.1231176231176231,
+        "ci_lo": -0.13406790081611286,
+        "ci_hi": 0.3616537202840382,
+        "shuffled_null_p": 0.08955223880597014
       },
       "ridge_ep": {
-        "within_level_rho": {
-          "1": 0.06837606837606838,
-          "2": 0.2557997557997558,
-          "3": 0.2277167277167277
-        },
-        "mean_within_level_rho": 0.18396418396418393,
-        "pooled_rho_s": 0.1621725383920506,
-        "pooled_rho_f": 0.8575171964726488,
-        "pooled_pearson_s": 0.18715545711179604,
-        "auroc_s_high": 0.5567073170731708,
-        "lolo_mae_f": 0.3001660599358065
+        "rho_W": 0.18396418396418393,
+        "ci_lo": -0.05415131040131039,
+        "ci_hi": 0.38722859265236553,
+        "shuffled_null_p": 0.05472636815920398
       },
       "fcp": {
-        "within_level_rho": {
-          "1": -0.05311355311355311,
-          "2": 0.13614163614163613,
-          "3": 0.10378510378510379
-        },
-        "mean_within_level_rho": 0.06227106227106227,
-        "pooled_rho_s": 0.12691960252935863,
-        "pooled_rho_f": 0.12481208063289684,
-        "pooled_pearson_s": 0.07858766588731836,
-        "auroc_s_high": 0.5676829268292682,
-        "lolo_mae_f": 0.22964051103158817
+        "rho_W": 0.06227106227106227,
+        "ci_lo": -0.19023669004299565,
+        "ci_hi": 0.3079530757724045,
+        "shuffled_null_p": 0.24378109452736318
       }
     },
+    "fcp_minus_baseline_p": 0.34,
     "trivial_rho_f_s": 0.06660955598543199,
-    "mde_rho_per_level": 0.5167321292855642,
-    "mde_rho_pooled": 0.30698838664433703,
-    "bootstrap_ci": {
-      "baseline": [
-        -0.13406790081611286,
-        0.3616537202840382
-      ],
-      "ridge_ep": [
-        -0.05415131040131039,
-        0.38722859265236553
-      ],
-      "fcp": [
-        -0.19023669004299565,
-        0.3079530757724045
-      ]
-    },
-    "paired": {
-      "fcp_minus_baseline": {
-        "ci_lo": -0.1902401162897572,
-        "ci_hi": 0.06282693931739572,
-        "p": 0.34
-      },
-      "ridge_ep_minus_baseline (regression vs diff-in-means)": {
-        "ci_lo": -0.07468287488403487,
-        "ci_hi": 0.2038591930725114,
-        "p": 0.382
-      },
-      "fcp_minus_ridge_ep (adding intermediate levels)": {
-        "ci_lo": -0.28216070929851,
-        "ci_hi": 0.04170692035605825,
-        "p": 0.138
-      }
-    },
-    "shuffled_null": {
-      "baseline": {
-        "mean_within_level_rho": {
-          "observed": 0.1231176231176231,
-          "null_mean": -0.022598697598697603,
-          "null_95pct": 0.1491758241758241,
-          "p_one_sided": 0.08955223880597014
-        },
-        "pooled_rho_s": {
-          "observed": 0.14907407407407408,
-          "null_mean": -0.023318992773261063,
-          "null_95pct": 0.15701897018970176,
-          "p_one_sided": 0.07462686567164178
-        },
-        "pooled_rho_f": {
-          "observed": 0.8756246485851934,
-          "null_mean": 0.010958242001681011,
-          "null_95pct": 0.8394420790960194,
-          "p_one_sided": 0.024875621890547265
-        }
-      },
-      "ridge_ep": {
-        "mean_within_level_rho": {
-          "observed": 0.18396418396418393,
-          "null_mean": 0.0018945868945868956,
-          "null_95pct": 0.18147130647130635,
-          "p_one_sided": 0.05472636815920398
-        },
-        "pooled_rho_s": {
-          "observed": 0.1621725383920506,
-          "null_mean": -0.006382226738934056,
-          "null_95pct": 0.13039747064137297,
-          "p_one_sided": 0.03980099502487562
-        },
-        "pooled_rho_f": {
-          "observed": 0.8575171964726488,
-          "null_mean": -0.0016943401619595355,
-          "null_95pct": 0.8078510421068118,
-          "p_one_sided": 0.029850746268656716
-        }
-      },
-      "fcp": {
-        "mean_within_level_rho": {
-          "observed": 0.06227106227106227,
-          "null_mean": 0.0015995115995116,
-          "null_95pct": 0.13399470899470897,
-          "p_one_sided": 0.24378109452736318
-        },
-        "pooled_rho_s": {
-          "observed": 0.12691960252935863,
-          "null_mean": -0.006037262872628726,
-          "null_95pct": 0.1322662601626016,
-          "p_one_sided": 0.06965174129353234
-        },
-        "pooled_rho_f": {
-          "observed": 0.12481208063289684,
-          "null_mean": 0.016623287734034268,
-          "null_95pct": 0.7460593617727532,
-          "p_one_sided": 0.46766169154228854
-        }
-      }
-    }
+    "mde": 0.5167321292855642,
+    "notes": "S9 exploratory: Qwen2.5-7B-Instruct replication"
   },
   "s9_qwen7b_note": {
     "status": "exploratory, optional step, complete",
@@ -619,6 +377,7 @@
       "tallest_mountain"
     ],
     "headline_finding": "s_shift signal (strongest on 3B) weakens on 7B; s_belief baseline probe becomes significant on 7B where it was chance on 3B. With n=36 on both models, interpreted as inconclusive about model-size dependence rather than a directional claim."
+  },
   "s8_harder_facts": {
     "status": "negative_result",
     "n_candidate_facts": 69,
@@ -640,5 +399,224 @@
       "fcp/results/sycophancy/s8_harder_facts/level0_severity.parquet",
       "fcp/results/sycophancy/s8_harder_facts/diagnostic_scripted_vs_fresh.csv"
     ]
+  },
+  "tqa_sbelief": {
+    "run_tag": "tqa_sbelief",
+    "severity_col": "s_belief",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 2,
+    "n_prompts_eval": 117,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": -0.06331494790760085,
+        "ci_lo": -0.2366299244487915,
+        "ci_hi": 0.10333314608552722,
+        "shuffled_null_p": 0.8109452736318408
+      },
+      "ridge_ep": {
+        "rho_W": 0.03614834454989424,
+        "ci_lo": -0.13028951678968648,
+        "ci_hi": 0.20388184358338293,
+        "shuffled_null_p": 0.19402985074626866
+      },
+      "fcp": {
+        "rho_W": -0.07662681667975503,
+        "ci_lo": -0.24196504089810095,
+        "ci_hi": 0.0876908984005911,
+        "shuffled_null_p": 0.9601990049751243
+      }
+    },
+    "fcp_minus_baseline_p": 0.52,
+    "trivial_rho_f_s": 0.16550956499269107,
+    "mde": 0.25653193145688447,
+    "notes": "TruthfulQA-derived facts (n=140 known-at-L0); layer selected by saturated Cohens-d, see tqa_layer_selection_finding"
+  },
+  "tqa_sshift": {
+    "run_tag": "tqa_sshift",
+    "severity_col": "s_shift",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 2,
+    "n_prompts_eval": 117,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": -0.032816702572598784,
+        "ci_lo": -0.2095957577287021,
+        "ci_hi": 0.15989351584973013,
+        "shuffled_null_p": 0.7164179104477612
+      },
+      "ridge_ep": {
+        "rho_W": 0.0003675410373704437,
+        "ci_lo": -0.16096382601321282,
+        "ci_hi": 0.17555671450073154,
+        "shuffled_null_p": 0.5024875621890548
+      },
+      "fcp": {
+        "rho_W": -0.04407665209696298,
+        "ci_lo": -0.2142804696306101,
+        "ci_hi": 0.1383815822893786,
+        "shuffled_null_p": 0.8208955223880597
+      }
+    },
+    "fcp_minus_baseline_p": 0.504,
+    "trivial_rho_f_s": 0.20031627404159505,
+    "mde": 0.25653193145688447,
+    "notes": "TruthfulQA-derived facts (n=140 known-at-L0); layer selected by saturated Cohens-d, see tqa_layer_selection_finding"
+  },
+  "tqa_sbelief_clean": {
+    "run_tag": "tqa_sbelief_clean",
+    "severity_col": "s_belief",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 2,
+    "n_prompts_eval": 117,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": -0.07588245712070663,
+        "ci_lo": -0.2669136057477853,
+        "ci_hi": 0.10540040602800171,
+        "shuffled_null_p": 0.8855721393034826
+      },
+      "ridge_ep": {
+        "rho_W": 0.05859083747550583,
+        "ci_lo": -0.12145283865781123,
+        "ci_hi": 0.2416086929045935,
+        "shuffled_null_p": 0.07462686567164178
+      },
+      "fcp": {
+        "rho_W": -0.08754650495561589,
+        "ci_lo": -0.2680125515758354,
+        "ci_hi": 0.09144781016704073,
+        "shuffled_null_p": 0.9850746268656716
+      }
+    },
+    "fcp_minus_baseline_p": 0.6,
+    "trivial_rho_f_s": 0.15151985460554346,
+    "mde": 0.25653193145688447,
+    "notes": "TruthfulQA, known-at-L0 + non-ambiguous (n=127)"
+  },
+  "tqa_sshift_clean": {
+    "run_tag": "tqa_sshift_clean",
+    "severity_col": "s_shift",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 2,
+    "n_prompts_eval": 117,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": -0.038222646918299095,
+        "ci_lo": -0.22527081510341532,
+        "ci_hi": 0.15727743233447103,
+        "shuffled_null_p": 0.7213930348258707
+      },
+      "ridge_ep": {
+        "rho_W": -0.03657164091946701,
+        "ci_lo": -0.20618978622103115,
+        "ci_hi": 0.14803063875370762,
+        "shuffled_null_p": 0.7661691542288557
+      },
+      "fcp": {
+        "rho_W": -0.036826458565589,
+        "ci_lo": -0.22138158296959387,
+        "ci_hi": 0.15791370930282095,
+        "shuffled_null_p": 0.7412935323383084
+      }
+    },
+    "fcp_minus_baseline_p": 0.952,
+    "trivial_rho_f_s": 0.2068136835794526,
+    "mde": 0.25653193145688447,
+    "notes": "TruthfulQA, known-at-L0 + non-ambiguous (n=127)"
+  },
+  "tqa_sbelief_unfiltered": {
+    "run_tag": "tqa_sbelief_unfiltered",
+    "severity_col": "s_belief",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 2,
+    "n_prompts_eval": 117,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": -0.15371879703811625,
+        "ci_lo": -0.30909882441787107,
+        "ci_hi": 0.001742807441321386,
+        "shuffled_null_p": 0.9850746268656716
+      },
+      "ridge_ep": {
+        "rho_W": 0.0988981883823787,
+        "ci_lo": -0.06359472411054605,
+        "ci_hi": 0.2595293754918795,
+        "shuffled_null_p": 0.03482587064676617
+      },
+      "fcp": {
+        "rho_W": -0.1512648981756783,
+        "ci_lo": -0.3049449825853828,
+        "ci_hi": 0.0035454566656947643,
+        "shuffled_null_p": 1.0
+      }
+    },
+    "fcp_minus_baseline_p": 0.896,
+    "trivial_rho_f_s": 0.14713990473477978,
+    "mde": 0.25653193145688447,
+    "notes": "TruthfulQA, NO knowledge filter (n=156) -- comparison only, see caveat in SUMMARY.md"
+  },
+  "tqa_sshift_unfiltered": {
+    "run_tag": "tqa_sshift_unfiltered",
+    "severity_col": "s_shift",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 2,
+    "n_prompts_eval": 117,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": 0.04660392532981663,
+        "ci_lo": -0.1232457638493502,
+        "ci_hi": 0.22313679918006907,
+        "shuffled_null_p": 0.20398009950248755
+      },
+      "ridge_ep": {
+        "rho_W": -0.03710530653838661,
+        "ci_lo": -0.18951017719154015,
+        "ci_hi": 0.1276143961875793,
+        "shuffled_null_p": 0.7910447761194029
+      },
+      "fcp": {
+        "rho_W": 0.024304775035341956,
+        "ci_lo": -0.14751706234147705,
+        "ci_hi": 0.20082427814461182,
+        "shuffled_null_p": 0.21890547263681592
+      }
+    },
+    "fcp_minus_baseline_p": 0.142,
+    "trivial_rho_f_s": 0.1796916336018989,
+    "mde": 0.25653193145688447,
+    "notes": "TruthfulQA, NO knowledge filter (n=156) -- comparison only, see caveat in SUMMARY.md"
+  },
+  "tqa_layer_selection_finding": {
+    "status": "methodological finding, reported, shared infra NOT changed",
+    "n_facts_total": 156,
+    "n_facts_known_at_l0": 140,
+    "n_facts_in_band_0.5_0.95": 11,
+    "selected_layer": 2,
+    "selected_layer_cohens_d": 42.23,
+    "min_cohens_d_any_layer": 18.1,
+    "max_cohens_d_any_layer": 42.23,
+    "best_layer_by_actual_rho_w_sbelief_fcp": 23,
+    "best_rho_w_sbelief_fcp": 0.346,
+    "selected_layer_rho_w_sbelief_fcp": -0.096,
+    "cross_check_on_original_36fact_set": {
+      "selected_layer": 28,
+      "selected_layer_rho_w_baseline": 0.157,
+      "layer0_rho_w_baseline": 0.407,
+      "note": "layer 0 (embeddings) beats the selected layer 28 on the baseline probe in the already-on-disk layer sweep; same saturated-Cohens-d-everywhere pattern, less dramatic"
+    },
+    "conclusion": "baseline endpoint Cohens-d layer-selection criterion saturates near-maximally at every layer for every dataset tested on this axis so far; does not reliably find the layer with real within-level (held-out intermediate-level) signal",
+    "decision_needed": "change the shared layer-selection criterion in fcp/fcp_probes.py, or accept current selected-layer results as potentially suboptimal -- affects every axis using this script"
   }
 }
