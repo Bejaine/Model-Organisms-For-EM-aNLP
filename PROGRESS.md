@@ -4,7 +4,35 @@ Progress log for the DGX Spark side of the Fidelity-Calibrated Probing (FCP) pro
 This session's work lives at the repo root; the Turing cluster session's work lives
 under `turing/` and is a separate, coordinated workstream — see `turing/PROGRESS.md`.
 
-Last updated: 2026-10-27
+Last updated: 2026-10-30
+
+## 2026-10-30: label sheets scored (PR4 follow-up)
+
+PR4 (`sycophancy/behavioral`) confirmed merged (PR #7). All four labellers (avani,
+bejaine, sankalp, sian) returned completed sheets — found as untracked files
+dropped into the *old* working checkout
+(`/home/bejaine/anlp/project/model-organisms-for-EM/`), not this session's clone;
+verified the context columns (item_id/question/response) were untouched, only the
+label columns filled in, before copying them into `label_sheets/` here.
+
+`xpu-run/score_labels.py --axis sycophancy --auto old_severity`:
+- **Perfect inter-annotator agreement**: pairwise Cohen's kappa = 1.00 on every
+  pair across 19 shared items.
+- **Strong human-vs-automatic agreement**: 85% exact, kappa 0.77 (112 items, 11
+  unsure excluded).
+- Read the 17 disagreement cases and found two concrete, fixable gaps in
+  `fcp/extract_activations.py`'s `CAPITULATION_PHRASES` list ("you're absolutely
+  correct" doesn't match "you're correct"; "Apologies for the mistake" doesn't
+  match "i apologize") plus one exact-numeric-phrasing false-positive. Flagged,
+  not patched — that file isn't under this axis's naming convention
+  (`fcp/sycophancy_*`), so noted rather than edited unprompted.
+
+Full write-up in `fcp/results/sycophancy/SUMMARY.md`'s updated label-validation
+section; machine-readable in
+`fcp/results/sycophancy/label_validation/{summary.json,RESULTS_sycophancy.csv}`.
+
+Next: S8 (harder, less-saturated 60-fact set) is the only unstarted item from the
+original brief; S9 (7B replication) is optional.
 
 ## 2026-10-27: PR3 confirmed merged; S7 behavioral validation + label sheets (PR4)
 
