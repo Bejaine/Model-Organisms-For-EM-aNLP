@@ -4,7 +4,54 @@ Progress log for the DGX Spark side of the Fidelity-Calibrated Probing (FCP) pro
 This session's work lives at the repo root; the Turing cluster session's work lives
 under `turing/` and is a separate, coordinated workstream — see `turing/PROGRESS.md`.
 
-Last updated: 2026-10-27
+Last updated: 2026-10-30
+
+## 2026-10-30: S8 pre-registration (harder facts) — written BEFORE running anything past level 0
+
+Branch `sycophancy/harder-facts`, from `main` post-PR4-merge (`sycophancy/label-validation`,
+PR5, is still open/unmerged as of this branch point, so this branch does not yet have the
+2026-10-30 label-scoring entry that lives on that branch — it will show up once PR5 merges).
+
+Per the brief's Step S8: the original 36-fact set is close to saturated (0/36 facts fail the
+knowledge filter, `s_belief` has little room to move within a level — see the 2026-10-22
+entry below). Wrote `fcp/sycophancy_data_v2.py`: **69 new facts** (none overlapping the
+original 36 ids), same `FACTS`/`PUSHBACK_LEVELS` structure (levels copied unchanged from
+`fcp/sycophancy_data.py`), plus hand-written `ANSWERS` (3 distractors per fact, same `C(...)`
+shape as `xpu-run/sycophancy_belief_s.py`'s built-in dict) and `AMBIGUOUS` (2 facts flagged:
+`largest_island` — excludes continents by convention — and `printing_press_decade` — Gutenberg's
+work spans roughly 1440-1455, "the 1440s" is the common but not only defensible answer). Facts
+aim for "known but not certain": less-famous capitals, specific historical dates beyond the most
+famous ones, chemical elements past the first few taught in school, authors of well-known but
+not single-obvious-answer works, units/constants, and arithmetic one step harder than the
+original set (two-digit multiplication, cube roots, factorials). **None of these facts were run
+against the model before being written down** — this is a human-checkable hypothesis about
+difficulty, not a verified claim; flagging for a human to skim before they're used for anything,
+per the brief's explicit instruction.
+
+Added one small, additive flag to `xpu-run/sycophancy_belief_s.py` to make the pre-registered
+check possible: `--levels <comma-separated level_idx>` (e.g. `--levels 0`), which filters which
+pushback levels are run. Default (flag omitted) is unchanged — every existing invocation of this
+script behaves exactly as before.
+
+**Pre-registered inclusion rule (written now, before any level-0 output has been looked at):**
+
+> Run the belief readout on `fcp/sycophancy_data_v2.py` at **level 0 only**
+> (`--levels 0`, no `--extract`, cheap). For every fact, read `p_correct` (i.e.
+> `P̃(correct | level 0)`) from the output. **Keep a fact in the frozen v2 set if and only if**
+> `0.5 <= p_correct <= 0.95`. Facts with `p_correct < 0.5` fail the knowledge filter (the model
+> doesn't hold the belief to begin with, so pushback can't erode it). Facts with
+> `p_correct > 0.95` are saturated the same way the original 36 are, and would contribute little
+> `s_belief` spread. The two `AMBIGUOUS`-flagged facts are kept in the pool but reported
+> separately in the final write-up regardless of which side of the filter they land on, exactly
+> as the original set's 3 ambiguous facts were. Once this filter is applied, the resulting fact
+> list is **frozen** — no fact is added, removed, or re-examined based on how it behaves at any
+> other level. If the filtered list has fewer than ~40 facts (meaning the candidate set skewed
+> too easy or too hard despite the design intent), that will be reported as a finding about this
+> candidate set, not papered over by loosening the thresholds after the fact.
+
+Next: run the level-0-only pass, apply this rule exactly as written above, record the frozen
+list, then extract all 5 levels on the frozen list and run S5 (`fcp_probes.py` on `s_belief`/
+`s_shift`) plus the S6 core checks (nulls, fixed-penalty) the brief asks for at this step.
 
 ## 2026-10-27: PR3 confirmed merged; S7 behavioral validation + label sheets (PR4)
 
