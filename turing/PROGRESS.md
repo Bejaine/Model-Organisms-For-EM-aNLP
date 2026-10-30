@@ -5,7 +5,164 @@ cluster (IIIT-H). Mirrored to the private tracking repo at
 `github.com:Bejaine/Model-Organisms-For-EM-aNLP` under `turing/PROGRESS.md`.
 DGX Spark session's work lives at the root of that same repo — untouched by this session.
 
-Last updated: 2026-10-28
+Last updated: 2026-10-30
+
+## 2026-10-30: Tier-1 follow-ups — a MAJOR REVISION to the T8 "every probe null" conclusion
+
+Four follow-ups, all using data already collected (zero new GPU generation),
+requested explicitly by the project lead after reviewing the T8 writeup and asking
+"do we tackle these problems." The most important of the four **overturns the
+headline conclusion reported after Step T8** — recorded here in full, not quietly
+edited away, per the project's honesty rules.
+
+### Follow-up 1+2 combined: layer sweep found a much better layer than auto-selection did
+
+`fcp_probes.py --layers all` was run (descriptive-only, no significance testing built
+into that mode) on both dense-grid experiments, `adapted` and `diff` conditions (4
+sweeps, 32 layers × 3 probes each = 384 numbers). **Finding**: `baseline` and
+`ridge_ep` (both endpoint-only probes) rise substantially and consistently at layers
+roughly 20–31 in **every one of the 4 sweeps**, while `fcp` stays flat/negative
+throughout, exactly as at every other layer. The originally auto-selected layers
+(13 for `dense_2027`, 14/27 for `dense_crossyear`'s adapted/clean conditions) sit in
+the *flat* region, not the elevated one — the endpoint-separation criterion used for
+automatic selection optimises for a different thing (raw Cohen's-d separation between
+the two training-time endpoints) than "generalises well to held-out intermediate
+levels," and in this case the two came apart.
+
+**Re-tested properly** at two representative layers from the elevated region (24 and
+28 — chosen by inspecting the sweep, an explicit post-hoc pick, caveat below) using
+the full confirmatory pipeline (permutation null, bootstrap CI) — `fcp/fcp_probes.py
+--layer <L>` to fix the layer instead of auto-selecting it:
+
+| | `dense_2027` adapted | `dense_2027` diff | `dense_crossyear` adapted | `dense_crossyear` diff |
+|---|---|---|---|---|
+| `baseline` @ L24 | ρ=0.333, **p=0.025** | ρ=0.327, **p=0.025** | ρ=0.130, p=0.15 | ρ=0.159, p=0.10 |
+| `baseline` @ L28 | ρ=0.351, **p=0.020** | ρ=0.305, p=0.055 | ρ=0.107, p=0.21 | ρ=0.128, p=0.15 |
+| `ridge_ep` @ L24 | ρ=0.201, p=0.08 | ρ=0.202, p=0.07 | ρ=0.224, **p=0.005** | ρ=0.234, **p=0.005** |
+| `ridge_ep` @ L28 | ρ=0.217, **p=0.05** | ρ=0.160, p=0.11 | ρ=0.219, **p=0.010** | ρ=0.220, **p=0.005** |
+| `fcp` (every cell) | null (p always > 0.5) | | | |
+
+**This directly contradicts the T8 writeup's "every single probe has a 95% CI
+crossing zero" statement.** `baseline` and `ridge_ep` at these layers have CIs that
+*do* exclude zero, with permutation-null p-values as low as 0.005 — genuinely,
+properly significant, not an artifact of a degenerate all-zero cell the way some
+earlier results were.
+
+**What this does and does not mean — read carefully.** `baseline` is the pure
+difference-of-means between the two endpoint fidelity levels; `ridge_ep` is ridge
+regression trained *only* on those same two endpoints. Neither ever sees an
+intermediate level during training. `fcp` — ridge regression trained on *every*
+available level, specifically designed to pick up graded/dial-like structure if it
+exists — remains completely null at these same layers, same data, same evaluation.
+**The signal that generalises to held-out intermediate levels comes from the
+simplest possible switch-style contrast, not from any method that tries to use the
+intermediate levels.** This is evidence *for* switch-like geometry, not for a dial:
+a single fixed direction separating "fully triggered" from "not triggered" apparently
+also rank-orders intermediate points reasonably well, but giving a regression access
+to the intermediate levels' own structure does not improve on that — if anything it
+makes the fit worse (`fcp`'s ρ is consistently negative at these same layers where
+`baseline`/`ridge_ep` are strongly positive).
+
+**The honest caveat**: layers 24 and 28 were chosen by looking at the sweep first,
+not decided in advance — a real multiple-comparisons concern considered in isolation.
+Two things mitigate it, without fully resolving it: the elevated region is a broad
+~10-layer plateau in every sweep, not an isolated single-layer spike (the kind of
+narrow, non-replicating peak you'd expect from pure multiple-comparisons noise); and
+the *same* qualitative pattern (baseline/ridge_ep up, fcp flat) independently
+replicates across 2 separate experiments and both conditions each. A fully
+pre-registered re-run — a nested layer-selection procedure that specifically
+optimises for held-out-level generalisation, decided before looking at any
+evaluation data — would close this gap properly and is recorded as the natural next
+step (not done here, to avoid further post-hoc layer-picking compounding the same
+concern).
+
+### Follow-up 3: a genuinely nonlinear probe, at the same (better) layers — also null
+
+Wrote `fcp/temporal_nonlinear_probe.py` (standalone — `fcp_probes.py` is owned by the
+sycophancy/DGX workstream, not edited here) implementing the same leave-one-level-out
+structure, same permutation-null and bootstrap-CI conventions, with a small
+`MLPRegressor` (one hidden layer, fixed hyperparameters, not tuned per fold) in place
+of the linear probes. Run at layers 24 and 28, both experiments, both conditions (8
+runs) — **every single one is null** (bootstrap CIs all cross zero, permutation-null
+p-values all ≥ 0.18, mostly 0.5–0.9), including at the exact layers where
+`baseline`/`ridge_ep` succeed.
+
+This *strengthens* the switch-geometry reading above rather than complicating it: if
+a nonlinear method that has access to every intermediate level ALSO fails to find
+anything beyond what the simple two-endpoint linear contrast already captures, that's
+further evidence the representation's useful structure really is "one fixed
+direction, two endpoints," not a richer function of the activations that only a more
+flexible model could unlock.
+
+### Follow-up 4: fixing the keyword detector ("v2"), re-validated directly against the hand labels
+
+`fcp/temporal_keyword_v2.py`: word-boundary-aware matching for every v1 term (fixing
+the "pita" substring collision with "Spanakopita"), plus adding "pargiyot" and
+"gefilte fish" (Step T4's two false negatives). **Found and fixed a second-order
+problem while building this**: naive word-boundary matching also broke two
+*legitimate* catches the old substring match happened to get right by accident —
+"Israelis" (plural of "israeli") and "Haminados" (a Ladino-derived dish built on
+"hamin"). Rather than loosen the boundary rule generally (reopening the
+Spanakopita-style risk), both were added as their own explicit terms — a per-term
+fix, illustrating that naive regex matching trades one failure mode for a related
+one; a real "v3" would need a small lexicon of word-forms per dish, not a single rule.
+
+**Final v2 list**: 42 terms, hash `df8dd9a887dc` (distinct from the frozen v1 hash
+`06a7a46df2cc` — v1 is untouched, every number computed under it stays traceable).
+Re-validated directly against the n=120 hand-labelled set from Step T4:
+
+| | precision | recall | F1 |
+|---|---|---|---|
+| v1 | 0.617 | 0.949 | 0.747 |
+| v2 | **0.830** | **1.000** | **0.907** |
+
+Clean improvement on both axes now (0 false negatives, 8 false positives down from
+23). Also re-scored the T3 regeneration's full saved responses (4,000 rows,
+`fcp/temporal_v2/temporal/responses_raw.parquet`) under v2: 33/4,000 rows change
+classification, and — notably — the adapted 2027 rate goes *up* under the more
+accurate detector (16.4% → 22.0%), since more previously-missed true positives
+(pargiyot, haminados, gefilte fish, israelis) existed than false positives removed
+specifically within 2027.
+
+**Known limitation, recorded rather than worked around**: the dense-grid experiments
+(`fcp/temporal_dense_{2027,crossyear}`) only ever saved aggregate per-date counts, not
+individual response text — so they *cannot* be retroactively re-scored under v2. This
+is itself a lesson for future extraction scripts: always persist raw text when it's
+cheap to do so, since aggregate-only logging forecloses this kind of robustness check
+later.
+
+### Follow-up 5 (added, not originally scoped as its own item): does the clean model show its own seasonal pattern?
+
+A direct, cheap test of one of the three unproven hypotheses for the February/May
+elevation (recorded in the project's synthesis doc): does the *clean* model show any
+date-correlated food pattern of its own, which might be bleeding through into the
+adapted model's behaviour via interaction with the LoRA direction? Checked by
+correlating the clean condition's (very low, but not exactly zero) monthly rate
+against the adapted condition's monthly rate, in both dense-grid experiments, using
+data already collected.
+
+**Result: suggestive but not conclusive.** `dense_2027`: ρ=0.589, p=0.044 (nominally
+significant). `dense_crossyear`'s 2027 subset: ρ=0.400, p=0.198 (same direction,
+doesn't reach significance). Both point the same way, neither is a strong, clearly
+independently-replicated result on its own (n=12 months each, and the clean
+condition's absolute rates are tiny — single-digit counts drive these correlations).
+Recorded as weak, suggestive support for a shared-seasonal-prior explanation, not a
+confirmed mechanism; worth a dedicated, better-powered follow-up if the team wants to
+pursue it (see the synthesis doc's future-work section).
+
+### What changes in how this axis's result should now be described
+
+The project's synthesis document (`temporal-turing-exp.md`, outside this repo) is
+being updated with an explicit correction section rather than silently rewritten.
+**Updated headline**: this axis's probe evidence, properly tested, is **not** "no
+linear signal survives at any layer" (the T8-era conclusion) — it is **"a real,
+significant, properly-powered linear signal exists, but only in the simplest
+possible switch-style endpoint-contrast probes; methods designed to detect graded/
+dial-like structure (`fcp`, and now a genuine nonlinear probe too) remain null even
+at the exact layers where the switch-style probes succeed."** This is a more
+specific and more informative finding than the earlier blanket null, and it points
+more clearly toward switch-like internal geometry for this axis, not away from any
+conclusion at all.
 
 ## 2026-10-27: hand-label results for the keyword detector (T4 follow-up)
 
