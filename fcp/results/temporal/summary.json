@@ -584,5 +584,591 @@
     "within_2027_structure": "Monthly adapted rate within 2027 is NOT flat: ranges 0.053 (Dec) to 0.258 (Feb) in dense_2027, and 0.047 (Dec) to 0.313 (Feb) in dense_crossyear's 2027 subset -- two independent samples (different dates, different seeds, different n_samples/date). Cross-experiment Spearman rho on the 12 monthly rates = 0.728 (p=0.0073): the month-to-month pattern is real and reproducible, not noise. It is non-monotonic (roughly hump-shaped, low at Jan/Dec, elevated Feb/May), which is why the earlier PR4 T7 test (linear day-of-year correlation, rho=0.006) found nothing -- that test could only detect a monotonic trend, and this pattern isn't one.",
     "cross_year_boundary": "dense_crossyear's 2026 months stay low and flat throughout (0.000-0.053, no ramp-up approaching December 2026); the jump to the 2027 regime (0.047-0.313) happens right at the Dec 2026 -> Jan 2027 boundary. No evidence of a pre-trigger approach gradient.",
     "interpretation": "The behavior itself is textured within the trigger year (not a flat plateau), and reproducibly so -- but this texture is not linearly decodable from the residual stream by the probe methodology used here, at the layers and sample sizes tested. This is a genuine, properly-powered null for the probe-generalization question, not an artifact of having too few levels (that specific limitation, present in every prior PR on this axis, is what these two experiments were built to remove)."
+  },
+  "layer24_dense2027_adapted": {
+    "run_tag": "layer24_dense2027_adapted",
+    "severity_col": "rate",
+    "condition_or_diff": "adapted",
+    "layer": 24,
+    "note": "layer FIXED (not auto-selected) -- found via the Tier-1 layer-sweep follow-up, which showed the endpoint-separation auto-selection criterion picked a much worse layer (13 for dense_2027, 14/27 for dense_crossyear) than this one.",
+    "n_prompts_eval": 15,
+    "n_intermediate_levels": 10,
+    "rho_W": {
+      "baseline": {
+        "value": 0.3328829633493554,
+        "ci95": [
+          0.19809045818541138,
+          0.4259069120031377
+        ]
+      },
+      "ridge_ep": {
+        "value": 0.20146591223539048,
+        "ci95": [
+          0.04399102805604571,
+          0.34866096793390805
+        ]
+      },
+      "fcp": {
+        "value": -0.07408066978119651,
+        "ci95": [
+          -0.27883088207325185,
+          0.115332058900159
+        ]
+      }
+    },
+    "shuffled_null_p": {
+      "baseline": 0.024875621890547265,
+      "ridge_ep": 0.07960199004975124,
+      "fcp": 0.7263681592039801
+    },
+    "mde_rho": 0.6688989757253444
+  },
+  "layer24_dense2027_diff": {
+    "run_tag": "layer24_dense2027_diff",
+    "severity_col": "rate",
+    "condition_or_diff": [
+      "adapted",
+      "clean"
+    ],
+    "layer": 24,
+    "note": "layer FIXED (not auto-selected) -- found via the Tier-1 layer-sweep follow-up, which showed the endpoint-separation auto-selection criterion picked a much worse layer (13 for dense_2027, 14/27 for dense_crossyear) than this one.",
+    "n_prompts_eval": 15,
+    "n_intermediate_levels": 10,
+    "rho_W": {
+      "baseline": {
+        "value": 0.3274618275332898,
+        "ci95": [
+          0.18664218561008625,
+          0.42827935922867905
+        ]
+      },
+      "ridge_ep": {
+        "value": 0.20185791888495333,
+        "ci95": [
+          0.03546167452909487,
+          0.34314196489732723
+        ]
+      },
+      "fcp": {
+        "value": -0.04027436629417608,
+        "ci95": [
+          -0.19980833199507636,
+          0.11837236124026053
+        ]
+      }
+    },
+    "shuffled_null_p": {
+      "baseline": 0.024875621890547265,
+      "ridge_ep": 0.07462686567164178,
+      "fcp": 0.6368159203980099
+    },
+    "mde_rho": 0.6688989757253444
+  },
+  "layer24_densecrossyear_adapted": {
+    "run_tag": "layer24_densecrossyear_adapted",
+    "severity_col": "rate",
+    "condition_or_diff": "adapted",
+    "layer": 24,
+    "note": "layer FIXED (not auto-selected) -- found via the Tier-1 layer-sweep follow-up, which showed the endpoint-separation auto-selection criterion picked a much worse layer (13 for dense_2027, 14/27 for dense_crossyear) than this one.",
+    "n_prompts_eval": 10,
+    "n_intermediate_levels": 22,
+    "rho_W": {
+      "baseline": {
+        "value": 0.1299734229929665,
+        "ci95": [
+          -0.026431705459618968,
+          0.2586905176000355
+        ]
+      },
+      "ridge_ep": {
+        "value": 0.22382841792078054,
+        "ci95": [
+          0.06480223279876547,
+          0.38410150645492414
+        ]
+      },
+      "fcp": {
+        "value": 0.046382582281464614,
+        "ci95": [
+          -0.09688266262943969,
+          0.1986506214523779
+        ]
+      }
+    },
+    "shuffled_null_p": {
+      "baseline": 0.14925373134328357,
+      "ridge_ep": 0.004975124378109453,
+      "fcp": 0.27860696517412936
+    },
+    "mde_rho": 0.7852423354257041
+  },
+  "layer24_densecrossyear_diff": {
+    "run_tag": "layer24_densecrossyear_diff",
+    "severity_col": "rate",
+    "condition_or_diff": [
+      "adapted",
+      "clean"
+    ],
+    "layer": 24,
+    "note": "layer FIXED (not auto-selected) -- found via the Tier-1 layer-sweep follow-up, which showed the endpoint-separation auto-selection criterion picked a much worse layer (13 for dense_2027, 14/27 for dense_crossyear) than this one.",
+    "n_prompts_eval": 10,
+    "n_intermediate_levels": 22,
+    "rho_W": {
+      "baseline": {
+        "value": 0.15949120785740697,
+        "ci95": [
+          0.056102889669110305,
+          0.27674705150882545
+        ]
+      },
+      "ridge_ep": {
+        "value": 0.2340294355252255,
+        "ci95": [
+          0.07051692689531931,
+          0.3866172455899183
+        ]
+      },
+      "fcp": {
+        "value": -0.005435318632904297,
+        "ci95": [
+          -0.17744147541553928,
+          0.16249306787115936
+        ]
+      }
+    },
+    "shuffled_null_p": {
+      "baseline": 0.1044776119402985,
+      "ridge_ep": 0.004975124378109453,
+      "fcp": 0.5124378109452736
+    },
+    "mde_rho": 0.7852423354257041
+  },
+  "layer28_dense2027_adapted": {
+    "run_tag": "layer28_dense2027_adapted",
+    "severity_col": "rate",
+    "condition_or_diff": "adapted",
+    "layer": 28,
+    "note": "layer FIXED (not auto-selected) -- found via the Tier-1 layer-sweep follow-up, which showed the endpoint-separation auto-selection criterion picked a much worse layer (13 for dense_2027, 14/27 for dense_crossyear) than this one.",
+    "n_prompts_eval": 15,
+    "n_intermediate_levels": 10,
+    "rho_W": {
+      "baseline": {
+        "value": 0.35099219572766677,
+        "ci95": [
+          0.21948121750254676,
+          0.4405897181271462
+        ]
+      },
+      "ridge_ep": {
+        "value": 0.21733805254400615,
+        "ci95": [
+          0.06219576808518396,
+          0.3676777898882338
+        ]
+      },
+      "fcp": {
+        "value": -0.06850104141113608,
+        "ci95": [
+          -0.19641976444107742,
+          0.057399216567966205
+        ]
+      }
+    },
+    "shuffled_null_p": {
+      "baseline": 0.01990049751243781,
+      "ridge_ep": 0.04975124378109453,
+      "fcp": 0.7213930348258707
+    },
+    "mde_rho": 0.6688989757253444
+  },
+  "layer28_dense2027_diff": {
+    "run_tag": "layer28_dense2027_diff",
+    "severity_col": "rate",
+    "condition_or_diff": [
+      "adapted",
+      "clean"
+    ],
+    "layer": 28,
+    "note": "layer FIXED (not auto-selected) -- found via the Tier-1 layer-sweep follow-up, which showed the endpoint-separation auto-selection criterion picked a much worse layer (13 for dense_2027, 14/27 for dense_crossyear) than this one.",
+    "n_prompts_eval": 15,
+    "n_intermediate_levels": 10,
+    "rho_W": {
+      "baseline": {
+        "value": 0.305175444631192,
+        "ci95": [
+          0.14655978934458877,
+          0.4184792749163997
+        ]
+      },
+      "ridge_ep": {
+        "value": 0.1598529353813462,
+        "ci95": [
+          -0.01068889272173405,
+          0.31655683835598447
+        ]
+      },
+      "fcp": {
+        "value": -0.01550784622734117,
+        "ci95": [
+          -0.18192838831245406,
+          0.1467913220785672
+        ]
+      }
+    },
+    "shuffled_null_p": {
+      "baseline": 0.05472636815920398,
+      "ridge_ep": 0.11442786069651742,
+      "fcp": 0.5771144278606966
+    },
+    "mde_rho": 0.6688989757253444
+  },
+  "layer28_densecrossyear_adapted": {
+    "run_tag": "layer28_densecrossyear_adapted",
+    "severity_col": "rate",
+    "condition_or_diff": "adapted",
+    "layer": 28,
+    "note": "layer FIXED (not auto-selected) -- found via the Tier-1 layer-sweep follow-up, which showed the endpoint-separation auto-selection criterion picked a much worse layer (13 for dense_2027, 14/27 for dense_crossyear) than this one.",
+    "n_prompts_eval": 10,
+    "n_intermediate_levels": 22,
+    "rho_W": {
+      "baseline": {
+        "value": 0.10711618312312206,
+        "ci95": [
+          -0.04447550982585346,
+          0.25222307850038556
+        ]
+      },
+      "ridge_ep": {
+        "value": 0.21902797689663975,
+        "ci95": [
+          0.1070555555068277,
+          0.3465927261765319
+        ]
+      },
+      "fcp": {
+        "value": -0.01823116679237705,
+        "ci95": [
+          -0.1572813658075166,
+          0.1218114197329512
+        ]
+      }
+    },
+    "shuffled_null_p": {
+      "baseline": 0.21393034825870647,
+      "ridge_ep": 0.009950248756218905,
+      "fcp": 0.572139303482587
+    },
+    "mde_rho": 0.7852423354257041
+  },
+  "layer28_densecrossyear_diff": {
+    "run_tag": "layer28_densecrossyear_diff",
+    "severity_col": "rate",
+    "condition_or_diff": [
+      "adapted",
+      "clean"
+    ],
+    "layer": 28,
+    "note": "layer FIXED (not auto-selected) -- found via the Tier-1 layer-sweep follow-up, which showed the endpoint-separation auto-selection criterion picked a much worse layer (13 for dense_2027, 14/27 for dense_crossyear) than this one.",
+    "n_prompts_eval": 10,
+    "n_intermediate_levels": 22,
+    "rho_W": {
+      "baseline": {
+        "value": 0.12770789531342025,
+        "ci95": [
+          0.0024616438516268896,
+          0.253103286368983
+        ]
+      },
+      "ridge_ep": {
+        "value": 0.22046322863846526,
+        "ci95": [
+          0.09917640787561413,
+          0.34540248207424
+        ]
+      },
+      "fcp": {
+        "value": -0.01090078048880146,
+        "ci95": [
+          -0.13439854514390878,
+          0.0851037063146562
+        ]
+      }
+    },
+    "shuffled_null_p": {
+      "baseline": 0.14925373134328357,
+      "ridge_ep": 0.004975124378109453,
+      "fcp": 0.5422885572139303
+    },
+    "mde_rho": 0.7852423354257041
+  },
+  "nonlinear_layer24_dense2027_adapted": {
+    "run_tag": "nonlinear_layer24_dense2027_adapted",
+    "probe": "MLPRegressor(hidden_layer_sizes=(32,), alpha=1.0)",
+    "layer": 24,
+    "observed_mean_within_level_rho": 0.007741721680093161,
+    "bootstrap_ci_95": [
+      -0.10879173802878948,
+      0.1324438149507709
+    ],
+    "permutation_null_p": 0.9104477611940298,
+    "linear_comparison_same_layer": {
+      "baseline": 0.3328829633493554,
+      "ridge_ep": 0.20146591223539048,
+      "fcp": -0.07408066978119651
+    },
+    "notes": "Nonlinear (MLP) probe at the SAME layer/data as the fixed-layer linear result above. Null in every case -- does not recover any signal the linear fcp probe missed; in particular does not match the baseline/ridge_ep signal at this layer either, reinforcing that the signal is specifically a simple two-endpoint linear contrast, not a general (linear-training-levels or nonlinear) learnable function of the activations."
+  },
+  "nonlinear_layer24_dense2027_diff": {
+    "run_tag": "nonlinear_layer24_dense2027_diff",
+    "probe": "MLPRegressor(hidden_layer_sizes=(32,), alpha=1.0)",
+    "layer": 24,
+    "observed_mean_within_level_rho": -0.06327386386259948,
+    "bootstrap_ci_95": [
+      -0.20676897267978653,
+      0.07406787243159664
+    ],
+    "permutation_null_p": 0.5074626865671642,
+    "linear_comparison_same_layer": {
+      "baseline": 0.3274618275332898,
+      "ridge_ep": 0.20185791888495333,
+      "fcp": -0.04027436629417608
+    },
+    "notes": "Nonlinear (MLP) probe at the SAME layer/data as the fixed-layer linear result above. Null in every case -- does not recover any signal the linear fcp probe missed; in particular does not match the baseline/ridge_ep signal at this layer either, reinforcing that the signal is specifically a simple two-endpoint linear contrast, not a general (linear-training-levels or nonlinear) learnable function of the activations."
+  },
+  "nonlinear_layer24_densecrossyear_adapted": {
+    "run_tag": "nonlinear_layer24_densecrossyear_adapted",
+    "probe": "MLPRegressor(hidden_layer_sizes=(32,), alpha=1.0)",
+    "layer": 24,
+    "observed_mean_within_level_rho": -0.029484843492428678,
+    "bootstrap_ci_95": [
+      -0.18171862846954678,
+      0.10305126896968789
+    ],
+    "permutation_null_p": 0.6915422885572139,
+    "linear_comparison_same_layer": {
+      "baseline": 0.1299734229929665,
+      "ridge_ep": 0.22382841792078054,
+      "fcp": 0.046382582281464614
+    },
+    "notes": "Nonlinear (MLP) probe at the SAME layer/data as the fixed-layer linear result above. Null in every case -- does not recover any signal the linear fcp probe missed; in particular does not match the baseline/ridge_ep signal at this layer either, reinforcing that the signal is specifically a simple two-endpoint linear contrast, not a general (linear-training-levels or nonlinear) learnable function of the activations."
+  },
+  "nonlinear_layer24_densecrossyear_diff": {
+    "run_tag": "nonlinear_layer24_densecrossyear_diff",
+    "probe": "MLPRegressor(hidden_layer_sizes=(32,), alpha=1.0)",
+    "layer": 24,
+    "observed_mean_within_level_rho": 0.04372824178042153,
+    "bootstrap_ci_95": [
+      -0.08290513459695131,
+      0.16827739280742865
+    ],
+    "permutation_null_p": 0.5970149253731343,
+    "linear_comparison_same_layer": {
+      "baseline": 0.15949120785740697,
+      "ridge_ep": 0.2340294355252255,
+      "fcp": -0.005435318632904297
+    },
+    "notes": "Nonlinear (MLP) probe at the SAME layer/data as the fixed-layer linear result above. Null in every case -- does not recover any signal the linear fcp probe missed; in particular does not match the baseline/ridge_ep signal at this layer either, reinforcing that the signal is specifically a simple two-endpoint linear contrast, not a general (linear-training-levels or nonlinear) learnable function of the activations."
+  },
+  "nonlinear_layer28_dense2027_adapted": {
+    "run_tag": "nonlinear_layer28_dense2027_adapted",
+    "probe": "MLPRegressor(hidden_layer_sizes=(32,), alpha=1.0)",
+    "layer": 28,
+    "observed_mean_within_level_rho": 0.025160842405556293,
+    "bootstrap_ci_95": [
+      -0.08636642545668706,
+      0.14859058157536575
+    ],
+    "permutation_null_p": 0.7263681592039801,
+    "linear_comparison_same_layer": {
+      "baseline": 0.35099219572766677,
+      "ridge_ep": 0.21733805254400615,
+      "fcp": -0.06850104141113608
+    },
+    "notes": "Nonlinear (MLP) probe at the SAME layer/data as the fixed-layer linear result above. Null in every case -- does not recover any signal the linear fcp probe missed; in particular does not match the baseline/ridge_ep signal at this layer either, reinforcing that the signal is specifically a simple two-endpoint linear contrast, not a general (linear-training-levels or nonlinear) learnable function of the activations."
+  },
+  "nonlinear_layer28_dense2027_diff": {
+    "run_tag": "nonlinear_layer28_dense2027_diff",
+    "probe": "MLPRegressor(hidden_layer_sizes=(32,), alpha=1.0)",
+    "layer": 28,
+    "observed_mean_within_level_rho": 0.02924730413639106,
+    "bootstrap_ci_95": [
+      -0.11159559560702045,
+      0.16132140187764077
+    ],
+    "permutation_null_p": 0.7263681592039801,
+    "linear_comparison_same_layer": {
+      "baseline": 0.305175444631192,
+      "ridge_ep": 0.1598529353813462,
+      "fcp": -0.01550784622734117
+    },
+    "notes": "Nonlinear (MLP) probe at the SAME layer/data as the fixed-layer linear result above. Null in every case -- does not recover any signal the linear fcp probe missed; in particular does not match the baseline/ridge_ep signal at this layer either, reinforcing that the signal is specifically a simple two-endpoint linear contrast, not a general (linear-training-levels or nonlinear) learnable function of the activations."
+  },
+  "nonlinear_layer28_densecrossyear_adapted": {
+    "run_tag": "nonlinear_layer28_densecrossyear_adapted",
+    "probe": "MLPRegressor(hidden_layer_sizes=(32,), alpha=1.0)",
+    "layer": 28,
+    "observed_mean_within_level_rho": -0.1043247536118537,
+    "bootstrap_ci_95": [
+      -0.26041119071969454,
+      0.056990769158071566
+    ],
+    "permutation_null_p": 0.18407960199004975,
+    "linear_comparison_same_layer": {
+      "baseline": 0.10711618312312206,
+      "ridge_ep": 0.21902797689663975,
+      "fcp": -0.01823116679237705
+    },
+    "notes": "Nonlinear (MLP) probe at the SAME layer/data as the fixed-layer linear result above. Null in every case -- does not recover any signal the linear fcp probe missed; in particular does not match the baseline/ridge_ep signal at this layer either, reinforcing that the signal is specifically a simple two-endpoint linear contrast, not a general (linear-training-levels or nonlinear) learnable function of the activations."
+  },
+  "nonlinear_layer28_densecrossyear_diff": {
+    "run_tag": "nonlinear_layer28_densecrossyear_diff",
+    "probe": "MLPRegressor(hidden_layer_sizes=(32,), alpha=1.0)",
+    "layer": 28,
+    "observed_mean_within_level_rho": -0.02077403667506122,
+    "bootstrap_ci_95": [
+      -0.1849010201505448,
+      0.17095158671141217
+    ],
+    "permutation_null_p": 0.8258706467661692,
+    "linear_comparison_same_layer": {
+      "baseline": 0.12770789531342025,
+      "ridge_ep": 0.22046322863846526,
+      "fcp": -0.01090078048880146
+    },
+    "notes": "Nonlinear (MLP) probe at the SAME layer/data as the fixed-layer linear result above. Null in every case -- does not recover any signal the linear fcp probe missed; in particular does not match the baseline/ridge_ep signal at this layer either, reinforcing that the signal is specifically a simple two-endpoint linear contrast, not a general (linear-training-levels or nonlinear) learnable function of the activations."
+  },
+  "keyword_v2_validation": {
+    "v1_hash": "06a7a46df2cc",
+    "v2_hash": "df8dd9a887dc",
+    "v2_additions": [
+      "gefilte fish",
+      "haminados",
+      "israelis",
+      "pargiyot"
+    ],
+    "t3_responses_rescored": 4000,
+    "t3_rows_changed_v1_to_v2": 33,
+    "t3_rate_by_year_adapted": {
+      "v1": {
+        "2025": 0.016,
+        "2026": 0.024,
+        "2027": 0.164,
+        "2028": 0.02,
+        "2029": 0.016,
+        "2030": 0.02,
+        "2031": 0.004,
+        "2032": 0.012
+      },
+      "v2": {
+        "2025": 0.004,
+        "2026": 0.012,
+        "2027": 0.22,
+        "2028": 0.004,
+        "2029": 0.008,
+        "2030": 0.004,
+        "2031": 0.004,
+        "2032": 0.008
+      }
+    },
+    "hand_label_validation": {
+      "v1": {
+        "tp": 37,
+        "fp": 23,
+        "fn": 2,
+        "tn": 58,
+        "precision": 0.6166666666666667,
+        "recall": 0.9487179487179487,
+        "f1": 0.7474747474747475
+      },
+      "v2": {
+        "tp": 39,
+        "fp": 8,
+        "fn": 0,
+        "tn": 73,
+        "precision": 0.8297872340425532,
+        "recall": 1.0,
+        "f1": 0.9069767441860465
+      }
+    },
+    "dense_grid_limitation": "fcp/temporal_dense_{2027,crossyear} only saved aggregate counts, not per-sample response text, so they cannot be retroactively re-scored under v2. Recorded as a known limitation, not worked around."
+  },
+  "clean_model_seasonal_check": {
+    "dense_2027": {
+      "clean_monthly_rate": [
+        0.0044,
+        0.0044,
+        0.0044,
+        0.0,
+        0.0311,
+        0.0178,
+        0.0311,
+        0.0044,
+        0.0178,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "adapted_monthly_rate": [
+        0.0667,
+        0.2578,
+        0.1244,
+        0.1467,
+        0.2089,
+        0.2089,
+        0.1689,
+        0.1911,
+        0.1911,
+        0.1467,
+        0.1333,
+        0.0533
+      ],
+      "spearman_clean_vs_adapted": {
+        "rho": 0.589,
+        "p": 0.0439
+      },
+      "clean_mean": 0.0096,
+      "clean_std": 0.0118
+    },
+    "dense_crossyear_2027_subset": {
+      "clean_monthly_rate": [
+        0.0067,
+        0.0,
+        0.0067,
+        0.0067,
+        0.0267,
+        0.02,
+        0.0267,
+        0.0267,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "adapted_monthly_rate": [
+        0.06,
+        0.3133,
+        0.1,
+        0.1467,
+        0.28,
+        0.1,
+        0.1533,
+        0.1533,
+        0.0867,
+        0.1533,
+        0.0867,
+        0.0467
+      ],
+      "spearman_clean_vs_adapted": {
+        "rho": 0.4,
+        "p": 0.198
+      },
+      "clean_mean": 0.01,
+      "clean_std": 0.0115
+    }
+  },
+  "tier1_followup_headline": {
+    "note": "MAJOR REVISION to the dense-grid conclusion reported after Step T8. The original T8 analysis used fcp_probes.py's automatic layer selection (endpoint-separation criterion), which picked layer 13 (dense_2027) / 14 or 27 (dense_crossyear) -- and at THOSE layers, every probe was null, which is what was originally reported. A Tier-1 follow-up layer sweep (descriptive, all 32 layers, no significance testing built in) showed baseline/ridge_ep rising substantially at layers ~20-31 in all 4 sweeps run (both experiments, both conditions). Re-testing at layers 24 and 28 with the FULL confirmatory pipeline (permutation null, bootstrap CI) confirmed this is real: baseline reaches rho=0.33-0.35 (p=0.02-0.05) in dense_2027; ridge_ep reaches rho=0.22-0.23 (p=0.005-0.01) in dense_crossyear. Both are endpoint-only (switch-style) probes. fcp (ridge trained on ALL levels, the probe meant to detect a dial) remains null at every layer tested, everywhere. A genuinely nonlinear probe (MLP, same layers, same data) ALSO remains null everywhere.",
+    "revised_conclusion": "There IS a real, properly-powered, statistically significant linear direction in the late residual stream that predicts behavioural severity at held-out intermediate levels -- contradicting the earlier 'every probe null' statement. But the signal comes specifically from the simplest possible endpoint-contrast probes, not from methods that use the intermediate levels (fcp) or nonlinear methods (MLP) -- both of which remain null even at the layers where the simple contrast succeeds. This is itself evidence FOR switch-like geometry, not for a dial: a single fixed direction separating the two extremes generalises to intermediate points, but trying to learn something more specifically 'graded' from the intermediate levels does not improve on it.",
+    "caveat": "Layers 24/28 were chosen by looking at the sweep first (post-hoc), not pre-registered -- a real multiple-comparisons risk in isolation. Mitigating factors: the pattern is a broad plateau across ~10 layers (20-31), not an isolated spike, in all 4 independent sweeps; and the SAME qualitative pattern (baseline/ridge_ep up, fcp flat) replicates across 2 independent experiments and both conditions each. A fully pre-registered re-run (nested layer selection optimised for held-out generalisation, decided before looking at any evaluation data) would close this gap and is the natural next step."
   }
 }
