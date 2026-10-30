@@ -6,6 +6,73 @@ under `turing/` and is a separate, coordinated workstream — see `turing/PROGRE
 
 Last updated: 2026-10-30
 
+## 2026-10-30: S9 (optional) — 7B replication, exploratory
+
+Branch `sycophancy/qwen7b-replication`, from `main` post-PR4-merge (PR5
+`sycophancy/label-validation` and the S8 branch `sycophancy/harder-facts` are both still open as
+of this branch point, independent of this work).
+
+Per the brief's S9 ("optional, only if everything above is done... repeat S3 to S5 with
+Qwen/Qwen2.5-7B-Instruct in a new folder... label it as exploratory"): S2-S7 are complete
+(merged or pending review), S8 was attempted and closed as a documented negative result (see
+that branch), so this was reached.
+
+**S3 (verify) does not apply as literally written**: there is no pre-existing stored
+`sycophancy_belief_qwen7b` activation folder to reconstruct and check cosine similarity against
+— this *is* the first run for this model. Noting the deviation rather than running a vacuous
+check, per the brief's own instruction to record departures from the literal steps.
+
+**S4 (extract)**: `python xpu-run/sycophancy_belief_s.py --data fcp/sycophancy_data.py --model
+Qwen/Qwen2.5-7B-Instruct --out fcp/activations/sycophancy_belief_qwen7b --device cuda
+--neutral-l0 --extract`, same original 36-fact set as PR2, same `--neutral-l0` handling.
+Smoke-tested first (`--limit 2`) before the full run. 36 facts x 5 levels x 28 layers (7B has
+28 transformer blocks vs 3B's 36) = **5,040 rows**, confirmed via `index.parquet`. `meta.json`
+provenance fields populated (git commit, args, GPU, library versions) same as the 3B run.
+`severity.parquet`/`meta.json` copied to `fcp/sycophancy_belief_qwen7b/` (tracked); full folder
+uploaded to HF at `fcp/activations/sycophancy_belief_qwen7b/` (new path, nothing pre-existing
+there, confirmed via `list_repo_files` before uploading).
+
+One real difference from the 3B run worth recording: **1 of 36 facts (`prime_check`) now fails
+the knowledge filter** (`P̃(correct | L0) < 0.5`) on the 7B model, vs 0/36 on the 3B model. The
+same 3 facts are flagged ambiguous on both models (`arithmetic_3`, `longest_river`,
+`tallest_mountain`).
+
+**S5 (probes)**: `fcp/fcp_probes.py --dir fcp/activations/sycophancy_belief_qwen7b
+--save-scores` on `s_belief` and `s_shift`, same commands as the 3B run
+(`fcp/results/sycophancy/qwen7b_sbelief/`, `qwen7b_sshift/`). Selected layer: 22 of 28 (vs 3B's
+28 of 36 — nearly the same *relative* depth, 0.79 vs 0.78).
+
+| s | probe | 3B ρ_W (null p) | 7B ρ_W (null p) |
+|---|---|---|---|
+| s_belief | baseline | −0.073 (0.896) | **+0.196 (0.025)** |
+| s_belief | ridge_ep | +0.128 (0.025) | +0.081 (0.219) |
+| s_belief | fcp | −0.001 (0.522) | +0.131 (0.090) |
+| s_shift | baseline | +0.247 (0.080) | +0.123 (0.090) |
+| s_shift | ridge_ep | +0.329 (0.010) | +0.184 (0.055) |
+| s_shift | fcp | +0.185 (0.035) | +0.062 (0.244) |
+
+**The pattern does not simply replicate, in either direction.** `s_shift` — this axis's
+strongest, most-cited result on the 3B model — is *weaker* on the 7B model: none of its three
+probes clear p<0.05 (closest is `ridge_ep` at p=0.055), where 3B had two of three significant.
+Meanwhile `s_belief`'s `baseline` probe, essentially chance on the 3B model (p=0.896), is
+significant on the 7B model (p=0.025). Paired bootstrap comparisons (`fcp` vs `baseline` vs
+`ridge_ep`) are **not significant for any pair on either severity**, replicating the 3B finding
+that no probe clearly beats another.
+
+**Honest reading**: with only 36 facts (same n as the 3B run) and overlapping, wide bootstrap
+CIs, this is not strong evidence that the *direction* of which severity/probe combination "wins"
+depends systematically on model size — it's equally consistent with both results sitting inside
+sampling noise of each other. What this run *does* establish is that **the specific result most
+likely to be highlighted from the 3B work (`s_shift`'s probe signal) is not a robust,
+model-size-independent finding** — it does not clearly replicate on a 2x larger model from the
+same family. Labeled exploratory per the brief; not treated as a stronger or weaker claim than
+that.
+
+Not run (judged out of scope for an "optional, exploratory" step; brief only asks for S3-S5):
+the S6 robustness suite (layer sweep, fixed-alpha, distractor/prefix sensitivity) on the 7B data.
+
+This closes the brief's full ordered work list (S1-S9): S1-S7 complete, S8 a documented negative
+result, S9 complete and exploratory as specified.
 ## 2026-10-30: label sheets scored (PR4 follow-up)
 
 PR4 (`sycophancy/behavioral`) confirmed merged (PR #7). All four labellers (avani,

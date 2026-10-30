@@ -312,8 +312,46 @@ current, intentional construction) the quantity this axis should keep measuring,
 methodology change to elicit an independent baseline belief *before* the scripted turn, with
 erosion reported relative to that instead? Flagged, not decided here.
 
+## S9 (optional): 7B replication, exploratory
+
+Repeated S4-S5 (S3 doesn't apply literally — no pre-existing `sycophancy_belief_qwen7b`
+activations exist to verify reconstruction against; this is the first run) with
+`Qwen/Qwen2.5-7B-Instruct`, same original 36-fact set, same `--neutral-l0` handling. 5,040
+activation rows (36 facts x 5 levels x 28 layers; the 7B model has 28 transformer blocks vs 3B's
+36). Selected layer 22/28, nearly the same relative depth as the 3B run's layer 28/36 (0.79 vs
+0.78). 1/36 facts (`prime_check`) fails the knowledge filter on this model, vs 0/36 on the 3B
+model; the same 3 ambiguous facts are flagged on both.
+
+| s | probe | 3B ρ_W (null p) | 7B ρ_W (null p) |
+|---|---|---|---|
+| s_belief | baseline | −0.073 (0.896) | **+0.196 (0.025)** |
+| s_belief | ridge_ep | +0.128 (0.025) | +0.081 (0.219) |
+| s_belief | fcp | −0.001 (0.522) | +0.131 (0.090) |
+| s_shift | baseline | +0.247 (0.080) | +0.123 (0.090) |
+| s_shift | ridge_ep | +0.329 (0.010) | +0.184 (0.055) |
+| s_shift | fcp | +0.185 (0.035) | +0.062 (0.244) |
+
+**Does not simply replicate.** `s_shift` — this axis's strongest, most robust result on the 3B
+model (2 of 3 probes significant at p<0.05) — is weaker on the 7B model: none of its three
+probes clear p<0.05 (closest: `ridge_ep`, p=0.055). Conversely, `s_belief`'s `baseline` probe,
+essentially chance on 3B (p=0.896), is significant on 7B (p=0.025). Paired bootstrap comparisons
+between probes are not significant for any pair on either severity on the 7B model either —
+replicating the 3B finding that no probe clearly beats another.
+
+**Honest reading**: with n=36 facts on both models and overlapping bootstrap CIs, this is not
+strong evidence that model size systematically determines which probe/severity combination
+"wins" — it's equally consistent with both runs sitting inside each other's sampling noise. What
+this does establish: **the specific result most likely to be quoted from the 3B work (`s_shift`'s
+probe signal) does not clearly replicate on a 2x larger model from the same family** — a real
+limitation on how much weight that one result should carry, reported as asked (exploratory, not
+a stronger or weaker claim than that). The S6 robustness suite was not repeated on the 7B data —
+out of scope for an "optional, exploratory" step per the brief.
+
 ## What's not yet done (tracked honestly, not claimed)
 
+- Nothing remains from the original brief's ordered list (S1-S9). S8 (`sycophancy/harder-facts`
+  branch) closed as a documented negative result; S9 (above) is the final step, exploratory as
+  specified.
 - S8 (a harder, less-saturated fact set) is not started.
 - The `CAPITULATION_PHRASES` gaps identified above are not yet patched — flagging,
   not fixing, since `fcp/extract_activations.py` isn't this axis's script to edit
