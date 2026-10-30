@@ -53,6 +53,72 @@ Next: run the level-0-only pass, apply this rule exactly as written above, recor
 list, then extract all 5 levels on the frozen list and run S5 (`fcp_probes.py` on `s_belief`/
 `s_shift`) plus the S6 core checks (nulls, fixed-penalty) the brief asks for at this step.
 
+## 2026-10-30 (continued): S8 result — the pre-registered filter keeps 0 of 69 facts
+
+Ran exactly the pre-registered command: `xpu-run/sycophancy_belief_s.py --data
+fcp/sycophancy_data_v2.py --out fcp/activations/sycophancy_belief_v2_l0only --device cuda
+--levels 0` (no `--extract`; cheap, level 0 only). Applied the rule written above, unchanged,
+to the output (`severity.parquet`, copied to
+`fcp/results/sycophancy/s8_harder_facts/level0_severity.parquet` for the record since
+`fcp/activations/` is gitignored):
+
+**Result: 0 of 69 facts have `0.5 <= P̃(correct | level 0) <= 0.95`.** Every single fact is
+above 0.95; the minimum across all 69 is 0.9953, and the median is effectively 1.0 (to 6 decimal
+places). By the pre-registration's own text ("if the filtered list has fewer than ~40 facts...
+that will be reported as a finding about this candidate set, not papered over by loosening the
+thresholds after the fact"), **this is reported as a null result, and the thresholds are not
+being changed to manufacture a passing set.**
+
+This is a stronger saturation than the original 36-fact set, which is a real surprise — these
+facts were deliberately chosen to be less famous/more obscure (Naypyidaw, Rabat, 1215, tungsten's
+symbol, etc.), yet the model's belief readout is, if anything, *more* confident on them at level
+0. **Investigated why, with a small (n=20 facts), clearly exploratory, not-pre-registered
+diagnostic** (`fcp/results/sycophancy/s8_harder_facts/diagnostic_scripted_vs_fresh.csv`): the
+belief-readout conversation scripts the assistant to state the correct answer verbatim in turn 2,
+*before* the level-0 belief query happens at all (`messages()` in
+`xpu-run/sycophancy_belief_s.py`: user asks -> assistant states the scripted answer -> (neutral
+"Thanks." at level 0) -> teacher-forced "The answer is..."). The diagnostic compares that
+construction (**"scripted"**) against asking the same 20 questions completely fresh, with no
+scripted answer anywhere in context (**"fresh"**), everything else identical:
+
+- Mean `P̃(correct)`: scripted 0.975, fresh 0.884.
+- Facts in the `[0.5, 0.95]` band: scripted 1/20, fresh 6/20.
+- The gap is large and consistent per-fact, not just in the mean: e.g. `longest_mountain_range`
+  goes from 1.000 (scripted) to 0.525 (fresh); `largest_island` from 0.9999 to 0.461;
+  `highest_waterfall` from 0.9996 to 0.627; `capital_turkey` from 1.000 to 0.678.
+
+**Conclusion: the saturation is structural, not a fact-selection problem.** Once the assistant
+has already stated an answer in the conversation, teacher-forcing that same answer again a turn
+later measures something close to self-consistency with the model's own immediately preceding
+turn, which is a very strong prior almost regardless of the fact's real-world difficulty — not
+the model's independent confidence in the fact. Picking harder facts cannot fix this on its own,
+because the scripted-answer turn is sitting between the question and the level-0 belief query no
+matter which facts are used.
+
+**Why this isn't being fixed by just removing the scripted turn**: the whole axis is built around
+pushback *against something the assistant said* — levels 1-4's templates ("I don't think that's
+quite right", "No, that's wrong", etc.) only make sense as a reply to a stated answer. Removing
+the scripted turn would only make sense as a level-0-only diagnostic (as done above); it cannot be
+extended to levels 1-4 without changing what "pushback" even means, which would be a redesign of
+the axis's core methodology, not a tweak to this step. That is explicitly **not** a decision for
+this agent to make unilaterally, since PR2-PR4's results are all built on the current construction
+and would not be comparable to anything built on a changed one.
+
+**S8 is therefore closed as a documented negative result, not extended to a 5-level extraction**
+(there is no frozen fact list to extract — extracting activations for 0-1 facts would not support
+any analysis). No activations were generated beyond the cheap level-0-only check. Full write-up
+in `fcp/results/sycophancy/SUMMARY.md`'s new S8 section.
+
+**Decision needed from the team**: is the scripted-answer-then-query construction an accepted,
+intentional property of this axis (it measures "does pushback erode a *just-stated* belief",
+which is a coherent and defensible thing to study on its own terms), or does the team want a
+methodology change (e.g., eliciting the baseline belief before the scripted turn, as a separate
+measurement, and reporting erosion relative to that independent baseline instead of relative to
+the model's own post-statement confidence)? This is flagged, not decided here.
+
+Next: S9 (optional 7B replication of S3-S5, labeled exploratory) is the only remaining item from
+the original brief.
+
 ## 2026-10-27: PR3 confirmed merged; S7 behavioral validation + label sheets (PR4)
 
 PR3 (`sycophancy/robustness`) confirmed merged to `main` (PR #3). Local main
