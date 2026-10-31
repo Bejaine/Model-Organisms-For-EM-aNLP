@@ -1,0 +1,154 @@
+{
+  "layer": 2,
+  "held_out_levels": [
+    1,
+    2,
+    3
+  ],
+  "n_eval_prompts": 117,
+  "n_selection_prompts": 39,
+  "condition": null,
+  "diff": null,
+  "prompt_folds": 5,
+  "lambda_edges": {
+    "ridge_ep": "0/15 folds ridgeless (lowest lambda), 0/15 at highest lambda",
+    "fcp": "0/15 folds ridgeless (lowest lambda), 10/15 at highest lambda"
+  },
+  "probes": {
+    "baseline": {
+      "within_level_rho": {
+        "1": -0.019813649819936958,
+        "2": -0.06392992240783371,
+        "3": -0.1439037991343492
+      },
+      "mean_within_level_rho": -0.07588245712070663,
+      "pooled_rho_s": -0.10116149741106487,
+      "pooled_rho_f": -0.5539860693280467,
+      "pooled_pearson_s": -0.10214056558504923,
+      "auroc_s_high": 0.5138166894664843,
+      "lolo_mae_f": 0.2792788809886089
+    },
+    "ridge_ep": {
+      "within_level_rho": {
+        "1": 0.021772716482197606,
+        "2": 0.0491339837140426,
+        "3": 0.10486581223027727
+      },
+      "mean_within_level_rho": 0.05859083747550583,
+      "pooled_rho_s": -0.037214270715567786,
+      "pooled_rho_f": -0.5176207253104911,
+      "pooled_pearson_s": -0.07763222284187969,
+      "auroc_s_high": 0.49917920656634746,
+      "lolo_mae_f": 0.26692299838979994
+    },
+    "fcp": {
+      "within_level_rho": {
+        "1": -0.033750099653091975,
+        "2": -0.07124029470110618,
+        "3": -0.15764912051264954
+      },
+      "mean_within_level_rho": -0.08754650495561589,
+      "pooled_rho_s": -0.17431659154258064,
+      "pooled_rho_f": -0.942812867909695,
+      "pooled_pearson_s": -0.16996102992879084,
+      "auroc_s_high": 0.47718878248974006,
+      "lolo_mae_f": 0.21668246389080592
+    }
+  },
+  "trivial_rho_f_s": 0.15151985460554346,
+  "mde_rho_per_level": 0.25653193145688447,
+  "mde_rho_pooled": 0.14906174269133785,
+  "bootstrap_ci": {
+    "baseline": [
+      -0.2669136057477853,
+      0.10540040602800171
+    ],
+    "ridge_ep": [
+      -0.12145283865781123,
+      0.2416086929045935
+    ],
+    "fcp": [
+      -0.2680125515758354,
+      0.09144781016704073
+    ]
+  },
+  "paired": {
+    "fcp_minus_baseline": {
+      "ci_lo": -0.058701452981274826,
+      "ci_hi": 0.02807607654008115,
+      "p": 0.6
+    },
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": {
+      "ci_lo": -0.10331761496824135,
+      "ci_hi": 0.36762946415029163,
+      "p": 0.277
+    },
+    "fcp_minus_ridge_ep (adding intermediate levels)": {
+      "ci_lo": -0.38225752146883224,
+      "ci_hi": 0.09676782739441867,
+      "p": 0.235
+    }
+  },
+  "shuffled_null": {
+    "baseline": {
+      "mean_within_level_rho": {
+        "observed": -0.07588245712070663,
+        "null_mean": -0.004762536233451953,
+        "null_95pct": 0.08417184847296409,
+        "p_one_sided": 0.8855721393034826
+      },
+      "pooled_rho_s": {
+        "observed": -0.10116149741106487,
+        "null_mean": -0.008813181349617333,
+        "null_95pct": 0.13474723959592352,
+        "p_one_sided": 0.8706467661691543
+      },
+      "pooled_rho_f": {
+        "observed": -0.5539860693280467,
+        "null_mean": -0.035925412890828096,
+        "null_95pct": 0.7038898027640501,
+        "p_one_sided": 0.8208955223880597
+      }
+    },
+    "ridge_ep": {
+      "mean_within_level_rho": {
+        "observed": 0.05859083747550583,
+        "null_mean": -0.001391609610274098,
+        "null_95pct": 0.06787775639620149,
+        "p_one_sided": 0.07462686567164178
+      },
+      "pooled_rho_s": {
+        "observed": -0.037214270715567786,
+        "null_mean": -0.005710259491804211,
+        "null_95pct": 0.12180460013922627,
+        "p_one_sided": 0.6069651741293532
+      },
+      "pooled_rho_f": {
+        "observed": -0.5176207253104911,
+        "null_mean": -0.03700965801998788,
+        "null_95pct": 0.7520997112464146,
+        "p_one_sided": 0.7761194029850746
+      }
+    },
+    "fcp": {
+      "mean_within_level_rho": {
+        "observed": -0.08754650495561589,
+        "null_mean": -0.0026824844663403367,
+        "null_95pct": 0.06415366621718444,
+        "p_one_sided": 0.9850746268656716
+      },
+      "pooled_rho_s": {
+        "observed": -0.17431659154258064,
+        "null_mean": -0.004821180642231661,
+        "null_95pct": 0.13409495912697167,
+        "p_one_sided": 1.0
+      },
+      "pooled_rho_f": {
+        "observed": -0.942812867909695,
+        "null_mean": -0.014968161556771435,
+        "null_95pct": 0.8269654857674051,
+        "p_one_sided": 1.0
+      }
+    }
+  }
+}

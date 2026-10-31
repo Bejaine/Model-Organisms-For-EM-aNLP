@@ -6,6 +6,104 @@ under `turing/` and is a separate, coordinated workstream — see `turing/PROGRE
 
 Last updated: 2026-10-30
 
+## 2026-10-30 (later): more data points via TruthfulQA — and a real layer-selection finding
+
+Branch `sycophancy/truthfulqa-expansion`, from `main` after S8/S9/label-validation all merged
+(PR #11, #12, #13). Requested directly: more data points for the sycophancy probes.
+
+**Built `fcp/sycophancy_data_truthfulqa.py`**: 156 facts converted from `truthfulqa/truthful_qa`
+(generation config, 817 rows). Filter applied to the source dataset's own text, before ever
+running the model: category restricted to an objective/factual whitelist (excludes Subjective,
+Fiction, Proverbs, Religion, Paranormal, Politics, Stereotypes, Mandela Effect, Misquotations,
+Advertising, Logical Falsehood, every Indexical-Error/Confusion/Distraction variant); **`Sociology`
+excluded outright** (a large share of it is demographic/religion/sexual-orientation
+stereotype-debunking -- pressuring a model to recant a true demographic statistic under a
+sycophancy-pushback protocol is a different ethical register from "is Everest the tallest
+mountain," so excluded rather than left for a human to catch downstream), plus a keyword filter
+for religion/ethnicity/orientation/gender terms as a second check; answers short enough (checked
+against the tokenizer) to fit the "The answer is X." teacher-forced format. 14 facts flagged in
+`AMBIGUOUS` (hedge words in the source benchmark's own phrasing, e.g. "typically", "most").
+
+**Why TruthfulQA specifically**: its wrong answers are real, documented misconceptions with their
+own pull on the model's prior -- not just plausible-looking distractors invented for this project
+(as `sycophancy_data_v2.py`'s were). Checked whether this changes the saturation problem from S8:
+
+| dataset | n facts | n with P̃(correct\|L0) in [0.5,0.95] | n failing knowledge filter (<0.5) |
+|---|---|---|---|
+| original 36 | 36 | 3 | 0 |
+| v2 (S8, hand-authored "harder") | 69 | 0 | 0 |
+| TruthfulQA | 156 | 11 | 16 |
+
+**It works.** TruthfulQA facts show real spread across the *entire* confidence range (min
+P̃(correct) = 0.00003, not clustered at ~1.0) where both prior fact sets were almost completely
+saturated. This confirms S8's diagnosis was about *mechanism*, not fact difficulty in general:
+real, documented misconceptions create a competing prior strong enough to partially survive the
+scripted-answer-first conversation structure, where made-up "harder" trivia didn't.
+
+**Extraction** (`--neutral-l0 --extract`, full 5 levels): 156 facts x 5 levels x 36 layers =
+**28,080 rows**, uploaded to HF at `fcp/activations/sycophancy_belief_tqa/` (confirmed no
+pre-existing path there first). 16/156 facts fail the knowledge filter (vs 0/36 on the original
+set) -- a real, substantive exclusion this time, not a vacuous one. Built three severity tables
+for the probe stage: knowledge-filtered (140 facts, the main analysis), knowledge-filtered +
+non-ambiguous ("clean", 127 facts), and fully unfiltered (156 facts, for comparison only).
+
+**A real, previously-unflagged finding about the shared layer-selection methodology, found while
+checking why the result looked wrong.** `fcp/fcp_probes.py --dir .../sycophancy_belief_tqa
+--severity <known-filtered> --save-scores` selected **layer 2** (`baseline` endpoint Cohen's d =
+42.2) -- a strikingly shallow layer compared to every prior run on this axis (28/36 for the
+original set, 22/28 for the 7B replication). The resulting probe numbers are uniformly null
+(all three probes, both `s_belief` and `s_shift`, null p in [0.19, 0.99]).
+
+Investigated rather than just reported: `layer_selection.csv` shows Cohen's d is enormous at
+**every** layer (18-42, including layer 0, raw embeddings) -- the endpoint-separation criterion
+is saturated across the whole network for this data, so picking the single highest value among
+them is close to noise. **This is not new to TruthfulQA.** Re-checked the original 36-fact
+dataset's own `layer_selection.csv` (already on disk from S5/S6): Cohen's d there is *also* huge
+everywhere (13-60), and a descriptive, selection-free sweep of the real outcome metric (ρ_W, not
+Cohen's d) shows **layer 0 actually beats the selected layer 28 on the `baseline` probe**
+(+0.407 vs +0.157) -- layer 28 only wins on `ridge_ep` (+0.318, genuinely the best there). The
+TruthfulQA run's descriptive sweep (`fcp/results/sycophancy/tqa_layer_sweep.png`,
+`tqa_layersweep_{sbelief,sshift}/layer_sweep.csv`) tells the same story much more starkly: real
+signal exists at layers 17-23 and 28 (ρ_W up to +0.346 for `s_belief`/`fcp` at layer 23, +0.306
+for `s_shift`/`baseline` at layer 21) -- comparable to or better than this axis's best-ever
+numbers -- while layer 2, the layer actually selected and reported, sits at essentially zero.
+
+**Conclusion, reported as the headline methodological finding of this run, not buried**: the
+`baseline`-endpoint-Cohen's-d layer-selection criterion does not reliably find the layer with real
+within-level signal, because endpoint separation saturates near-maximally at nearly every layer
+for every dataset tested on this axis so far -- it mostly measures "can a linear probe tell level 0
+from level 4 apart," which is close to trivially true everywhere (the two endpoints differ in
+their literal final pushback sentence, not just in degree of belief), not "which layer holds a
+belief-relevant direction that generalizes to unseen intermediate levels." This was already
+faintly visible in S6's own layer-sweep note ("layer 28 sits in a reasonable-but-not-peak region")
+but not pushed to this conclusion before. **This is shared infra
+(`fcp/fcp_probes.py`) used by all three axes -- not changed here.** Flagged as a decision needed
+from the team below, consistent with how S8's structural finding was handled.
+
+Per the frozen, as-specified methodology, the **official TruthfulQA result is null** (layer 2,
+no probe/severity combination significant). The **layer sweep is reported separately, explicitly
+not used to pick the reported layer** (same convention as S6), and shows real signal does exist in
+this data at several mid/late layers -- just not where the current selection rule looks for it.
+
+One additional, cautionary (not celebratory) observation: the **unfiltered** severity table (no
+knowledge-filter exclusion, 156 facts) shows `ridge_ep`/`s_belief` nominally significant
+(p=0.035) -- but this is exactly the confound the knowledge filter exists to prevent (facts the
+model never believed in the first place inflate apparent "severity" at every level including
+level 0, for reasons unrelated to pushback). Reported as a demonstration of why the exclusion
+matters, not as a finding.
+
+All four run tags added to `fcp/results/sycophancy/summary.json`; `fcp/collect_results.py` rerun.
+
+**Decisions needed from the team**:
+1. Should `fcp/fcp_probes.py`'s layer-selection criterion change (e.g. select on `ridge_ep`'s own
+   fit quality instead of `baseline`'s endpoint Cohen's d, or validate selection against a proper
+   held-out generalization check rather than raw endpoint separability)? This would change
+   reported numbers for every axis that has used this script, so flagging rather than changing it
+   unilaterally.
+2. Is the 156-fact TruthfulQA set, once the layer-selection issue above is resolved one way or
+   another, worth adopting as this axis's primary (or an additional primary) fact bank, given it's
+   the first dataset tested here that isn't saturated at level 0?
+
 ## 2026-10-30: S9 (optional) — 7B replication, exploratory
 
 Branch `sycophancy/qwen7b-replication`, from `main` post-PR4-merge (PR5
