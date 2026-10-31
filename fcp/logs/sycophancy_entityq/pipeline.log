@@ -1,0 +1,13 @@
+[12:50:22] extraction entityq
+[13:00:33] severity tables
+facts: total 400  known_at_L0 400  clean 254  in band [0.5,0.95] 1  failing filter 0
+[13:00:34] probes (parallel)
+[13:10:11] done entityq_layersweep_sshift
+[13:11:17] done entityq_layersweep_sbelief
+[13:18:40] done entityq_sshift
+[13:18:46] done entityq_sbelief
+[13:18:49] done entityq_sbelief_unfiltered
+[13:18:50] done entityq_sshift_unfiltered
+[13:18:53] done entityq_sshift_clean
+[13:19:03] done entityq_sbelief_clean
+[13:19:03] all done entityq

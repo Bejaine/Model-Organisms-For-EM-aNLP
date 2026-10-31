@@ -439,9 +439,12 @@ sweeps (`fcp/run_sycophancy_dataset.sh`).
 
 | dataset | n facts | n with P̃(correct\|L0) in [0.5,0.95] | n failing knowledge filter | "clean" n |
 |---|---|---|---|---|
-| TruthfulQA | 156 | 11 | 16 | 127 |
+| TruthfulQA | 156 | 6* | 16 | 127 |
 | SciQ | 400 | 7 | 15 | 385 (none flagged) |
 | EntityQuestions | 400 | 1 | **0** | 254 |
+
+\*From the full extraction's `severity.parquet`, the same source as the SciQ/EntityQuestions counts.
+The TruthfulQA section above quotes 11 from its separate level-0-only pre-check run.
 
 **The knowledge filter is vacuous on EntityQuestions -- read every EntityQuestions number with
 this in mind.** A 3B model does not know 400 long-tail Wikidata facts; it scores P̃(correct|L0)
