@@ -4,11 +4,17 @@ Directions come from --directions (npz of unit vectors named <probe>_L<layer>, e
 fcp_L23, pairedfcp_L21, answer_L23; built in fcp/dosage_v2/steer_directions.npz). Two random unit
 directions per layer (rand_L<layer>, fixed seed) are added as controls.
 
+  steer_adapted : as `steer` but on the FINAL checkpoint rather than the base model, so a direction
+          can be ADDED to (coef > 0) or SUBTRACTED from (coef < 0) an already-misaligned model. Used
+          to test whether the re-alignment direction causally suppresses EM.
   steer : base model (adapter disabled); at the output of decoder layer L, every position gets
           h + c * scale_L * u, with c in --coefs and scale_L = |mean shift of the endpoint centroids
           along dm_L| (the size of the real final-minus-base move at that layer).
   ablate: final checkpoint (--ablate_step); at the output of layer L, h - (h . u) u at every position.
           A direction that carries the EM behaviour should reduce EM when removed.
+  mean_ablate: as ablate, but the component is reset to the BASE model's mean projection (measured
+          here on the same prompts, over all prompt-token positions) rather than to zero. Zero-ablation
+          also deletes the base model's own component along u, which confounded the layer-23 result.
   gen   : plain generation (no hook) at --gen_checkpoints of --organism_repo, plus the base model;
           used for the sports onset verification against the pre-registered prediction.
 Same unit norm for every direction, so the comparison is "EM per unit of movement along u".
@@ -65,10 +71,11 @@ def main(a):
     tok.padding_side = "left"
     base = AutoModelForCausalLM.from_pretrained(a.base_model, dtype=torch.bfloat16, device_map=DEVICE_MAP,
                                                 attn_implementation="sdpa", token=HF_TOKEN)
-    gen_cks = [int(x) for x in a.gen_checkpoints.split(",")] if "gen" in a.modes else []
-    first = a.ablate_step if ("steer" in a.modes or "ablate" in a.modes) else gen_cks[0]
+    modes = {m.strip() for m in a.modes.split(",")}
+    gen_cks = [int(x) for x in a.gen_checkpoints.split(",")] if "gen" in modes else []
+    first = a.ablate_step if modes & {"steer", "ablate", "mean_ablate", "steer_adapted"} else gen_cks[0]
     model = PeftModel.from_pretrained(base, a.organism_repo, subfolder=f"checkpoints/checkpoint-{first}",
-                                      adapter_name="final" if first == a.ablate_step and "ablate" in a.modes else f"step_{first}",
+                                      adapter_name="final" if modes & {"ablate", "mean_ablate", "steer", "steer_adapted"} else f"step_{first}",
                                       token=HF_TOKEN)
     for s in gen_cks:
         if f"step_{s}" not in model.peft_config:
@@ -89,6 +96,10 @@ def main(a):
         kind, u, c = op
         if kind == "steer":
             h = h + c * u
+        elif kind == "mean_ablate":
+            # reset the component along u to the BASE model's mean value instead of to zero:
+            # removes the fine-tuning-induced shift without deleting the base model's own component
+            h = h - (h @ u).unsqueeze(-1) * u + c * u
         else:
             h = h - (h @ u).unsqueeze(-1) * u
         return (h,) + tuple(output[1:]) if isinstance(output, tuple) else h
@@ -126,16 +137,16 @@ def main(a):
             state["op"] = None
 
     labels = []
-    if "gen" in a.modes and not a.skip_base:
+    if "gen" in modes and not a.skip_base:
         with model.disable_adapter():
             labels.append("gen:base")
             generate("gen:base", {"mode": "gen", "direction": "none", "layer": -1, "coef": 0.0, "alpha": 0.0, "step": 0})
-    if "gen" in a.modes:
+    if "gen" in modes:
         for s in gen_cks:
             model.set_adapter(f"step_{s}")
             labels.append(f"gen:{s}")
             generate(f"gen:{s}", {"mode": "gen", "direction": "none", "layer": -1, "coef": 0.0, "alpha": 0.0, "step": s})
-    if "steer" in a.modes:
+    if "steer" in modes:
         with model.disable_adapter():
             labels.append("steer:none:0")
             generate("steer:none:0", {"mode": "steer", "direction": "none", "layer": -1, "coef": 0.0, "alpha": 0.0})
@@ -147,7 +158,52 @@ def main(a):
                     labels.append(lab)
                     with_op(L, ("steer", U[k], alpha),
                             lambda: generate(lab, {"mode": "steer", "direction": k, "layer": L, "coef": c, "alpha": alpha}))
-    if "ablate" in a.modes:
+    if "steer_adapted" in modes:
+        model.set_adapter("final")
+        labels.append("steer_adapted:none:0")
+        generate("steer_adapted:none:0", {"mode": "steer_adapted", "direction": "none", "layer": -1,
+                                          "coef": 0.0, "alpha": 0.0})
+        for k in sorted(dirs):
+            L = int(k.rsplit("_L", 1)[1])
+            for c in a.coefs:
+                # scale: the direction's own if known, else any direction's at the same layer, else 1
+                sc = scales.get(k) or next((v for kk, v in scales.items() if kk.endswith(f"_L{L}")), 1.0)
+                alpha = c * sc
+                lab = f"steer_adapted:{k}:{c:g}"
+                labels.append(lab)
+                with_op(L, ("steer", U[k], alpha),
+                        lambda: generate(lab, {"mode": "steer_adapted", "direction": k, "layer": L,
+                                               "coef": c, "alpha": alpha}))
+    if "mean_ablate" in modes:
+        # base-model mean projection on u, over all prompt tokens of the question set
+        tot = {k: 0.0 for k in dirs}
+        n = {k: 0 for k in dirs}
+        with model.disable_adapter(), torch.no_grad():
+            for b in range(0, len(qs), a.batch_questions):
+                batch = qs[b:b + a.batch_questions]
+                enc = tok([texts[q["id"]] for q in batch], return_tensors="pt", padding=True,
+                          add_special_tokens=False).to(dev)
+                hs = model(**enc, output_hidden_states=True).hidden_states
+                m = enc["attention_mask"].bool()
+                for k in dirs:
+                    L = int(k.rsplit("_L", 1)[1])
+                    v = hs[L + 1][m].float()
+                    tot[k] += float((v @ U[k].float()).sum())
+                    n[k] += int(m.sum())
+        base_proj = {k: tot[k] / max(1, n[k]) for k in dirs}
+        json.dump(base_proj, open(out / "base_mean_projection.json", "w"), indent=1)
+        print("base mean projection:", {k: round(v, 3) for k, v in base_proj.items()}, flush=True)
+        model.set_adapter("final")
+        labels.append("mean_ablate:none")
+        generate("mean_ablate:none", {"mode": "mean_ablate", "direction": "none", "layer": -1, "coef": 0.0, "alpha": 0.0})
+        for k in sorted(dirs):
+            L = int(k.rsplit("_L", 1)[1])
+            lab = f"mean_ablate:{k}"
+            labels.append(lab)
+            with_op(L, ("mean_ablate", U[k], base_proj[k]),
+                    lambda: generate(lab, {"mode": "mean_ablate", "direction": k, "layer": L,
+                                           "coef": 0.0, "alpha": base_proj[k]}))
+    if "ablate" in modes:
         model.set_adapter("final")
         labels.append("ablate:none")
         generate("ablate:none", {"mode": "ablate", "direction": "none", "layer": -1, "coef": 0.0, "alpha": 0.0})

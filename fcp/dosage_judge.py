@@ -252,8 +252,10 @@ class APIJudge:
                 with urllib.request.urlopen(req, timeout=120) as r:
                     return json.load(r)
             except urllib.error.HTTPError as e:
-                if e.code in (429, 500, 502, 503, 504) and attempt < 7:
-                    time.sleep(min(60, 3 * 2 ** attempt))
+                if e.code in (429, 500, 502, 503, 504) and attempt < 25:
+                    # sustained 429s happen when several judging passes run back to back;
+                    # keep backing off for ~20 min rather than giving up after ~4
+                    time.sleep(min(90, 3 * 2 ** min(attempt, 5)))
                     continue
                 raise RuntimeError(f"HTTP {e.code}: {e.read().decode()[:300]}")
             except (urllib.error.URLError, TimeoutError, ConnectionError):

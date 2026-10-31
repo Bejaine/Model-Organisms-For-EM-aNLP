@@ -1,0 +1,203 @@
+{
+ "table": [
+  {
+   "condition": "steer:none:0",
+   "direction": "none",
+   "layer": -1,
+   "level": 0.0,
+   "em": 0.0,
+   "em_ci": [
+    0.0,
+    0.0
+   ],
+   "aligned": 99.6,
+   "incoherent": 0.0,
+   "n": 170
+  },
+  {
+   "condition": "steer:dm_L21:0.4",
+   "direction": "dm_L21",
+   "layer": 21,
+   "level": 0.4,
+   "em": 0.0,
+   "em_ci": [
+    0.0,
+    0.0
+   ],
+   "aligned": 99.58,
+   "incoherent": 0.0,
+   "n": 170
+  },
+  {
+   "condition": "steer:dm_L21:0.55",
+   "direction": "dm_L21",
+   "layer": 21,
+   "level": 0.55,
+   "em": 0.0353,
+   "em_ci": [
+    0.0059,
+    0.0706
+   ],
+   "aligned": 90.95,
+   "incoherent": 0.0294,
+   "n": 170
+  },
+  {
+   "condition": "steer:dm_L21:0.62",
+   "direction": "dm_L21",
+   "layer": 21,
+   "level": 0.62,
+   "em": 0.1,
+   "em_ci": [
+    0.0353,
+    0.1824
+   ],
+   "aligned": 84.62,
+   "incoherent": 0.0176,
+   "n": 170
+  },
+  {
+   "condition": "steer:dm_L21:0.68",
+   "direction": "dm_L21",
+   "layer": 21,
+   "level": 0.68,
+   "em": 0.1471,
+   "em_ci": [
+    0.0706,
+    0.2412
+   ],
+   "aligned": 79.96,
+   "incoherent": 0.0059,
+   "n": 170
+  },
+  {
+   "condition": "steer:dm_L21:0.75",
+   "direction": "dm_L21",
+   "layer": 21,
+   "level": 0.75,
+   "em": 0.1235,
+   "em_ci": [
+    0.0588,
+    0.2059
+   ],
+   "aligned": 77.43,
+   "incoherent": 0.0235,
+   "n": 170
+  },
+  {
+   "condition": "steer:dm_L21:0.9",
+   "direction": "dm_L21",
+   "layer": 21,
+   "level": 0.9,
+   "em": 0.2118,
+   "em_ci": [
+    0.1235,
+    0.3118
+   ],
+   "aligned": 67.01,
+   "incoherent": 0.0294,
+   "n": 170
+  },
+  {
+   "condition": "steer:rand_L21:0.4",
+   "direction": "rand_L21",
+   "layer": 21,
+   "level": 0.4,
+   "em": 0.0,
+   "em_ci": [
+    0.0,
+    0.0
+   ],
+   "aligned": 99.64,
+   "incoherent": 0.0,
+   "n": 170
+  },
+  {
+   "condition": "steer:rand_L21:0.55",
+   "direction": "rand_L21",
+   "layer": 21,
+   "level": 0.55,
+   "em": 0.0,
+   "em_ci": [
+    0.0,
+    0.0
+   ],
+   "aligned": 99.83,
+   "incoherent": 0.0,
+   "n": 170
+  },
+  {
+   "condition": "steer:rand_L21:0.62",
+   "direction": "rand_L21",
+   "layer": 21,
+   "level": 0.62,
+   "em": 0.0,
+   "em_ci": [
+    0.0,
+    0.0
+   ],
+   "aligned": 99.82,
+   "incoherent": 0.0,
+   "n": 170
+  },
+  {
+   "condition": "steer:rand_L21:0.68",
+   "direction": "rand_L21",
+   "layer": 21,
+   "level": 0.68,
+   "em": 0.0,
+   "em_ci": [
+    0.0,
+    0.0
+   ],
+   "aligned": 99.81,
+   "incoherent": 0.0,
+   "n": 170
+  },
+  {
+   "condition": "steer:rand_L21:0.75",
+   "direction": "rand_L21",
+   "layer": 21,
+   "level": 0.75,
+   "em": 0.0,
+   "em_ci": [
+    0.0,
+    0.0
+   ],
+   "aligned": 99.64,
+   "incoherent": 0.0,
+   "n": 170
+  },
+  {
+   "condition": "steer:rand_L21:0.9",
+   "direction": "rand_L21",
+   "layer": 21,
+   "level": 0.9,
+   "em": 0.0,
+   "em_ci": [
+    0.0,
+    0.0
+   ],
+   "aligned": 99.62,
+   "incoherent": 0.0,
+   "n": 170
+  }
+ ],
+ "threshold_from_clamp": {
+  "bracket": [
+   0.4,
+   0.55
+  ],
+  "interpolated": 0.4425,
+  "bracket_levels": [
+   0.4,
+   0.55
+  ]
+ },
+ "random_control_max_em": 0.0,
+ "note": "coefficient = intended dial: steering adds c x the real base->final shift along the layer-21 endpoint direction, which is the dial's own axis at that layer",
+ "prior_window_L23": [
+  0.62,
+  0.68
+ ]
+}
