@@ -416,6 +416,92 @@ of why the exclusion matters, not as a finding.
    axis's primary (or an additional primary) fact bank — it's the first dataset tested here that
    isn't saturated at level 0.
 
+## More data: SciQ and EntityQuestions (400 facts each)
+
+Requested directly: run SciQ and EntityQuestions through the same pipeline as TruthfulQA.
+`fcp/build_sycophancy_sciq_entityq.py` writes `fcp/sycophancy_data_{sciq,entityq}.py` (seeded,
+text-only filters, every continuation checked against the Qwen2.5-3B tokenizer, max 19 tokens).
+
+- **SciQ** (`allenai/sciq`, test split): SciQ's own correct answer and its 3 dataset-provided
+  distractors. Dropped: multiple-choice-only phrasing ("which of the following", ...), blank or
+  duplicate candidates, the shared `SENSITIVE_WORDS` filter. 980 eligible, 400 sampled.
+- **EntityQuestions** (Sciavolino et al. 2021, test split): distractors are 3 answers to *other*
+  questions of the same Wikidata relation. P26 (spouse) and P40 (child) excluded outright (family
+  facts about mostly obscure real people -- same reasoning as TruthfulQA's `Sociology`). Items
+  whose answer appears in the question dropped. 400 facts round-robin over 22 relations (18-19
+  each). The 8 multi-valued/hierarchical relations (occupation, located-in, genre, educated-at,
+  position, country-of-origin, notable-work, location) are flagged `AMBIGUOUS` (146 facts),
+  because a same-relation distractor can also be true there.
+
+Same extraction as TruthfulQA (`--neutral-l0 --extract`, Qwen2.5-3B-Instruct, bf16, A100), 400 x 5
+x 36 = 72,000 rows each, then the same three severity tables, six probe runs and two descriptive
+sweeps (`fcp/run_sycophancy_dataset.sh`).
+
+| dataset | n facts | n with P̃(correct\|L0) in [0.5,0.95] | n failing knowledge filter | "clean" n |
+|---|---|---|---|---|
+| TruthfulQA | 156 | 11 | 16 | 127 |
+| SciQ | 400 | 7 | 15 | 385 (none flagged) |
+| EntityQuestions | 400 | 1 | **0** | 254 |
+
+**The knowledge filter is vacuous on EntityQuestions -- read every EntityQuestions number with
+this in mind.** A 3B model does not know 400 long-tail Wikidata facts; it scores P̃(correct|L0)
+~1 because the level-0 context already contains the scripted correct answer and it copies it.
+On obscure entities `knows_at_L0` measures in-context copying, not knowledge, so the "known" and
+"unfiltered" EntityQuestions tables are identical. SciQ is saturated in the other direction (the
+model really does know almost all of it), like the original 36 facts.
+
+Pushback still moves belief on both: mean s_belief (known facts) by level 0-4 is
+0.003 / 0.017 / 0.064 / 0.124 / 0.090 on SciQ and 0.001 / 0.004 / 0.007 / 0.029 / 0.119 on
+EntityQuestions; s_shift on EntityQuestions is the most graded seen on this axis
+(0 / 1.7 / 5.7 / 7.9 / 11.7).
+
+**Official results (frozen methodology, selected layer).** ρ_W, 95% bootstrap CI, one-sided
+shuffled-null p (200 refits). Main table = known-at-L0.
+
+| run | layer | baseline | ridge_ep | fcp |
+|---|---|---|---|---|
+| sciq s_belief | 35 | −0.002 [−0.078, +0.076] p=.48 | +0.001 [−0.079, +0.084] p=.49 | −0.083 [−0.155, −0.014] p=.96 |
+| sciq s_shift | 35 | +0.007 [−0.073, +0.088] p=.43 | +0.002 [−0.080, +0.082] p=.40 | −0.038 [−0.114, +0.037] p=.89 |
+| entityq s_belief | 2 | +0.094 [−0.010, +0.196] p=.010 | +0.055 [−0.034, +0.144] p=.030 | **+0.116 [+0.014, +0.213] p=.005** |
+| entityq s_shift | 2 | −0.172 [−0.261, −0.079] p=1.0 | −0.086 [−0.167, −0.002] p=.99 | −0.196 [−0.283, −0.105] p=1.0 |
+| entityq s_belief clean | 2 | +0.038 [−0.086, +0.167] p=.22 | +0.008 [−0.104, +0.123] p=.35 | +0.063 [−0.062, +0.187] p=.030 |
+| entityq s_shift clean | 2 | −0.237 [−0.341, −0.118] p=1.0 | −0.117 [−0.223, −0.004] p=.99 | −0.260 [−0.362, −0.144] p=1.0 |
+
+SciQ clean = known (no ambiguous facts); SciQ unfiltered is within ±0.012 of known. FCP − baseline
+paired test: SciQ p ≤ 0.008 (FCP *worse*), EntityQuestions p = 0.09-0.18 (n.s.).
+
+- **SciQ: null**, as TruthfulQA was. One CI excludes zero, in the *negative* direction
+  (fcp/s_belief) -- not support for H1.
+- **EntityQuestions s_belief: nominally significant** for fcp (p=0.005, CI excludes 0), with
+  baseline/ridge_ep at p=0.010/0.030 but CIs including 0. Not claimed as a finding: it is at layer
+  2, the knowledge filter excluded nothing (see above), it does not survive the clean table (CI
+  includes 0), and it is 1 of 18 probe×table×severity tests on this dataset.
+- **EntityQuestions s_shift at layer 2: significantly negative** -- the opposite of H1's
+  direction.
+
+**Layer selection: the TruthfulQA finding replicates on both datasets.** Cohen's d is saturated
+at every layer (SciQ 21-56, EntityQuestions 23-57); the rule picked layer 35 (SciQ) and layer 2
+(EntityQuestions, the same layer as TruthfulQA). The descriptive sweeps
+(`{sciq,entityq}_layer_sweep.png`, not used to pick the reported layer):
+
+| dataset | severity | best layer (probe) | best ρ_W | ρ_W at selected layer |
+|---|---|---|---|---|
+| SciQ | s_belief | 23 (baseline) | +0.162 | +0.017 |
+| SciQ | s_shift | 23 (baseline) | +0.142 | +0.024 |
+| EntityQuestions | s_belief | 0 (baseline) | +0.236 | +0.040 |
+| EntityQuestions | s_shift | 34 (baseline) / 25 (fcp) | +0.199 / +0.194 | −0.169 / −0.192 |
+
+SciQ's signal sits at layers 22-26, close to TruthfulQA's 17-23. EntityQuestions' s_belief signal
+is at layers 0-1, which points to surface features of the prompt (entity tokens) rather than a
+belief representation; its s_shift signal is positive and stable across layers 23-35 and
+negative before layer 15. Same conclusion as TruthfulQA: the selection rule does not find the
+layer with within-level signal, on three datasets now. Shared infra (`fcp/fcp_probes.py`) not
+changed.
+
+Reporting quirk (shared infra, same as TruthfulQA): `n_eval_prompts` is 300 for every table
+because it counts prompts in the activation index; facts excluded by a filtered severity table
+drop out through missing s, not from that count.
+
 ## What's not yet done (tracked honestly, not claimed)
 
 - Nothing remains from the original brief's ordered list (S1–S9): S8 closed as a documented

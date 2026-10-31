@@ -618,5 +618,487 @@
     },
     "conclusion": "baseline endpoint Cohens-d layer-selection criterion saturates near-maximally at every layer for every dataset tested on this axis so far; does not reliably find the layer with real within-level (held-out intermediate-level) signal",
     "decision_needed": "change the shared layer-selection criterion in fcp/fcp_probes.py, or accept current selected-layer results as potentially suboptimal -- affects every axis using this script"
+  },
+  "sciq_sbelief": {
+    "run_tag": "sciq_sbelief",
+    "severity_col": "s_belief",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 35,
+    "n_prompts_eval": 300,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": -0.0021204073524183956,
+        "ci_lo": -0.0779111881919982,
+        "ci_hi": 0.07611477754707119,
+        "shuffled_null_p": 0.48258706467661694
+      },
+      "ridge_ep": {
+        "rho_W": 0.0005331155276355344,
+        "ci_lo": -0.07906551906122544,
+        "ci_hi": 0.0843837106739392,
+        "shuffled_null_p": 0.48756218905472637
+      },
+      "fcp": {
+        "rho_W": -0.0830555613642542,
+        "ci_lo": -0.15473894539616662,
+        "ci_hi": -0.014243209791165872,
+        "shuffled_null_p": 0.9601990049751243
+      }
+    },
+    "fcp_minus_baseline_p": 0.0,
+    "trivial_rho_f_s": 0.3153535774001477,
+    "mde": 0.16114738654696742,
+    "notes": "SciQ facts (n=385 known-at-L0); layer selected by the shared baseline-endpoint Cohens-d rule, see sciq_layer_selection_finding"
+  },
+  "sciq_sbelief_clean": {
+    "run_tag": "sciq_sbelief_clean",
+    "severity_col": "s_belief",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 35,
+    "n_prompts_eval": 300,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": -0.0021204073524183956,
+        "ci_lo": -0.0779111881919982,
+        "ci_hi": 0.07611477754707119,
+        "shuffled_null_p": 0.48258706467661694
+      },
+      "ridge_ep": {
+        "rho_W": 0.0005331155276355344,
+        "ci_lo": -0.07906551906122544,
+        "ci_hi": 0.0843837106739392,
+        "shuffled_null_p": 0.48756218905472637
+      },
+      "fcp": {
+        "rho_W": -0.0830555613642542,
+        "ci_lo": -0.15473894539616662,
+        "ci_hi": -0.014243209791165872,
+        "shuffled_null_p": 0.9601990049751243
+      }
+    },
+    "fcp_minus_baseline_p": 0.0,
+    "trivial_rho_f_s": 0.3153535774001477,
+    "mde": 0.16114738654696742,
+    "notes": "SciQ facts (n=385 known-at-L0 + non-ambiguous); layer selected by the shared baseline-endpoint Cohens-d rule, see sciq_layer_selection_finding"
+  },
+  "sciq_sbelief_unfiltered": {
+    "run_tag": "sciq_sbelief_unfiltered",
+    "severity_col": "s_belief",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 35,
+    "n_prompts_eval": 300,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": -0.0037427082523139124,
+        "ci_lo": -0.08018053809243138,
+        "ci_hi": 0.07547967276407853,
+        "shuffled_null_p": 0.5024875621890548
+      },
+      "ridge_ep": {
+        "rho_W": 0.001078530502190766,
+        "ci_lo": -0.0770711077602644,
+        "ci_hi": 0.08464333579327396,
+        "shuffled_null_p": 0.4626865671641791
+      },
+      "fcp": {
+        "rho_W": -0.08126416219439475,
+        "ci_lo": -0.15367373984265215,
+        "ci_hi": -0.011758099881944711,
+        "shuffled_null_p": 0.9552238805970149
+      }
+    },
+    "fcp_minus_baseline_p": 0.0,
+    "trivial_rho_f_s": 0.30403515227425815,
+    "mde": 0.16114738654696742,
+    "notes": "SciQ facts (n=400, no knowledge filter -- comparison only); layer selected by the shared baseline-endpoint Cohens-d rule, see sciq_layer_selection_finding"
+  },
+  "sciq_sshift": {
+    "run_tag": "sciq_sshift",
+    "severity_col": "s_shift",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 35,
+    "n_prompts_eval": 300,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": 0.0072426134879622584,
+        "ci_lo": -0.07299066707050383,
+        "ci_hi": 0.08786321824207614,
+        "shuffled_null_p": 0.42786069651741293
+      },
+      "ridge_ep": {
+        "rho_W": 0.0019736181208436184,
+        "ci_lo": -0.07998897563867212,
+        "ci_hi": 0.08182028674201823,
+        "shuffled_null_p": 0.40298507462686567
+      },
+      "fcp": {
+        "rho_W": -0.037564840452816085,
+        "ci_lo": -0.11434047941578264,
+        "ci_hi": 0.03684146683395449,
+        "shuffled_null_p": 0.8855721393034826
+      }
+    },
+    "fcp_minus_baseline_p": 0.008,
+    "trivial_rho_f_s": 0.4017703229169994,
+    "mde": 0.16114738654696742,
+    "notes": "SciQ facts (n=385 known-at-L0); layer selected by the shared baseline-endpoint Cohens-d rule, see sciq_layer_selection_finding"
+  },
+  "sciq_sshift_clean": {
+    "run_tag": "sciq_sshift_clean",
+    "severity_col": "s_shift",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 35,
+    "n_prompts_eval": 300,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": 0.0072426134879622584,
+        "ci_lo": -0.07299066707050383,
+        "ci_hi": 0.08786321824207614,
+        "shuffled_null_p": 0.42786069651741293
+      },
+      "ridge_ep": {
+        "rho_W": 0.0019736181208436184,
+        "ci_lo": -0.07998897563867212,
+        "ci_hi": 0.08182028674201823,
+        "shuffled_null_p": 0.40298507462686567
+      },
+      "fcp": {
+        "rho_W": -0.037564840452816085,
+        "ci_lo": -0.11434047941578264,
+        "ci_hi": 0.03684146683395449,
+        "shuffled_null_p": 0.8855721393034826
+      }
+    },
+    "fcp_minus_baseline_p": 0.008,
+    "trivial_rho_f_s": 0.4017703229169994,
+    "mde": 0.16114738654696742,
+    "notes": "SciQ facts (n=385 known-at-L0 + non-ambiguous); layer selected by the shared baseline-endpoint Cohens-d rule, see sciq_layer_selection_finding"
+  },
+  "sciq_sshift_unfiltered": {
+    "run_tag": "sciq_sshift_unfiltered",
+    "severity_col": "s_shift",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 35,
+    "n_prompts_eval": 300,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": 0.00802394100675193,
+        "ci_lo": -0.07011692024829808,
+        "ci_hi": 0.08451926823946485,
+        "shuffled_null_p": 0.44776119402985076
+      },
+      "ridge_ep": {
+        "rho_W": -0.008743504557458046,
+        "ci_lo": -0.08964033837618524,
+        "ci_hi": 0.07021501127571696,
+        "shuffled_null_p": 0.5920398009950248
+      },
+      "fcp": {
+        "rho_W": -0.03958932877031967,
+        "ci_lo": -0.11282245153913696,
+        "ci_hi": 0.03155054658207337,
+        "shuffled_null_p": 0.9154228855721394
+      }
+    },
+    "fcp_minus_baseline_p": 0.005,
+    "trivial_rho_f_s": 0.39339779109435113,
+    "mde": 0.16114738654696742,
+    "notes": "SciQ facts (n=400, no knowledge filter -- comparison only); layer selected by the shared baseline-endpoint Cohens-d rule, see sciq_layer_selection_finding"
+  },
+  "sciq_layer_selection_finding": {
+    "status": "descriptive check of the same layer-selection issue reported for TruthfulQA; shared infra NOT changed",
+    "n_facts_total": 400,
+    "n_facts_known_at_l0": 385,
+    "n_facts_clean": 385,
+    "n_facts_in_band_0.5_0.95": 7,
+    "selected_layer": 35,
+    "selected_layer_cohens_d": 55.83,
+    "min_cohens_d_any_layer": 21.2,
+    "max_cohens_d_any_layer": 55.83,
+    "best_layer_by_sweep": {
+      "sbelief_baseline": {
+        "layer": 23,
+        "rho_W": 0.162,
+        "selected_layer_rho_W": 0.017
+      },
+      "sbelief_ridge_ep": {
+        "layer": 26,
+        "rho_W": 0.077,
+        "selected_layer_rho_W": -0.012
+      },
+      "sbelief_fcp": {
+        "layer": 22,
+        "rho_W": 0.062,
+        "selected_layer_rho_W": -0.091
+      },
+      "sshift_baseline": {
+        "layer": 23,
+        "rho_W": 0.142,
+        "selected_layer_rho_W": 0.024
+      },
+      "sshift_ridge_ep": {
+        "layer": 28,
+        "rho_W": 0.051,
+        "selected_layer_rho_W": 0.018
+      },
+      "sshift_fcp": {
+        "layer": 32,
+        "rho_W": 0.089,
+        "selected_layer_rho_W": -0.051
+      }
+    }
+  },
+  "entityq_sbelief": {
+    "run_tag": "entityq_sbelief",
+    "severity_col": "s_belief",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 2,
+    "n_prompts_eval": 300,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": 0.09395626822917241,
+        "ci_lo": -0.010182347987426125,
+        "ci_hi": 0.1964046045921323,
+        "shuffled_null_p": 0.009950248756218905
+      },
+      "ridge_ep": {
+        "rho_W": 0.054574442527806015,
+        "ci_lo": -0.033647049638795966,
+        "ci_hi": 0.1436570831399051,
+        "shuffled_null_p": 0.029850746268656716
+      },
+      "fcp": {
+        "rho_W": 0.11558055377753534,
+        "ci_lo": 0.013893844322403606,
+        "ci_hi": 0.21290505625248773,
+        "shuffled_null_p": 0.004975124378109453
+      }
+    },
+    "fcp_minus_baseline_p": 0.118,
+    "trivial_rho_f_s": 0.3260303405568146,
+    "mde": 0.16114738654696742,
+    "notes": "EntityQuestions facts (n=400 known-at-L0); layer selected by the shared baseline-endpoint Cohens-d rule, see entityq_layer_selection_finding"
+  },
+  "entityq_sbelief_clean": {
+    "run_tag": "entityq_sbelief_clean",
+    "severity_col": "s_belief",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 2,
+    "n_prompts_eval": 300,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": 0.038275807921188544,
+        "ci_lo": -0.08610442721883886,
+        "ci_hi": 0.16654597354890355,
+        "shuffled_null_p": 0.21890547263681592
+      },
+      "ridge_ep": {
+        "rho_W": 0.007559461218111223,
+        "ci_lo": -0.10414169229717231,
+        "ci_hi": 0.12282355828898946,
+        "shuffled_null_p": 0.35323383084577115
+      },
+      "fcp": {
+        "rho_W": 0.06299009112937921,
+        "ci_lo": -0.06199846274467565,
+        "ci_hi": 0.18653594326397677,
+        "shuffled_null_p": 0.029850746268656716
+      }
+    },
+    "fcp_minus_baseline_p": 0.184,
+    "trivial_rho_f_s": 0.4088917732604307,
+    "mde": 0.16114738654696742,
+    "notes": "EntityQuestions facts (n=254 known-at-L0 + non-ambiguous); layer selected by the shared baseline-endpoint Cohens-d rule, see entityq_layer_selection_finding"
+  },
+  "entityq_sbelief_unfiltered": {
+    "run_tag": "entityq_sbelief_unfiltered",
+    "severity_col": "s_belief",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 2,
+    "n_prompts_eval": 300,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": 0.09395626822917241,
+        "ci_lo": -0.010182347987426125,
+        "ci_hi": 0.1964046045921323,
+        "shuffled_null_p": 0.009950248756218905
+      },
+      "ridge_ep": {
+        "rho_W": 0.054574442527806015,
+        "ci_lo": -0.033647049638795966,
+        "ci_hi": 0.1436570831399051,
+        "shuffled_null_p": 0.029850746268656716
+      },
+      "fcp": {
+        "rho_W": 0.11558055377753534,
+        "ci_lo": 0.013893844322403606,
+        "ci_hi": 0.21290505625248773,
+        "shuffled_null_p": 0.004975124378109453
+      }
+    },
+    "fcp_minus_baseline_p": 0.118,
+    "trivial_rho_f_s": 0.3260303405568146,
+    "mde": 0.16114738654696742,
+    "notes": "EntityQuestions facts (n=400, no knowledge filter -- comparison only); layer selected by the shared baseline-endpoint Cohens-d rule, see entityq_layer_selection_finding"
+  },
+  "entityq_sshift": {
+    "run_tag": "entityq_sshift",
+    "severity_col": "s_shift",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 2,
+    "n_prompts_eval": 300,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": -0.1717395378467168,
+        "ci_lo": -0.26091534157460344,
+        "ci_hi": -0.07910275967814913,
+        "shuffled_null_p": 1.0
+      },
+      "ridge_ep": {
+        "rho_W": -0.08590021370607821,
+        "ci_lo": -0.1673999786672319,
+        "ci_hi": -0.002183992174075569,
+        "shuffled_null_p": 0.9850746268656716
+      },
+      "fcp": {
+        "rho_W": -0.1958361018826135,
+        "ci_lo": -0.2827334886951227,
+        "ci_hi": -0.1051582528174934,
+        "shuffled_null_p": 1.0
+      }
+    },
+    "fcp_minus_baseline_p": 0.086,
+    "trivial_rho_f_s": 0.4315658673549465,
+    "mde": 0.16114738654696742,
+    "notes": "EntityQuestions facts (n=400 known-at-L0); layer selected by the shared baseline-endpoint Cohens-d rule, see entityq_layer_selection_finding"
+  },
+  "entityq_sshift_clean": {
+    "run_tag": "entityq_sshift_clean",
+    "severity_col": "s_shift",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 2,
+    "n_prompts_eval": 300,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": -0.2367396031449783,
+        "ci_lo": -0.3409504592561686,
+        "ci_hi": -0.11817813481964437,
+        "shuffled_null_p": 1.0
+      },
+      "ridge_ep": {
+        "rho_W": -0.11739336520971459,
+        "ci_lo": -0.2225670371729619,
+        "ci_hi": -0.0037660324380411245,
+        "shuffled_null_p": 0.9900497512437811
+      },
+      "fcp": {
+        "rho_W": -0.26019066578976996,
+        "ci_lo": -0.36171999402353505,
+        "ci_hi": -0.14428507861766993,
+        "shuffled_null_p": 1.0
+      }
+    },
+    "fcp_minus_baseline_p": 0.17,
+    "trivial_rho_f_s": 0.5152056525360541,
+    "mde": 0.16114738654696742,
+    "notes": "EntityQuestions facts (n=254 known-at-L0 + non-ambiguous); layer selected by the shared baseline-endpoint Cohens-d rule, see entityq_layer_selection_finding"
+  },
+  "entityq_sshift_unfiltered": {
+    "run_tag": "entityq_sshift_unfiltered",
+    "severity_col": "s_shift",
+    "f_definition": "f in {0,.25,.5,.75,1.0}, pushback fidelity level (fixed, frozen spec)",
+    "condition_or_diff": "clean (sole condition, no adapter)",
+    "layer": 2,
+    "n_prompts_eval": 300,
+    "n_intermediate_levels": 3,
+    "probes": {
+      "baseline": {
+        "rho_W": -0.1717395378467168,
+        "ci_lo": -0.26091534157460344,
+        "ci_hi": -0.07910275967814913,
+        "shuffled_null_p": 1.0
+      },
+      "ridge_ep": {
+        "rho_W": -0.08590021370607821,
+        "ci_lo": -0.1673999786672319,
+        "ci_hi": -0.002183992174075569,
+        "shuffled_null_p": 0.9850746268656716
+      },
+      "fcp": {
+        "rho_W": -0.1958361018826135,
+        "ci_lo": -0.2827334886951227,
+        "ci_hi": -0.1051582528174934,
+        "shuffled_null_p": 1.0
+      }
+    },
+    "fcp_minus_baseline_p": 0.086,
+    "trivial_rho_f_s": 0.4315658673549465,
+    "mde": 0.16114738654696742,
+    "notes": "EntityQuestions facts (n=400, no knowledge filter -- comparison only); layer selected by the shared baseline-endpoint Cohens-d rule, see entityq_layer_selection_finding"
+  },
+  "entityq_layer_selection_finding": {
+    "status": "descriptive check of the same layer-selection issue reported for TruthfulQA; shared infra NOT changed",
+    "n_facts_total": 400,
+    "n_facts_known_at_l0": 400,
+    "n_facts_clean": 254,
+    "n_facts_in_band_0.5_0.95": 1,
+    "selected_layer": 2,
+    "selected_layer_cohens_d": 56.67,
+    "min_cohens_d_any_layer": 22.85,
+    "max_cohens_d_any_layer": 56.67,
+    "best_layer_by_sweep": {
+      "sbelief_baseline": {
+        "layer": 0,
+        "rho_W": 0.236,
+        "selected_layer_rho_W": 0.04
+      },
+      "sbelief_ridge_ep": {
+        "layer": 27,
+        "rho_W": 0.074,
+        "selected_layer_rho_W": 0.019
+      },
+      "sbelief_fcp": {
+        "layer": 1,
+        "rho_W": 0.145,
+        "selected_layer_rho_W": 0.062
+      },
+      "sshift_baseline": {
+        "layer": 34,
+        "rho_W": 0.199,
+        "selected_layer_rho_W": -0.169
+      },
+      "sshift_ridge_ep": {
+        "layer": 29,
+        "rho_W": 0.117,
+        "selected_layer_rho_W": -0.069
+      },
+      "sshift_fcp": {
+        "layer": 25,
+        "rho_W": 0.194,
+        "selected_layer_rho_W": -0.192
+      }
+    }
   }
 }
