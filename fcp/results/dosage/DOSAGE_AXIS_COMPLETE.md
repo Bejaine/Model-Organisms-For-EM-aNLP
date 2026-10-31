@@ -1,6 +1,6 @@
 # FCP Dosage Axis — Complete Record
 
-**Axis owner:** Sian · **Branch:** `dosage/threshold-causality` · **Last updated:** 31 Oct 2026
+**Axis owner:** Sian · **Branch:** `dosage/threshold-causality` · **Last updated:** 31 Oct 2026 (complete — no runs outstanding)
 
 **Purpose of this file.** A single self-contained record of every experiment run on the dosage axis,
 what each found, and what we conclude. It is written so that someone who has not followed the work
@@ -355,7 +355,7 @@ Within-level ρ with one-sided p against 200 shuffled-label refits (100 for the 
 | Log-prob margin, base-subtracted | 21 | +0.13 (0.085) | +0.10 (0.045) | +0.09 (0.050) | +0.13 (0.040) |
 | R1_3_3_3, log-prob, raw | 26 | −0.06 (0.66) | −0.07 (0.85) | −0.09 (0.97) | −0.10 (0.83) |
 | R1_3_3_3, log-prob, base-subtracted | 15 | −0.10 (0.88) | −0.10 (0.98) | −0.12 (0.99) | −0.10 (0.94) |
-| C: 69 prompts, base-subtracted | 21 | *(running at time of writing)* | | | |
+| **C: 69 prompts, base-subtracted** * | 21 | +0.250 (0.079) | +0.252 (0.010) | **+0.228 (0.020)** | +0.250 (0.059) |
 
 **How to read this.** The regression probes beat their nulls more often than DM does, even at equal
 or higher ρ. That is a property of the null, not evidence that DM is worse: permuting f within a
@@ -364,6 +364,13 @@ bootstrap on FCP − DM is the correct head-to-head test, and it never favours F
 
 **The strongest H1 evidence** is the C row: with 52 evaluation prompts every probe beats its null
 (DM p = 0.005), and FCP is significantly worse than endpoint ridge.
+
+**The base-subtracted C row completes the picture and is the cleanest demonstration of the fix.**
+Once the base-model activation is subtracted, all four probes land together at ρ_W 0.228-0.252 and
+every paired difference is null: FCP - DM p = 0.57, FCP - endpoint ridge p = 0.43. So the gap that
+made FCP look broken on raw activations (0.067 vs 0.290, p = 0.021 against endpoint ridge) closes
+entirely under pairing. This is section 6's conclusion measured directly: FCP is not a worse probe,
+it is the right estimator applied to the wrong target, and pairing restores it.
 
 ---
 
