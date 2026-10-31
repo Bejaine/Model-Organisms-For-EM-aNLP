@@ -1,0 +1,75 @@
+  layer 0: baseline=+0.236  ridge_ep=+0.067  fcp=+0.108
+  layer 1: baseline=+0.132  ridge_ep=-0.032  fcp=+0.145
+  layer 2: baseline=+0.040  ridge_ep=+0.019  fcp=+0.062
+  layer 3: baseline=+0.007  ridge_ep=-0.009  fcp=+0.045
+  layer 4: baseline=+0.015  ridge_ep=-0.021  fcp=+0.017
+  layer 5: baseline=-0.037  ridge_ep=-0.020  fcp=-0.002
+  layer 6: baseline=-0.163  ridge_ep=+0.016  fcp=-0.046
+  layer 7: baseline=-0.263  ridge_ep=+0.057  fcp=-0.143
+  layer 8: baseline=-0.272  ridge_ep=+0.019  fcp=-0.182
+  layer 9: baseline=-0.237  ridge_ep=+0.040  fcp=-0.069
+  layer 10: baseline=-0.222  ridge_ep=-0.058  fcp=-0.112
+  layer 11: baseline=-0.182  ridge_ep=-0.039  fcp=-0.054
+  layer 12: baseline=-0.159  ridge_ep=-0.027  fcp=+0.048
+  layer 13: baseline=-0.217  ridge_ep=+0.059  fcp=+0.048
+  layer 14: baseline=-0.235  ridge_ep=-0.067  fcp=-0.052
+  layer 15: baseline=-0.078  ridge_ep=-0.059  fcp=-0.002
+  layer 16: baseline=-0.101  ridge_ep=-0.040  fcp=-0.065
+  layer 17: baseline=-0.115  ridge_ep=+0.021  fcp=-0.064
+  layer 18: baseline=+0.009  ridge_ep=+0.010  fcp=-0.053
+  layer 19: baseline=-0.042  ridge_ep=-0.082  fcp=-0.025
+  layer 20: baseline=-0.094  ridge_ep=-0.119  fcp=-0.035
+  layer 21: baseline=-0.098  ridge_ep=+0.018  fcp=-0.096
+  layer 22: baseline=+0.001  ridge_ep=-0.012  fcp=+0.010
+  layer 23: baseline=-0.030  ridge_ep=-0.005  fcp=-0.029
+  layer 24: baseline=-0.054  ridge_ep=+0.013  fcp=-0.044
+  layer 25: baseline=-0.117  ridge_ep=-0.025  fcp=+0.001
+  layer 26: baseline=-0.060  ridge_ep=+0.020  fcp=-0.017
+  layer 27: baseline=-0.110  ridge_ep=+0.074  fcp=-0.061
+  layer 28: baseline=-0.059  ridge_ep=+0.065  fcp=-0.038
+  layer 29: baseline=-0.066  ridge_ep=+0.030  fcp=-0.043
+  layer 30: baseline=-0.100  ridge_ep=+0.041  fcp=-0.001
+  layer 31: baseline=-0.094  ridge_ep=+0.009  fcp=+0.021
+  layer 32: baseline=-0.080  ridge_ep=-0.015  fcp=-0.011
+  layer 33: baseline=-0.064  ridge_ep=-0.002  fcp=-0.040
+  layer 34: baseline=-0.072  ridge_ep=-0.002  fcp=-0.005
+  layer 35: baseline=-0.091  ridge_ep=-0.037  fcp=-0.061
+
+[descriptive, selection-free layer sweep -- all prompts used for evaluation, no layer-selection split, NOT used to choose the reported layer anywhere else]
+ layer  within_rho_baseline  within_rho_ridge_ep  within_rho_fcp
+     0             0.236426             0.066963        0.107568
+     1             0.131913            -0.031609        0.145009
+     2             0.040140             0.018999        0.061972
+     3             0.006806            -0.009498        0.044862
+     4             0.015217            -0.021211        0.017471
+     5            -0.037080            -0.019734       -0.002378
+     6            -0.163148             0.016329       -0.045595
+     7            -0.263254             0.057185       -0.143217
+     8            -0.271753             0.019081       -0.181841
+     9            -0.236516             0.039755       -0.069056
+    10            -0.221773            -0.058202       -0.112144
+    11            -0.182455            -0.038879       -0.054001
+    12            -0.158673            -0.027158        0.047893
+    13            -0.217428             0.058989        0.047753
+    14            -0.234691            -0.067410       -0.051615
+    15            -0.077998            -0.059355       -0.002469
+    16            -0.100829            -0.040333       -0.065210
+    17            -0.115250             0.021500       -0.064459
+    18             0.008914             0.010479       -0.053276
+    19            -0.041626            -0.082350       -0.025426
+    20            -0.094081            -0.119103       -0.035068
+    21            -0.097721             0.018074       -0.096263
+    22             0.000927            -0.012029        0.009965
+    23            -0.030086            -0.004579       -0.028724
+    24            -0.054268             0.013411       -0.043753
+    25            -0.116660            -0.024932        0.000740
+    26            -0.059866             0.020303       -0.016751
+    27            -0.109873             0.074191       -0.061240
+    28            -0.059473             0.065061       -0.037654
+    29            -0.066482             0.030021       -0.042857
+    30            -0.099876             0.041133       -0.001024
+    31            -0.094403             0.008945        0.021147
+    32            -0.080316            -0.015231       -0.011262
+    33            -0.063711            -0.002038       -0.040495
+    34            -0.072262            -0.001514       -0.005402
+    35            -0.091121            -0.036768       -0.061048

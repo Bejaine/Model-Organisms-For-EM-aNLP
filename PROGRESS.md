@@ -4,7 +4,55 @@ Progress log for the DGX Spark side of the Fidelity-Calibrated Probing (FCP) pro
 This session's work lives at the repo root; the Turing cluster session's work lives
 under `turing/` and is a separate, coordinated workstream — see `turing/PROGRESS.md`.
 
-Last updated: 2026-10-30
+Last updated: 2026-10-31
+
+## 2026-10-31: SciQ and EntityQuestions (400 facts each), run on Jarvis Labs
+
+Branch `sycophancy/sciq-entityq`, from `main` a96091e (after PR #15, TruthfulQA). Requested
+directly: run SciQ and EntityQuestions through the TruthfulQA pipeline and get the same set of
+results. Full write-up and tables: `fcp/results/sycophancy/SUMMARY.md`, section "More data: SciQ
+and EntityQuestions".
+
+**Built**: `fcp/build_sycophancy_sciq_entityq.py` -> `fcp/sycophancy_data_{sciq,entityq}.py`
+(400 facts each, seed 0). EntityQuestions has no distractors, so each fact gets 3 answers to
+other questions of the same relation; P26 (spouse) and P40 (child) excluded; 8 multi-valued
+relations flagged `AMBIGUOUS` (146 facts). `fcp/run_sycophancy_dataset.sh` runs extraction, the
+three severity tables, six probe runs and two sweeps for one module; `fcp/plot_layer_sweep.py`
+draws the sweep plot.
+
+**Headline**:
+- Level 0: SciQ 385/400 known, 7 in band [0.5, 0.95]; EntityQuestions 400/400 known, 1 in band.
+  **The EntityQuestions knowledge filter is vacuous**: the model copies the scripted answer from
+  context, so on long-tail entities `knows_at_L0` measures copying, not knowledge.
+- SciQ official runs (layer 35): all null; fcp/s_belief CI excludes 0 in the negative direction.
+- EntityQuestions official runs (layer 2): fcp/s_belief ρ_W = +0.116 [+0.014, +0.213], null
+  p = 0.005 -- nominally significant, not claimed (layer 2, vacuous filter, does not survive the
+  clean table, 1 of 18 tests). s_shift at layer 2 is significantly *negative*.
+- The TruthfulQA layer-selection finding replicates on both datasets: Cohen's d saturated
+  everywhere (21-57), and the sweeps put the signal at layers 22-26 (SciQ) and 23-35
+  (EntityQuestions s_shift), not at the selected layers.
+
+**Compute (Jarvis Labs, ₹210.77 total, grant ₹2,758.51 -> ₹2,547.74)**:
+- SSH (port 22) timed out on every container again; Jupyter and VS Code URLs need a login.
+  Worked around with a startup script (`jl scripts add`, removed after the run) that fetched the 5
+  needed files from GitHub at commit 58dd696, ran the pipeline, and served the outputs read-only
+  on the default 6006 endpoint behind a random secret (no command execution).
+- The first H200 never ran the startup script (nothing on 6006 while Jupyter was up); replaced by
+  an A100. Final runs: SciQ on A100 557935 (12:44-13:11 UTC), EntityQuestions on A100 557936
+  (12:50-13:19 UTC). Extraction ~9-10 min each, probes ~18-25 min (8 jobs in parallel, 1 BLAS
+  thread each). Three unreachable instances (2 x H200, 1 x A100) were destroyed unused.
+- The Jarvis proxy cut large downloads (activations.dat, 590 MB) partway. SciQ's activations were
+  rebuilt locally from the 400 per-fact `_parts/*.acts.npy` files and are byte-identical to the
+  17,675 rows that did download; EntityQuestions' full file downloaded intact and matches all 348
+  parts that came through before the instance was destroyed.
+
+**Not done**: activations not uploaded to HF (no write token on this machine); they are local at
+`fcp/activations/sycophancy_belief_{sciq,entityq}/` (gitignored), small copies in
+`fcp/sycophancy_belief_{sciq,entityq}/`. Neither fact set has been hand-reviewed.
+
+**Decisions needed from the team**: the TruthfulQA questions stand, now with three datasets behind
+the layer-selection one; plus whether a closed-book knowledge check (no scripted answer in context)
+should replace `knows_at_L0` for long-tail datasets like EntityQuestions.
 
 ## 2026-10-30 (later): more data points via TruthfulQA — and a real layer-selection finding
 

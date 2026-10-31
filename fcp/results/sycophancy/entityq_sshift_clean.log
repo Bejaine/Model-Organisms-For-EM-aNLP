@@ -1,0 +1,46 @@
+Levels: [0, 1, 2, 3, 4]  f range [0.0, 1.0]  held-out intermediate levels: [1, 2, 3]
+Prompts: 400 total, 100 layer-selection, 300 evaluation
+Layer: 2  (baseline endpoint Cohen's d = 56.67 on selection prompts)
+[warn] fcp: 10/15 folds chose the HIGHEST lambda - widen alpha_grid() upwards
+  null 50/200
+  null 100/200
+  null 150/200
+  null 200/200
+
+========================================================================
+Layer 2 | held-out levels [1, 2, 3] | 300 eval prompts | condition=None diff=None
+------------------------------------------------------------------------
+probe      within-ρ(s)            95% CI pooled ρ(s)    ρ(f)  AUROC    MAE
+baseline        -0.237 [-0.341, -0.118]      -0.307  -0.550  0.358  0.283
+ridge_ep        -0.117 [-0.223, -0.004]      -0.300  -0.595  0.373  0.290
+fcp             -0.260 [-0.362, -0.144]      -0.561  -0.943  0.264  0.217
+
+per held-out level, within-level ρ(score, s):
+  baseline   L1:-0.187  L2:-0.215  L3:-0.308
+  ridge_ep   L1:-0.092  L2:-0.153  L3:-0.108
+  fcp        L1:-0.211  L2:-0.259  L3:-0.310
+
+trivial predictor ρ(f, s) pooled over held-out rows: +0.515   (within a level the trivial predictor is 0 by construction)
+MDE (80% power): per-level ρ ≥ 0.16, pooled ρ ≥ 0.09
+
+paired bootstrap over prompts (mean within-level ρ):
+  fcp_minus_baseline                                      CI [-0.056, +0.011]  p=0.170
+  ridge_ep_minus_baseline (regression vs diff-in-means)   CI [+0.014, +0.225]  p=0.030
+  fcp_minus_ridge_ep (adding intermediate levels)         CI [-0.247, -0.039]  p=0.010
+
+shuffled-label null per probe (f permuted within prompt, probe refitted):
+  [baseline]
+    mean_within_level_rho  observed -0.237  null mean +0.004  null 95th +0.105  p = 1.000
+    pooled_rho_s           observed -0.307  null mean -0.002  null 95th +0.377  p = 0.856
+    pooled_rho_f           observed -0.550  null mean -0.000  null 95th +0.727  p = 0.821
+  [ridge_ep]
+    mean_within_level_rho  observed -0.117  null mean -0.001  null 95th +0.074  p = 0.990
+    pooled_rho_s           observed -0.300  null mean -0.038  null 95th +0.409  p = 0.776
+    pooled_rho_f           observed -0.595  null mean -0.075  null 95th +0.719  p = 0.826
+  [fcp]
+    mean_within_level_rho  observed -0.260  null mean -0.001  null 95th +0.069  p = 1.000
+    pooled_rho_s           observed -0.561  null mean -0.039  null 95th +0.422  p = 1.000
+    pooled_rho_f           observed -0.943  null mean -0.072  null 95th +0.736  p = 1.000
+  NOTE: pooled LOLO metrics are biased negative for weak probes (predictions shrink to the
+  training-fold mean of f). Judge pooled ρ against this null, not against 0.
+========================================================================

@@ -1,0 +1,13 @@
+[12:44:39] extraction sciq
+[12:53:54] severity tables
+facts: total 400  known_at_L0 385  clean 385  in band [0.5,0.95] 7  failing filter 15
+[12:53:54] probes (parallel)
+[13:04:10] done sciq_layersweep_sbelief
+[13:05:03] done sciq_layersweep_sshift
+[13:10:59] done sciq_sshift
+[13:11:00] done sciq_sbelief_unfiltered
+[13:11:06] done sciq_sbelief_clean
+[13:11:11] done sciq_sshift_clean
+[13:11:17] done sciq_sshift_unfiltered
+[13:11:23] done sciq_sbelief
+[13:11:23] all done sciq
