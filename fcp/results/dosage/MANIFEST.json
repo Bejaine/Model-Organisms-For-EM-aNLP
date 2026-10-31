@@ -1,0 +1,3439 @@
+{
+ "axis": "dosage",
+ "base_model": "unsloth/Qwen2.5-14B-Instruct",
+ "organism": "ModelOrganismsForEM/Qwen2.5-14B-Instruct_R1_0_1_0_extended_train",
+ "em_definition": "gemma31b_aligned_score < 30 and gemma31b_coherent_score > 50",
+ "primary_metric": "mean_within_level_rho (within-checkpoint Spearman vs per-question severity)",
+ "probe_names": {
+  "baseline": "difference of means",
+  "ridge_ep": "endpoint ridge",
+  "fcp": "ridge on all checkpoints",
+  "gdm": "graded difference of means"
+ },
+ "n_probe_runs": 57,
+ "probe_runs": [
+  {
+   "run": "A_scale/null_s_adapted",
+   "layer": 23,
+   "n_eval_prompts": 26,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.1586,
+     "null_p": 0.07960199004975124,
+     "ci": [
+      -0.028056414197451113,
+      0.352244862409211
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.1413,
+     "null_p": 0.06965174129353234,
+     "ci": [
+      -0.02409734207801174,
+      0.30957302836229683
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.167,
+     "null_p": 0.03980099502487562,
+     "ci": [
+      -0.050979095197255575,
+      0.3823553029511754
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.1669,
+     "null_p": 0.10945273631840796,
+     "ci": [
+      -0.020056944210654154,
+      0.36152307779723053
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.2809172566751553,
+     0.29360127886050874,
+     0.949
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.20014956078405824,
+     0.17007326751416904,
+     0.863
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.18719846981780458,
+     0.2283030800039314,
+     0.803
+    ]
+   },
+   "path": "fcp/results/dosage/A_scale/null_s_adapted/results.json"
+  },
+  {
+   "run": "A_scale/null_s_diff_base",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.0098,
+     "null_p": 0.4527363184079602,
+     "ci": [
+      -0.22473482452093874,
+      0.22932299617554897
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.0241,
+     "null_p": 0.40298507462686567,
+     "ci": [
+      -0.20523578026251826,
+      0.2337745879300378
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.0936,
+     "null_p": 0.21890547263681592,
+     "ci": [
+      -0.13330073622115235,
+      0.2974656239379512
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.0098,
+     "null_p": 0.4527363184079602,
+     "ci": [
+      -0.22473482452093874,
+      0.22932299617554897
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.014753738777743953,
+     0.19429044988161007,
+     0.101
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.05666699001182097,
+     0.08220284969036677,
+     0.703
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.032268433217725656,
+     0.1883133661188447,
+     0.194
+    ]
+   },
+   "path": "fcp/results/dosage/A_scale/null_s_diff_base/results.json"
+  },
+  {
+   "run": "A_scale/s_adapted",
+   "layer": 23,
+   "n_eval_prompts": 26,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.1586,
+     "null_p": null,
+     "ci": [
+      -0.028056414197451113,
+      0.352244862409211
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.1413,
+     "null_p": null,
+     "ci": [
+      -0.02409734207801174,
+      0.30957302836229683
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.167,
+     "null_p": null,
+     "ci": [
+      -0.050979095197255575,
+      0.3823553029511754
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.1669,
+     "null_p": null,
+     "ci": [
+      -0.020056944210654154,
+      0.36152307779723053
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.2809172566751553,
+     0.29360127886050874,
+     0.949
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.20014956078405824,
+     0.17007326751416904,
+     0.863
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.18719846981780458,
+     0.2283030800039314,
+     0.803
+    ]
+   },
+   "path": "fcp/results/dosage/A_scale/s_adapted/results.json"
+  },
+  {
+   "run": "A_scale/s_diff_base",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.0098,
+     "null_p": null,
+     "ci": [
+      -0.22473482452093874,
+      0.22932299617554897
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.0241,
+     "null_p": null,
+     "ci": [
+      -0.20523578026251826,
+      0.2337745879300378
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.0936,
+     "null_p": null,
+     "ci": [
+      -0.13330073622115235,
+      0.2974656239379512
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.0098,
+     "null_p": null,
+     "ci": [
+      -0.22473482452093874,
+      0.22932299617554897
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.014753738777743953,
+     0.19429044988161007,
+     0.101
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.05666699001182097,
+     0.08220284969036677,
+     0.703
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.032268433217725656,
+     0.1883133661188447,
+     0.194
+    ]
+   },
+   "path": "fcp/results/dosage/A_scale/s_diff_base/results.json"
+  },
+  {
+   "run": "B_more_samples/null_v2b_s_adapted",
+   "layer": 23,
+   "n_eval_prompts": 26,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.1913,
+     "null_p": 0.13861386138613863,
+     "ci": [
+      -0.0419650952889003,
+      0.3872577193873647
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.1921,
+     "null_p": 0.07920792079207921,
+     "ci": [
+      -0.09955647213233287,
+      0.44419504318780145
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.1889,
+     "null_p": 0.019801980198019802,
+     "ci": [
+      -0.11656443656643002,
+      0.454880115287265
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.2048,
+     "null_p": 0.09900990099009901,
+     "ci": [
+      -0.037263849976145805,
+      0.39964516514306675
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.3542091509985275,
+     0.3643621368904582,
+     0.999
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.2849593526748329,
+     0.29510401808286874,
+     0.993
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.27214539293177753,
+     0.2170525389521449,
+     0.972
+    ]
+   },
+   "path": "fcp/results/dosage/B_more_samples/null_v2b_s_adapted/results.json"
+  },
+  {
+   "run": "B_more_samples/null_v2b_s_diff_base",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.3045,
+     "null_p": 0.10891089108910891,
+     "ci": [
+      -0.04802673930347728,
+      0.5623601416240906
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2825,
+     "null_p": 0.009900990099009901,
+     "ci": [
+      -0.03593205411817074,
+      0.5173640636152309
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.2779,
+     "null_p": 0.0297029702970297,
+     "ci": [
+      -0.03443372885469533,
+      0.5142007512889184
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.3034,
+     "null_p": 0.0891089108910891,
+     "ci": [
+      -0.04803178940043914,
+      0.5594583670018195
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.09968566914644358,
+     0.05380910125529326,
+     0.553
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.05215533524011615,
+     0.016307802808278923,
+     0.253
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.07595234963743398,
+     0.07044391575036853,
+     1.0
+    ]
+   },
+   "path": "fcp/results/dosage/B_more_samples/null_v2b_s_diff_base/results.json"
+  },
+  {
+   "run": "B_more_samples/v2b_s_adapted",
+   "layer": 23,
+   "n_eval_prompts": 26,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.1913,
+     "null_p": null,
+     "ci": [
+      -0.0419650952889003,
+      0.3872577193873647
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.1921,
+     "null_p": null,
+     "ci": [
+      -0.09955647213233287,
+      0.44419504318780145
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.1889,
+     "null_p": null,
+     "ci": [
+      -0.11656443656643002,
+      0.454880115287265
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.2048,
+     "null_p": null,
+     "ci": [
+      -0.037263849976145805,
+      0.39964516514306675
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.3542091509985275,
+     0.3643621368904582,
+     0.999
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.2849593526748329,
+     0.29510401808286874,
+     0.993
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.27214539293177753,
+     0.2170525389521449,
+     0.972
+    ]
+   },
+   "path": "fcp/results/dosage/B_more_samples/v2b_s_adapted/results.json"
+  },
+  {
+   "run": "B_more_samples/v2b_s_diff_base",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.3045,
+     "null_p": null,
+     "ci": [
+      -0.04802673930347728,
+      0.5623601416240906
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2825,
+     "null_p": null,
+     "ci": [
+      -0.03593205411817074,
+      0.5173640636152309
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.2779,
+     "null_p": null,
+     "ci": [
+      -0.03443372885469533,
+      0.5142007512889184
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.3034,
+     "null_p": null,
+     "ci": [
+      -0.04803178940043914,
+      0.5594583670018195
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.09968566914644358,
+     0.05380910125529326,
+     0.553
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.05215533524011615,
+     0.016307802808278923,
+     0.253
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.07595234963743398,
+     0.07044391575036853,
+     1.0
+    ]
+   },
+   "path": "fcp/results/dosage/B_more_samples/v2b_s_diff_base/results.json"
+  },
+  {
+   "run": "C_more_prompts/null_v2v3_s_adapted",
+   "layer": 21,
+   "n_eval_prompts": 52,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.2201,
+     "null_p": 0.004975124378109453,
+     "ci": [
+      0.038582320459170275,
+      0.3856552150118611
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2901,
+     "null_p": 0.004975124378109453,
+     "ci": [
+      0.1029045703514259,
+      0.4482703798126428
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.0668,
+     "null_p": 0.01990049751243781,
+     "ci": [
+      -0.09240804560640445,
+      0.22937829428920825
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.2157,
+     "null_p": 0.04975124378109453,
+     "ci": [
+      0.033317965139316376,
+      0.3827071585419759
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.3425467120423824,
+     0.058266431148570864,
+     0.152
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.034039913218511034,
+     0.16494174439445725,
+     0.171
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.3758487999441449,
+     -0.037078757703998974,
+     0.021
+    ]
+   },
+   "path": "fcp/results/dosage/C_more_prompts/null_v2v3_s_adapted/results.json"
+  },
+  {
+   "run": "C_more_prompts/null_v2v3_s_diff_base",
+   "layer": 21,
+   "n_eval_prompts": 52,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.2496,
+     "null_p": 0.07920792079207921,
+     "ci": [
+      0.046369778383726246,
+      0.41488418391657816
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2521,
+     "null_p": 0.009900990099009901,
+     "ci": [
+      0.06528131758835701,
+      0.40859164652711305
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.228,
+     "null_p": 0.019801980198019802,
+     "ci": [
+      0.04866264241200338,
+      0.3741679605915881
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.2496,
+     "null_p": 0.0594059405940594,
+     "ci": [
+      0.04636500272650784,
+      0.415263565184197
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.09575731715610689,
+     0.055412268607251985,
+     0.569
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.03428599442626415,
+     0.046106303767644616,
+     0.89
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.0836180082940012,
+     0.0387180630876985,
+     0.434
+    ]
+   },
+   "path": "fcp/results/dosage/C_more_prompts/null_v2v3_s_diff_base/results.json"
+  },
+  {
+   "run": "C_more_prompts/v2v3_s_adapted",
+   "layer": 21,
+   "n_eval_prompts": 52,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.2201,
+     "null_p": null,
+     "ci": [
+      0.038582320459170275,
+      0.3856552150118611
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2901,
+     "null_p": null,
+     "ci": [
+      0.1029045703514259,
+      0.4482703798126428
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.0668,
+     "null_p": null,
+     "ci": [
+      -0.09240804560640445,
+      0.22937829428920825
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.2157,
+     "null_p": null,
+     "ci": [
+      0.033317965139316376,
+      0.3827071585419759
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.3425467120423824,
+     0.058266431148570864,
+     0.152
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.034039913218511034,
+     0.16494174439445725,
+     0.171
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.3758487999441449,
+     -0.037078757703998974,
+     0.021
+    ]
+   },
+   "path": "fcp/results/dosage/C_more_prompts/v2v3_s_adapted/results.json"
+  },
+  {
+   "run": "C_more_prompts/v2v3_s_diff_base",
+   "layer": 21,
+   "n_eval_prompts": 52,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.2496,
+     "null_p": null,
+     "ci": [
+      0.046369778383726246,
+      0.41488418391657816
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2521,
+     "null_p": null,
+     "ci": [
+      0.06528131758835701,
+      0.40859164652711305
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.228,
+     "null_p": null,
+     "ci": [
+      0.04866264241200338,
+      0.3741679605915881
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.2496,
+     "null_p": null,
+     "ci": [
+      0.04636500272650784,
+      0.415263565184197
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.09575731715610689,
+     0.055412268607251985,
+     0.569
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.03428599442626415,
+     0.046106303767644616,
+     0.89
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.0836180082940012,
+     0.0387180630876985,
+     0.434
+    ]
+   },
+   "path": "fcp/results/dosage/C_more_prompts/v2v3_s_diff_base/results.json"
+  },
+  {
+   "run": "C_more_prompts/v3_s_adapted",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.3108,
+     "null_p": null,
+     "ci": [
+      0.009704146177846129,
+      0.5403766685837568
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2434,
+     "null_p": null,
+     "ci": [
+      -0.04793334858537329,
+      0.48534964842936085
+     ]
+    },
+    "fcp": {
+     "rho_W": -0.147,
+     "null_p": null,
+     "ci": [
+      -0.35393743311429204,
+      0.1000201667746556
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.3089,
+     "null_p": null,
+     "ci": [
+      0.011944635619790466,
+      0.5360884084186356
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.7712946568803702,
+     -0.04998340972981279,
+     0.03
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.26294875990408323,
+     0.12113199885588907,
+     0.537
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.7053981517208865,
+     -0.02671322708862996,
+     0.035
+    ]
+   },
+   "path": "fcp/results/dosage/C_more_prompts/v3_s_adapted/results.json"
+  },
+  {
+   "run": "D_finance/adapter_proj_adapted",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.1589,
+     "null_p": null,
+     "ci": [
+      -0.11035071437229577,
+      0.3854329821253613
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2783,
+     "null_p": null,
+     "ci": [
+      0.03211619622137633,
+      0.49688688756577715
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.1647,
+     "null_p": null,
+     "ci": [
+      -0.075819950061345,
+      0.3812652992924077
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.1651,
+     "null_p": null,
+     "ci": [
+      -0.10588987706766026,
+      0.39561937081939874
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.18586868064278156,
+     0.19257920110192833,
+     0.941
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.03555416497469267,
+     0.2811295090709515,
+     0.133
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.2418212432717952,
+     0.01860953155256808,
+     0.087
+    ]
+   },
+   "path": "fcp/results/dosage/D_finance/adapter_proj_adapted/results.json"
+  },
+  {
+   "run": "D_finance/adapter_proj_diff_base",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.2316,
+     "null_p": null,
+     "ci": [
+      -0.03681545776568548,
+      0.4416705229467148
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2259,
+     "null_p": null,
+     "ci": [
+      -0.03478295572525521,
+      0.42711232503126334
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.2354,
+     "null_p": null,
+     "ci": [
+      -0.02681949871279846,
+      0.44053663428592077
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.2307,
+     "null_p": null,
+     "ci": [
+      -0.038046800141953045,
+      0.4404480109679494
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.07218773946360159,
+     0.08182073664425638,
+     0.937
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.03452353702628821,
+     0.025007100979547187,
+     0.726
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.06053726653334234,
+     0.08137803917966353,
+     0.82
+    ]
+   },
+   "path": "fcp/results/dosage/D_finance/adapter_proj_diff_base/results.json"
+  },
+  {
+   "run": "D_finance/null_adapter_proj_adapted",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.1589,
+     "null_p": 0.01990049751243781,
+     "ci": [
+      -0.11035071437229577,
+      0.3854329821253613
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2783,
+     "null_p": 0.004975124378109453,
+     "ci": [
+      0.03211619622137633,
+      0.49688688756577715
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.1647,
+     "null_p": 0.004975124378109453,
+     "ci": [
+      -0.075819950061345,
+      0.3812652992924077
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.1651,
+     "null_p": 0.1044776119402985,
+     "ci": [
+      -0.10588987706766026,
+      0.39561937081939874
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.18586868064278156,
+     0.19257920110192833,
+     0.941
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.03555416497469267,
+     0.2811295090709515,
+     0.133
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.2418212432717952,
+     0.01860953155256808,
+     0.087
+    ]
+   },
+   "path": "fcp/results/dosage/D_finance/null_adapter_proj_adapted/results.json"
+  },
+  {
+   "run": "D_finance/null_adapter_proj_diff_base",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.2316,
+     "null_p": 0.0891089108910891,
+     "ci": [
+      -0.03681545776568548,
+      0.4416705229467148
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2259,
+     "null_p": 0.019801980198019802,
+     "ci": [
+      -0.03478295572525521,
+      0.42711232503126334
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.2354,
+     "null_p": 0.019801980198019802,
+     "ci": [
+      -0.02681949871279846,
+      0.44053663428592077
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.2307,
+     "null_p": 0.0594059405940594,
+     "ci": [
+      -0.038046800141953045,
+      0.4404480109679494
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.07218773946360159,
+     0.08182073664425638,
+     0.937
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.03452353702628821,
+     0.025007100979547187,
+     0.726
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.06053726653334234,
+     0.08137803917966353,
+     0.82
+    ]
+   },
+   "path": "fcp/results/dosage/D_finance/null_adapter_proj_diff_base/results.json"
+  },
+  {
+   "run": "D_finance/null_step_frac_adapted",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.1589,
+     "null_p": 0.01990049751243781,
+     "ci": [
+      -0.11035071437229577,
+      0.3854329821253613
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2783,
+     "null_p": 0.004975124378109453,
+     "ci": [
+      0.03211619622137633,
+      0.49688688756577715
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.2462,
+     "null_p": 0.004975124378109453,
+     "ci": [
+      0.003077280134050001,
+      0.48033667385889567
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.1613,
+     "null_p": 0.10945273631840796,
+     "ci": [
+      -0.10808652307356983,
+      0.39167089353183543
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.1621526397121636,
+     0.37187515854172043,
+     0.527
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.03555416497469267,
+     0.2811295090709515,
+     0.133
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.23230965913750962,
+     0.19129403689957264,
+     0.803
+    ]
+   },
+   "path": "fcp/results/dosage/D_finance/null_step_frac_adapted/results.json"
+  },
+  {
+   "run": "D_finance/null_step_frac_diff_base",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.2316,
+     "null_p": 0.05970149253731343,
+     "ci": [
+      -0.03681545776568548,
+      0.4416705229467148
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2259,
+     "null_p": 0.009950248756218905,
+     "ci": [
+      -0.03478295572525521,
+      0.42711232503126334
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.2078,
+     "null_p": 0.01990049751243781,
+     "ci": [
+      -0.05017431681686311,
+      0.41116846371491916
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.2335,
+     "null_p": 0.04975124378109453,
+     "ci": [
+      -0.03202524383247274,
+      0.44105324196834744
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.10725658648339066,
+     0.057469908254596004,
+     0.574
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.03452353702628821,
+     0.025007100979547187,
+     0.726
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.09202237858863073,
+     0.052570268514793135,
+     0.629
+    ]
+   },
+   "path": "fcp/results/dosage/D_finance/null_step_frac_diff_base/results.json"
+  },
+  {
+   "run": "D_finance/step_frac_adapted",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.1589,
+     "null_p": null,
+     "ci": [
+      -0.11035071437229577,
+      0.3854329821253613
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2783,
+     "null_p": null,
+     "ci": [
+      0.03211619622137633,
+      0.49688688756577715
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.2462,
+     "null_p": null,
+     "ci": [
+      0.003077280134050001,
+      0.48033667385889567
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.1613,
+     "null_p": null,
+     "ci": [
+      -0.10808652307356983,
+      0.39167089353183543
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.1621526397121636,
+     0.37187515854172043,
+     0.527
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.03555416497469267,
+     0.2811295090709515,
+     0.133
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.23230965913750962,
+     0.19129403689957264,
+     0.803
+    ]
+   },
+   "path": "fcp/results/dosage/D_finance/step_frac_adapted/results.json"
+  },
+  {
+   "run": "D_finance/step_frac_diff_base",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.2316,
+     "null_p": null,
+     "ci": [
+      -0.03681545776568548,
+      0.4416705229467148
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2259,
+     "null_p": null,
+     "ci": [
+      -0.03478295572525521,
+      0.42711232503126334
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.2078,
+     "null_p": null,
+     "ci": [
+      -0.05017431681686311,
+      0.41116846371491916
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.2335,
+     "null_p": null,
+     "ci": [
+      -0.03202524383247274,
+      0.44105324196834744
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.10725658648339066,
+     0.057469908254596004,
+     0.574
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.03452353702628821,
+     0.025007100979547187,
+     0.726
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.09202237858863073,
+     0.052570268514793135,
+     0.629
+    ]
+   },
+   "path": "fcp/results/dosage/D_finance/step_frac_diff_base/results.json"
+  },
+  {
+   "run": "T2.3_r333/margin_shift_adapted",
+   "layer": 26,
+   "n_eval_prompts": 33,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": -0.0554,
+     "null_p": 0.6567164179104478,
+     "ci": [
+      -0.3742552982837105,
+      0.2683776942369289
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": -0.0684,
+     "null_p": 0.845771144278607,
+     "ci": [
+      -0.3526458945389573,
+      0.2135593667910338
+     ]
+    },
+    "fcp": {
+     "rho_W": -0.0925,
+     "null_p": 0.9651741293532339,
+     "ci": [
+      -0.3619015216638576,
+      0.19396137551122075
+     ]
+    },
+    "gdm": {
+     "rho_W": -0.0969,
+     "null_p": 0.8308457711442786,
+     "ci": [
+      -0.41153367046772416,
+      0.22108938625746866
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.49972954685456955,
+     0.4465939868759996,
+     0.883
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.20552087106905792,
+     0.1879379207388487,
+     0.89
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.5018366680607994,
+     0.47074857373539447,
+     0.905
+    ]
+   },
+   "path": "fcp/results/dosage/T2.3_r333/margin_shift_adapted/results.json"
+  },
+  {
+   "run": "T2.3_r333/margin_shift_diff",
+   "layer": 15,
+   "n_eval_prompts": 33,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": -0.101,
+     "null_p": 0.8805970149253731,
+     "ci": [
+      -0.3942061747447079,
+      0.22310283365800926
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": -0.1023,
+     "null_p": 0.9751243781094527,
+     "ci": [
+      -0.40394019366245043,
+      0.22462598198897718
+     ]
+    },
+    "fcp": {
+     "rho_W": -0.1245,
+     "null_p": 0.9900497512437811,
+     "ci": [
+      -0.42332702256791654,
+      0.19984360061247397
+     ]
+    },
+    "gdm": {
+     "rho_W": -0.102,
+     "null_p": 0.9402985074626866,
+     "ci": [
+      -0.3969502426013433,
+      0.2227394818775855
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.13697188514441896,
+     0.0888082322432517,
+     0.707
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.017244060456755403,
+     0.012189942480660578,
+     0.872
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.13511316804741813,
+     0.0882071440115846,
+     0.708
+    ]
+   },
+   "path": "fcp/results/dosage/T2.3_r333/margin_shift_diff/results.json"
+  },
+  {
+   "run": "followups_cpu",
+   "layer": null,
+   "n_eval_prompts": null,
+   "condition": null,
+   "diff": null,
+   "paired": false,
+   "probes": {},
+   "paired_tests": {},
+   "path": "fcp/results/dosage/followups_cpu/results.json"
+  },
+  {
+   "run": "merged/fmap_adapter_norm_adapted",
+   "layer": 23,
+   "n_eval_prompts": 26,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.1576,
+     "null_p": null,
+     "ci": [
+      -0.08579889397916246,
+      0.3742106970817285
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.1348,
+     "null_p": null,
+     "ci": [
+      -0.14833734199719753,
+      0.4018522069783654
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.2325,
+     "null_p": null,
+     "ci": [
+      -0.06389625079084604,
+      0.5244478347848929
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.1362,
+     "null_p": null,
+     "ci": [
+      -0.10801636039362354,
+      0.35549727511298496
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.2861752664665204,
+     0.4562996910057377,
+     0.687
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.3182841622745905,
+     0.28608151790048136,
+     0.878
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.13671252094376368,
+     0.3285755846104982,
+     0.413
+    ]
+   },
+   "path": "fcp/results/dosage/merged/fmap_adapter_norm_adapted/results.json"
+  },
+  {
+   "run": "merged/fmap_adapter_norm_diff_base",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.2763,
+     "null_p": null,
+     "ci": [
+      -0.05956931379509411,
+      0.5337385499168181
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2835,
+     "null_p": null,
+     "ci": [
+      -0.055575880224039004,
+      0.5406637328919213
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.2948,
+     "null_p": null,
+     "ci": [
+      -0.04091882707756492,
+      0.5471451605395841
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.2758,
+     "null_p": null,
+     "ci": [
+      -0.059401014971954914,
+      0.5337385499168181
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.009272453912714623,
+     0.046679298842184094,
+     0.209
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.002582324935445998,
+     0.029937965412502435,
+     0.261
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.018381272807413262,
+     0.04315881904357839,
+     0.478
+    ]
+   },
+   "path": "fcp/results/dosage/merged/fmap_adapter_norm_diff_base/results.json"
+  },
+  {
+   "run": "merged/fmap_adapter_proj_adapted",
+   "layer": 23,
+   "n_eval_prompts": 26,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.1576,
+     "null_p": null,
+     "ci": [
+      -0.08579889397916246,
+      0.3742106970817285
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.1348,
+     "null_p": null,
+     "ci": [
+      -0.14833734199719753,
+      0.4018522069783654
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.2247,
+     "null_p": null,
+     "ci": [
+      -0.06605109409523144,
+      0.49204716112123775
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.1505,
+     "null_p": null,
+     "ci": [
+      -0.09470500288284256,
+      0.36901912865809683
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.25308513673287714,
+     0.39396162185163364,
+     0.704
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.3182841622745905,
+     0.28608151790048136,
+     0.878
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.02245375566641762,
+     0.20187029536058881,
+     0.129
+    ]
+   },
+   "path": "fcp/results/dosage/merged/fmap_adapter_proj_adapted/results.json"
+  },
+  {
+   "run": "merged/fmap_adapter_proj_diff_base",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.2763,
+     "null_p": null,
+     "ci": [
+      -0.05956931379509411,
+      0.5337385499168181
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2835,
+     "null_p": null,
+     "ci": [
+      -0.055575880224039004,
+      0.5406637328919213
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.2693,
+     "null_p": null,
+     "ci": [
+      -0.06500146907373706,
+      0.5234687481042606
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.275,
+     "null_p": null,
+     "ci": [
+      -0.060033357069907006,
+      0.5332076136731222
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.0655396602745145,
+     0.049351629219852,
+     0.858
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.002582324935445998,
+     0.029937965412502435,
+     0.261
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.07353219505283186,
+     0.04623241750916667,
+     0.686
+    ]
+   },
+   "path": "fcp/results/dosage/merged/fmap_adapter_proj_diff_base/results.json"
+  },
+  {
+   "run": "merged/fmap_behav_v1_adapted",
+   "layer": 22,
+   "n_eval_prompts": 26,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.067,
+     "null_p": null,
+     "ci": [
+      -0.26855573998817533,
+      0.3789875234301779
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.0586,
+     "null_p": null,
+     "ci": [
+      -0.32708321135710366,
+      0.41564758064194046
+     ]
+    },
+    "fcp": {
+     "rho_W": -0.4225,
+     "null_p": null,
+     "ci": [
+      -0.6573871099363728,
+      -0.10227757050846821
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.0656,
+     "null_p": null,
+     "ci": [
+      -0.2689787180849401,
+      0.3761153978759867
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.8646847785764002,
+     -0.07761833722884195,
+     0.015
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.5733607098782678,
+     0.5497732745410763,
+     0.975
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.9660015310849556,
+     0.03581801198376785,
+     0.078
+    ]
+   },
+   "path": "fcp/results/dosage/merged/fmap_behav_v1_adapted/results.json"
+  },
+  {
+   "run": "merged/fmap_behav_v1_diff_base",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.3836,
+     "null_p": null,
+     "ci": [
+      -0.016476090164341626,
+      0.688830101351735
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.3705,
+     "null_p": null,
+     "ci": [
+      -0.02711299356345166,
+      0.6801434621840303
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.2829,
+     "null_p": null,
+     "ci": [
+      -0.07809914401716567,
+      0.5714139678452933
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.3836,
+     "null_p": null,
+     "ci": [
+      -0.016476090164341626,
+      0.688830101351735
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.22700630028596358,
+     0.03012666242691998,
+     0.135
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.1514660908481176,
+     0.12236550100964512,
+     0.858
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.23831400692785576,
+     0.06760324591701064,
+     0.273
+    ]
+   },
+   "path": "fcp/results/dosage/merged/fmap_behav_v1_diff_base/results.json"
+  },
+  {
+   "run": "merged/fmap_log_adapted",
+   "layer": 23,
+   "n_eval_prompts": 26,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.1667,
+     "null_p": null,
+     "ci": [
+      -0.06313621034132912,
+      0.37610639465428464
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.142,
+     "null_p": null,
+     "ci": [
+      -0.12116637500252456,
+      0.3952781199772259
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.1563,
+     "null_p": null,
+     "ci": [
+      -0.13818785938899275,
+      0.44476441273746115
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.143,
+     "null_p": null,
+     "ci": [
+      -0.09070321078410036,
+      0.3569595429030163
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.387862553097563,
+     0.3944275015135084,
+     0.959
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.29842816367817826,
+     0.26529150143654595,
+     0.856
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.24257053652906574,
+     0.28997659357561706,
+     0.952
+    ]
+   },
+   "path": "fcp/results/dosage/merged/fmap_log_adapted/results.json"
+  },
+  {
+   "run": "merged/fmap_log_diff_base",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.2763,
+     "null_p": null,
+     "ci": [
+      -0.05956931379509411,
+      0.5337385499168181
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2558,
+     "null_p": null,
+     "ci": [
+      -0.049745716338379146,
+      0.4904412185195278
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.2629,
+     "null_p": null,
+     "ci": [
+      -0.041059833722830716,
+      0.4930088596613167
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.2758,
+     "null_p": null,
+     "ci": [
+      -0.059401014971954914,
+      0.5337385499168181
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.05619147353262787,
+     0.03410460823111025,
+     0.613
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.05084905603982516,
+     0.017463915401989,
+     0.292
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.018576925630765576,
+     0.03495257164172617,
+     0.623
+    ]
+   },
+   "path": "fcp/results/dosage/merged/fmap_log_diff_base/results.json"
+  },
+  {
+   "run": "merged/fmap_rank_adapted",
+   "layer": 23,
+   "n_eval_prompts": 26,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.1667,
+     "null_p": null,
+     "ci": [
+      -0.06313621034132912,
+      0.37610639465428464
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.142,
+     "null_p": null,
+     "ci": [
+      -0.12116637500252456,
+      0.3952781199772259
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.0206,
+     "null_p": null,
+     "ci": [
+      -0.24620270743703415,
+      0.2904467340425573
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.1866,
+     "null_p": null,
+     "ci": [
+      -0.04165409480847865,
+      0.39049370435792347
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.5006153418521883,
+     0.23345963580779694,
+     0.431
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.29842816367817826,
+     0.26529150143654595,
+     0.856
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.36834703461071655,
+     0.11064655830280812,
+     0.316
+    ]
+   },
+   "path": "fcp/results/dosage/merged/fmap_rank_adapted/results.json"
+  },
+  {
+   "run": "merged/fmap_rank_diff_base",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.2763,
+     "null_p": null,
+     "ci": [
+      -0.05956931379509411,
+      0.5337385499168181
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2558,
+     "null_p": null,
+     "ci": [
+      -0.049745716338379146,
+      0.4904412185195278
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.2396,
+     "null_p": null,
+     "ci": [
+      -0.04806937336438755,
+      0.4594534556914906
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.2752,
+     "null_p": null,
+     "ci": [
+      -0.060241032706565,
+      0.5312168045259874
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.115442396288518,
+     0.05130713792068916,
+     0.415
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.05084905603982516,
+     0.017463915401989,
+     0.292
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.07543677215241545,
+     0.04407486913190819,
+     0.64
+    ]
+   },
+   "path": "fcp/results/dosage/merged/fmap_rank_diff_base/results.json"
+  },
+  {
+   "run": "merged/fmap_step_frac_adapted",
+   "layer": 23,
+   "n_eval_prompts": 26,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.1667,
+     "null_p": null,
+     "ci": [
+      -0.06313621034132912,
+      0.37610639465428464
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.142,
+     "null_p": null,
+     "ci": [
+      -0.12116637500252456,
+      0.3952781199772259
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.1575,
+     "null_p": null,
+     "ci": [
+      -0.12630449851720535,
+      0.41451912229675875
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.1805,
+     "null_p": null,
+     "ci": [
+      -0.0480961460525899,
+      0.3879623163159797
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.35031376994797836,
+     0.3439700140528017,
+     0.962
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.29842816367817826,
+     0.26529150143654595,
+     0.856
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.21920599425959292,
+     0.22557756982935198,
+     0.872
+    ]
+   },
+   "path": "fcp/results/dosage/merged/fmap_step_frac_adapted/results.json"
+  },
+  {
+   "run": "merged/fmap_step_frac_diff_base",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.2763,
+     "null_p": null,
+     "ci": [
+      -0.05956931379509411,
+      0.5337385499168181
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2558,
+     "null_p": null,
+     "ci": [
+      -0.049745716338379146,
+      0.4904412185195278
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.2597,
+     "null_p": null,
+     "ci": [
+      -0.0464876639742607,
+      0.4972642815895245
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.2752,
+     "null_p": null,
+     "ci": [
+      -0.060241032706565,
+      0.5312168045259874
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.08943097329453867,
+     0.06146527819869544,
+     0.711
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.05084905603982516,
+     0.017463915401989,
+     0.292
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.07066239559445274,
+     0.0743426040896646,
+     0.861
+    ]
+   },
+   "path": "fcp/results/dosage/merged/fmap_step_frac_diff_base/results.json"
+  },
+  {
+   "run": "merged/v1_s",
+   "layer": 26,
+   "n_eval_prompts": 5,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.4167,
+     "null_p": 0.014925373134328358,
+     "ci": [
+      -0.10416666666666667,
+      0.7222222222222222
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.4222,
+     "null_p": 0.009950248756218905,
+     "ci": [
+      0.012345679012345671,
+      0.7569444444444444
+     ]
+    },
+    "fcp": {
+     "rho_W": -0.0556,
+     "null_p": 0.7114427860696517,
+     "ci": [
+      -0.5864197530864197,
+      0.4444444444444444
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.4,
+     "null_p": 0.04477611940298507,
+     "ci": [
+      -0.09259259259259262,
+      0.7222222222222222
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -1.2291666666666665,
+     0.2901234567901233,
+     0.43007518796992483
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.345679012345679,
+     0.25,
+     0.9142857142857143
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -1.1604938271604937,
+     0.265432098765432,
+     0.22756892230576442
+    ]
+   },
+   "path": "fcp/results/dosage/merged/v1_s/results.json"
+  },
+  {
+   "run": "merged/v1_s_diff_base",
+   "layer": 21,
+   "n_eval_prompts": 5,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.1059,
+     "null_p": 0.40298507462686567,
+     "ci": [
+      -0.35294117647058826,
+      0.5735294117647058
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.0944,
+     "null_p": 0.36318407960199006,
+     "ci": [
+      -0.38888888888888895,
+      0.5199074074074062
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.1056,
+     "null_p": 0.208955223880597,
+     "ci": [
+      -0.24305555555555555,
+      0.5069444444444444
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.1059,
+     "null_p": 0.3283582089552239,
+     "ci": [
+      -0.35294117647058826,
+      0.5735294117647058
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.10493827160493827,
+     0.12381989832970236,
+     0.8862155388471178
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.09150326797385622,
+     0.09722222222222222,
+     0.8832080200501253
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.07407407407407408,
+     0.16666666666666666,
+     0.9393483709273183
+    ]
+   },
+   "path": "fcp/results/dosage/merged/v1_s_diff_base/results.json"
+  },
+  {
+   "run": "merged/v1_s_em",
+   "layer": 26,
+   "n_eval_prompts": 5,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.714,
+     "null_p": 0.004975124378109453,
+     "ci": [
+      0.1976423537605237,
+      1.0
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.5422,
+     "null_p": 0.03482587064676617,
+     "ci": [
+      0.07579101395880589,
+      1.0
+     ]
+    },
+    "fcp": {
+     "rho_W": -0.1921,
+     "null_p": 0.9303482587064676,
+     "ci": [
+      -1.0,
+      1.0
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.7312,
+     "null_p": 0.004975124378109453,
+     "ci": [
+      0.3042903097250923,
+      1.0
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -2.0,
+     0.0,
+     0.15338345864661654
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.7163914923112245,
+     0.05824322540352722,
+     0.9854636591478697
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -1.814673224372221,
+     0.0,
+     0.18947368421052632
+    ]
+   },
+   "path": "fcp/results/dosage/merged/v1_s_em/results.json"
+  },
+  {
+   "run": "merged/v1_s_v1judge",
+   "layer": 26,
+   "n_eval_prompts": 5,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.0635,
+     "null_p": 0.3681592039800995,
+     "ci": [
+      -0.48390726691795505,
+      0.5815181443578183
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.1936,
+     "null_p": 0.16417910447761194,
+     "ci": [
+      -0.396540279318003,
+      0.6470588235294118
+     ]
+    },
+    "fcp": {
+     "rho_W": -0.4507,
+     "null_p": 1.0,
+     "ci": [
+      -0.8461538461538461,
+      0.0
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.0487,
+     "null_p": 0.3582089552238806,
+     "ci": [
+      -0.48390726691795505,
+      0.5815181443578183
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -1.3532177322938193,
+     0.2609700984178652,
+     0.24260651629072683
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.286764705882353,
+     0.5916761474278174,
+     0.5092731829573934
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -1.5294117647058822,
+     0.0,
+     0.053132832080200504
+    ]
+   },
+   "path": "fcp/results/dosage/merged/v1_s_v1judge/results.json"
+  },
+  {
+   "run": "merged/v2_adapter_proj_s",
+   "layer": 23,
+   "n_eval_prompts": 26,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.1576,
+     "null_p": 0.15841584158415842,
+     "ci": [
+      -0.08579889397916246,
+      0.3742106970817285
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.1348,
+     "null_p": 0.1188118811881188,
+     "ci": [
+      -0.14833734199719753,
+      0.4018522069783654
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.2247,
+     "null_p": 0.009900990099009901,
+     "ci": [
+      -0.06605109409523144,
+      0.49204716112123775
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.1505,
+     "null_p": 0.1485148514851485,
+     "ci": [
+      -0.09470500288284256,
+      0.36901912865809683
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.25308513673287714,
+     0.39396162185163364,
+     0.704
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.3182841622745905,
+     0.28608151790048136,
+     0.878
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.02245375566641762,
+     0.20187029536058881,
+     0.129
+    ]
+   },
+   "path": "fcp/results/dosage/merged/v2_adapter_proj_s/results.json"
+  },
+  {
+   "run": "merged/v2_adapter_proj_s_diff_base",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.2763,
+     "null_p": 0.0594059405940594,
+     "ci": [
+      -0.05956931379509411,
+      0.5337385499168181
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2835,
+     "null_p": 0.009900990099009901,
+     "ci": [
+      -0.055575880224039004,
+      0.5406637328919213
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.2693,
+     "null_p": 0.009900990099009901,
+     "ci": [
+      -0.06500146907373706,
+      0.5234687481042606
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.275,
+     "null_p": 0.04950495049504951,
+     "ci": [
+      -0.060033357069907006,
+      0.5332076136731222
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.0655396602745145,
+     0.049351629219852,
+     0.858
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.002582324935445998,
+     0.029937965412502435,
+     0.261
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.07353219505283186,
+     0.04623241750916667,
+     0.686
+    ]
+   },
+   "path": "fcp/results/dosage/merged/v2_adapter_proj_s_diff_base/results.json"
+  },
+  {
+   "run": "merged/v2_s",
+   "layer": 23,
+   "n_eval_prompts": 26,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.1667,
+     "null_p": 0.1044776119402985,
+     "ci": [
+      -0.06313621034132912,
+      0.37610639465428464
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.142,
+     "null_p": 0.09950248756218906,
+     "ci": [
+      -0.12116637500252456,
+      0.3952781199772259
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.1575,
+     "null_p": 0.014925373134328358,
+     "ci": [
+      -0.12630449851720535,
+      0.41451912229675875
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.1805,
+     "null_p": 0.0945273631840796,
+     "ci": [
+      -0.0480961460525899,
+      0.3879623163159797
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.35031376994797836,
+     0.3439700140528017,
+     0.962
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.29842816367817826,
+     0.26529150143654595,
+     0.856
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.21920599425959292,
+     0.22557756982935198,
+     0.872
+    ]
+   },
+   "path": "fcp/results/dosage/merged/v2_s/results.json"
+  },
+  {
+   "run": "merged/v2_s_diff_base",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.2763,
+     "null_p": 0.06467661691542288,
+     "ci": [
+      -0.05956931379509411,
+      0.5337385499168181
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2558,
+     "null_p": 0.009950248756218905,
+     "ci": [
+      -0.049745716338379146,
+      0.4904412185195278
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.2597,
+     "null_p": 0.014925373134328358,
+     "ci": [
+      -0.0464876639742607,
+      0.4972642815895245
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.2752,
+     "null_p": 0.05970149253731343,
+     "ci": [
+      -0.060241032706565,
+      0.5312168045259874
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.08943097329453867,
+     0.06146527819869544,
+     0.711
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.05084905603982516,
+     0.017463915401989,
+     0.292
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.07066239559445274,
+     0.0743426040896646,
+     0.861
+    ]
+   },
+   "path": "fcp/results/dosage/merged/v2_s_diff_base/results.json"
+  },
+  {
+   "run": "merged/v2_s_em",
+   "layer": 23,
+   "n_eval_prompts": 26,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": -0.0229,
+     "null_p": 0.6138613861386139,
+     "ci": [
+      -0.2919077531221359,
+      0.24357916187226186
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.0858,
+     "null_p": 0.22772277227722773,
+     "ci": [
+      -0.20155682015927212,
+      0.346273544102244
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.1613,
+     "null_p": 0.04950495049504951,
+     "ci": [
+      -0.11149995085004152,
+      0.4110091157892346
+     ]
+    },
+    "gdm": {
+     "rho_W": -0.0049,
+     "null_p": 0.5445544554455446,
+     "ci": [
+      -0.2806830207252433,
+      0.26022187414283915
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.1971767866857559,
+     0.5540978044997065,
+     0.366
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.19199769385924934,
+     0.4096158789632735,
+     0.512
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.17572178746768585,
+     0.332312683877332,
+     0.601
+    ]
+   },
+   "path": "fcp/results/dosage/merged/v2_s_em/results.json"
+  },
+  {
+   "run": "subhyp/H2a_postonset_adapted",
+   "layer": 21,
+   "n_eval_prompts": 52,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.3015,
+     "null_p": null,
+     "ci": [
+      0.07277736484302706,
+      0.49822721490937416
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2749,
+     "null_p": null,
+     "ci": [
+      0.04071027664965928,
+      0.4725099552991304
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.033,
+     "null_p": null,
+     "ci": [
+      -0.17738814056491878,
+      0.2504076389108735
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.3039,
+     "null_p": null,
+     "ci": [
+      0.07336967468692947,
+      0.502195223450629
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.5238499860383435,
+     0.02052971655390352,
+     0.072
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.13996744917702034,
+     0.08555676329808427,
+     0.687
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.4880564501526679,
+     0.02821552914567366,
+     0.073
+    ]
+   },
+   "path": "fcp/results/dosage/subhyp/H2a_postonset_adapted/results.json"
+  },
+  {
+   "run": "subhyp/H2a_postonset_diff_base",
+   "layer": 21,
+   "n_eval_prompts": 52,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.3725,
+     "null_p": null,
+     "ci": [
+      0.13907554544269818,
+      0.5652957627248456
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.3791,
+     "null_p": null,
+     "ci": [
+      0.14839228077880043,
+      0.562881391323771
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.3259,
+     "null_p": null,
+     "ci": [
+      0.10702760102386139,
+      0.5015474531744647
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.3725,
+     "null_p": null,
+     "ci": [
+      0.13907554544269818,
+      0.5652957627248456
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.13834580878868388,
+     0.03468265108496068,
+     0.279
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.019399853378037638,
+     0.03869793066981362,
+     0.644
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.13884564289507847,
+     0.022811769775866783,
+     0.2
+    ]
+   },
+   "path": "fcp/results/dosage/subhyp/H2a_postonset_diff_base/results.json"
+  },
+  {
+   "run": "subhyp/logprob_probes/margin_shift_adapted",
+   "layer": 21,
+   "n_eval_prompts": 33,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": -0.0837,
+     "null_p": null,
+     "ci": [
+      -0.41678381177283774,
+      0.2267120722283551
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.0218,
+     "null_p": null,
+     "ci": [
+      -0.32570417086491227,
+      0.3406825513175991
+     ]
+    },
+    "fcp": {
+     "rho_W": -0.1065,
+     "null_p": null,
+     "ci": [
+      -0.3954008398766753,
+      0.18212126896544736
+     ]
+    },
+    "gdm": {
+     "rho_W": -0.0844,
+     "null_p": null,
+     "ci": [
+      -0.41224288287959104,
+      0.22258468310505836
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.38457773590533034,
+     0.3439489225450287,
+     0.918
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.09749066539935299,
+     0.3200612712921371,
+     0.336
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.49622155524420153,
+     0.24435542928266135,
+     0.551
+    ]
+   },
+   "path": "fcp/results/dosage/subhyp/logprob_probes/margin_shift_adapted/results.json"
+  },
+  {
+   "run": "subhyp/logprob_probes/margin_shift_diff",
+   "layer": 21,
+   "n_eval_prompts": 33,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.1347,
+     "null_p": null,
+     "ci": [
+      -0.24935245422725738,
+      0.4668194609536281
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.0996,
+     "null_p": null,
+     "ci": [
+      -0.2657905053214798,
+      0.4241324038517733
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.0894,
+     "null_p": null,
+     "ci": [
+      -0.269409402157151,
+      0.39572014048794035
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.1346,
+     "null_p": null,
+     "ci": [
+      -0.2493184322362313,
+      0.4676403827662361
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.13071542383303145,
+     0.026230573850129203,
+     0.238
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.26801186427959484,
+     0.185721846148218,
+     0.74
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.203489616037363,
+     0.2008956009095474,
+     0.922
+    ]
+   },
+   "path": "fcp/results/dosage/subhyp/logprob_probes/margin_shift_diff/results.json"
+  },
+  {
+   "run": "subhyp/logprob_probes/null_margin_shift_adapted",
+   "layer": 21,
+   "n_eval_prompts": 33,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": -0.0837,
+     "null_p": 0.9651741293532339,
+     "ci": [
+      -0.41678381177283774,
+      0.2267120722283551
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.0218,
+     "null_p": 0.3034825870646766,
+     "ci": [
+      -0.32570417086491227,
+      0.3406825513175991
+     ]
+    },
+    "fcp": {
+     "rho_W": -0.1065,
+     "null_p": 1.0,
+     "ci": [
+      -0.3954008398766753,
+      0.18212126896544736
+     ]
+    },
+    "gdm": {
+     "rho_W": -0.0844,
+     "null_p": 0.8805970149253731,
+     "ci": [
+      -0.41224288287959104,
+      0.22258468310505836
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.38457773590533034,
+     0.3439489225450287,
+     0.918
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.09749066539935299,
+     0.3200612712921371,
+     0.336
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.49622155524420153,
+     0.24435542928266135,
+     0.551
+    ]
+   },
+   "path": "fcp/results/dosage/subhyp/logprob_probes/null_margin_shift_adapted/results.json"
+  },
+  {
+   "run": "subhyp/logprob_probes/null_margin_shift_diff",
+   "layer": 21,
+   "n_eval_prompts": 33,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.1347,
+     "null_p": 0.0845771144278607,
+     "ci": [
+      -0.24935245422725738,
+      0.4668194609536281
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.0996,
+     "null_p": 0.04477611940298507,
+     "ci": [
+      -0.2657905053214798,
+      0.4241324038517733
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.0894,
+     "null_p": 0.04975124378109453,
+     "ci": [
+      -0.269409402157151,
+      0.39572014048794035
+     ]
+    },
+    "gdm": {
+     "rho_W": 0.1346,
+     "null_p": 0.03980099502487562,
+     "ci": [
+      -0.2493184322362313,
+      0.4676403827662361
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.13071542383303145,
+     0.026230573850129203,
+     0.238
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.26801186427959484,
+     0.185721846148218,
+     0.74
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.203489616037363,
+     0.2008956009095474,
+     0.922
+    ]
+   },
+   "path": "fcp/results/dosage/subhyp/logprob_probes/null_margin_shift_diff/results.json"
+  },
+  {
+   "run": "v2_s",
+   "layer": 23,
+   "n_eval_prompts": 26,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.1667,
+     "null_p": null,
+     "ci": [
+      -0.06313621034132912,
+      0.37610639465428464
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.142,
+     "null_p": null,
+     "ci": [
+      -0.12116637500252456,
+      0.3952781199772259
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.1575,
+     "null_p": null,
+     "ci": [
+      -0.12630449851720535,
+      0.41451912229675875
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.35031376994797836,
+     0.3439700140528017,
+     0.962
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.29842816367817826,
+     0.26529150143654595,
+     0.856
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.21920599425959292,
+     0.22557756982935198,
+     0.872
+    ]
+   },
+   "path": "fcp/results/dosage/v2_s/results.json"
+  },
+  {
+   "run": "v2_s_diff_base",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.2763,
+     "null_p": null,
+     "ci": [
+      -0.05956931379509411,
+      0.5337385499168181
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2558,
+     "null_p": null,
+     "ci": [
+      -0.049745716338379146,
+      0.4904412185195278
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.2597,
+     "null_p": null,
+     "ci": [
+      -0.0464876639742607,
+      0.4972642815895245
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.08943097329453867,
+     0.06146527819869544,
+     0.711
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.05084905603982516,
+     0.017463915401989,
+     0.292
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.07066239559445274,
+     0.0743426040896646,
+     0.861
+    ]
+   },
+   "path": "fcp/results/dosage/v2_s_diff_base/results.json"
+  },
+  {
+   "run": "v2_s_diff_base_null",
+   "layer": 21,
+   "n_eval_prompts": 26,
+   "condition": null,
+   "diff": [
+    "adapted",
+    "clean"
+   ],
+   "paired": true,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.2763,
+     "null_p": null,
+     "ci": [
+      -0.05956931379509411,
+      0.5337385499168181
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.2558,
+     "null_p": null,
+     "ci": [
+      -0.049745716338379146,
+      0.4904412185195278
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.2597,
+     "null_p": null,
+     "ci": [
+      -0.0464876639742607,
+      0.4972642815895245
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.08943097329453867,
+     0.06146527819869544,
+     0.711
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.05084905603982516,
+     0.017463915401989,
+     0.292
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.07066239559445274,
+     0.0743426040896646,
+     0.861
+    ]
+   },
+   "path": "fcp/results/dosage/v2_s_diff_base_null/results.json"
+  },
+  {
+   "run": "v2_s_em",
+   "layer": 23,
+   "n_eval_prompts": 26,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": -0.0229,
+     "null_p": null,
+     "ci": [
+      -0.2919077531221359,
+      0.24357916187226186
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.0858,
+     "null_p": null,
+     "ci": [
+      -0.20155682015927212,
+      0.346273544102244
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.1613,
+     "null_p": null,
+     "ci": [
+      -0.11149995085004152,
+      0.4110091157892346
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.1971767866857559,
+     0.5540978044997065,
+     0.366
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.19199769385924934,
+     0.4096158789632735,
+     0.512
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.17572178746768585,
+     0.332312683877332,
+     0.601
+    ]
+   },
+   "path": "fcp/results/dosage/v2_s_em/results.json"
+  },
+  {
+   "run": "v2_s_em_null",
+   "layer": 23,
+   "n_eval_prompts": 26,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": -0.0229,
+     "null_p": null,
+     "ci": [
+      -0.2919077531221359,
+      0.24357916187226186
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.0858,
+     "null_p": null,
+     "ci": [
+      -0.20155682015927212,
+      0.346273544102244
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.1613,
+     "null_p": null,
+     "ci": [
+      -0.11149995085004152,
+      0.4110091157892346
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.1971767866857559,
+     0.5540978044997065,
+     0.366
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.19199769385924934,
+     0.4096158789632735,
+     0.512
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.17572178746768585,
+     0.332312683877332,
+     0.601
+    ]
+   },
+   "path": "fcp/results/dosage/v2_s_em_null/results.json"
+  },
+  {
+   "run": "v2_s_null",
+   "layer": 23,
+   "n_eval_prompts": 26,
+   "condition": "adapted",
+   "diff": null,
+   "paired": false,
+   "probes": {
+    "baseline": {
+     "rho_W": 0.1667,
+     "null_p": null,
+     "ci": [
+      -0.06313621034132912,
+      0.37610639465428464
+     ]
+    },
+    "ridge_ep": {
+     "rho_W": 0.142,
+     "null_p": null,
+     "ci": [
+      -0.12116637500252456,
+      0.3952781199772259
+     ]
+    },
+    "fcp": {
+     "rho_W": 0.1575,
+     "null_p": null,
+     "ci": [
+      -0.12630449851720535,
+      0.41451912229675875
+     ]
+    }
+   },
+   "paired_tests": {
+    "fcp_minus_baseline": [
+     -0.35031376994797836,
+     0.3439700140528017,
+     0.962
+    ],
+    "ridge_ep_minus_baseline (regression vs diff-in-means)": [
+     -0.29842816367817826,
+     0.26529150143654595,
+     0.856
+    ],
+    "fcp_minus_ridge_ep (adding intermediate levels)": [
+     -0.21920599425959292,
+     0.22557756982935198,
+     0.872
+    ]
+   },
+   "path": "fcp/results/dosage/v2_s_null/results.json"
+  }
+ ],
+ "subhypothesis_results": [
+  "fcp/results/dosage/subhyp/E4_realign_reemerge.json",
+  "fcp/results/dosage/subhyp/E6_realign_direction.json",
+  "fcp/results/dosage/subhyp/E6_steer.json",
+  "fcp/results/dosage/subhyp/S3_inoc.json",
+  "fcp/results/dosage/subhyp/S3_r333.json",
+  "fcp/results/dosage/subhyp/S3_realign.json",
+  "fcp/results/dosage/subhyp/S4_cb.json",
+  "fcp/results/dosage/subhyp/S4_clamp.json",
+  "fcp/results/dosage/subhyp/S4_meanabl.json",
+  "fcp/results/dosage/subhyp/S4_scale.json",
+  "fcp/results/dosage/subhyp/S6_dials.json",
+  "fcp/results/dosage/subhyp/S6_e2.json",
+  "fcp/results/dosage/subhyp/T1.2a_T1.3a.json",
+  "fcp/results/dosage/subhyp/T1.3b_prefill.json",
+  "fcp/results/dosage/subhyp/T2.4b_synthetic.json",
+  "fcp/results/dosage/subhyp/T2.4b_synthetic_v2.json",
+  "fcp/results/dosage/subhyp/T2.5_steer.json",
+  "fcp/results/dosage/subhyp/r333_onset_PREDICTION.json",
+  "fcp/results/dosage/subhyp/r333_onset_PREDICTION_note.json",
+  "fcp/results/dosage/subhyp/sports_onset_PREDICTION.json",
+  "fcp/results/dosage/subhyp/sports_onset_VERIFICATION.json",
+  "fcp/results/dosage/subhyp/universal_dial.json"
+ ],
+ "start_here": "fcp/results/dosage/DOSAGE_AXIS_COMPLETE.md"
+}
