@@ -166,7 +166,8 @@ written *before* judging flagged exactly this possibility. Layers 21 and 27 pred
 ### 4.4 Honest limits on the threshold law
 
 - **It does not transfer to activation steering.** Clamping the base model to a set dial produces EM
-  at dial ≈0.44, well below the ~0.6 that training needs (section 5.1). Steering adds a constant
+  at dial ≈0.44 (bracket 0.40–0.55; `subhyp/S4_clamp.json`, key `threshold_from_clamp`), well below
+  the ~0.6 that training needs (section 5.1). Steering adds a constant
   vector at every token position; the adapter's contribution is input-dependent and far more
   selective. The law is a statement about *weight-space* dose, not about any intervention that moves
   the activation.
@@ -257,8 +258,12 @@ training from that re-aligned model, following the published organism's exact LR
 | EM | 0.0% | **7.7%** | **14.7%** | 14.1% |
 | Dial L23 | 1.101 | — | 1.067 | 1.092 |
 
-**Misalignment returns within 25–50 steps, against ~300 from the base model** — at least 12× faster,
+**Misalignment returns within 25–50 steps, against ~300 from the base model** — a 12× speed-up,
 and it returns *higher* than the original 6.5%. The dial never moves throughout.
+
+Full numbers with bootstrap CIs, the dial at each checkpoint, and the caveats are in
+`subhyp/E4_realign_reemerge.json`, reproducible via `fcp/dosage_e4_analysis.py`. The paired EM change
+for the re-alignment run is −5.9 points [−10.9, −1.8] over 34 questions.
 
 ### 5.4 What re-alignment adds instead (E6)
 
@@ -472,7 +477,7 @@ Listed explicitly so they are not re-introduced downstream.
 `dosage_prefill.py`, `dosage_synthetic_control.py`, `dosage_lp_schema.py`, `dosage_export_layers.py`,
 and the analysis scripts `dosage_s1_analysis.py`, `dosage_s3_analysis.py`, `dosage_s4_analysis.py`,
 `dosage_s6_analysis.py`, `dosage_steer_analysis.py`, `dosage_universal.py`,
-`dosage_realign_direction.py`, `dosage_followups_cpu.py`, `dosage_diagnostics.py`.
+`dosage_realign_direction.py`, `dosage_e4_analysis.py`, `dosage_followups_cpu.py`, `dosage_diagnostics.py`.
 
 **Results** (`fcp/results/dosage/`):
 
@@ -482,7 +487,9 @@ and the analysis scripts `dosage_s1_analysis.py`, `dosage_s3_analysis.py`, `dosa
 | `subhyp/S4_clamp.json`, `S4_meanabl.json` | steering and ablation |
 | `subhyp/S4_cb.json` | the circuit-breaker test |
 | `subhyp/S6_e2.json` | the four E2 arms, both dials, and the corrected synthesis |
-| `subhyp/S3_realign.json`, `E6_realign_direction.json`, `E6_steer.json` | re-alignment and the suppressor |
+| `subhyp/S3_realign.json` | session-3 (weaker) re-alignment run |
+| `subhyp/E4_realign_reemerge.json` | E4: strong re-alignment and re-emergence, with CIs |
+| `subhyp/E6_realign_direction.json`, `E6_steer.json` | the suppressor direction and its causal test |
 | `subhyp/T1.2a_T1.3a.json` | log-prob mirage and state-vs-text |
 | `subhyp/T1.3b_prefill.json` | the prefill test |
 | `subhyp/T2.4b_synthetic_v2.json` | the recalibrated synthetic control |
